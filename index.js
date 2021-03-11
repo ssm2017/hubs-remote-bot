@@ -216,17 +216,11 @@ function log(...objs) {
 	const dropImage = async () => {
 		try {
 			await page.evaluate(async () => {
-				window.APP.hubChannel.sendMessage("create object");
+				window.APP.hubChannel.sendMessage("create image");
 				let el = document.createElement("a-entity");
 				let loaded = new Promise((r, e) => { el.addEventListener('loaded', r, {once: true})});
-				el.setAttribute('scale', '1 1 1');
-				el.setAttribute('position', `${Math.random() * 3 - 1.5} ${Math.random() * 2 + 1} ${Math.random() * 4 - 2}`);
-				el.setAttribute('rotation', '0 0 0');
-				el.setAttribute('media-loader', {src: 'http://www.lehublot.net/wp-content/themes/discovery-child/img/bandeau_social_lab.gif', resolve: true});
-				el.setAttribute('networked', {template: '#interactable-media'});
-				el.setAttribute('data', {projection: '360-equirectangular'});
-
-				document.querySelector('a-scene').append(el);
+				el.setAttribute('scale', '8 2 8');
+               
 				await loaded;
 
 				let netEl = await NAF.utils.getNetworkedEntity(el);
