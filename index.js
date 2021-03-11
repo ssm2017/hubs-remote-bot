@@ -4,77 +4,6 @@ const puppeteer = require('puppeteer'); // Adding Puppeteer
 const querystring = require("query-string");
 const {Server} = require('node-osc');
 
-app.listen(7000, function() {
-	console.log('Http server started on port 7000.');
-});
-
-var server = new Server(3333, '0.0.0.0');
-console.log('OSC server started on port 3333');
-
-/*
-// Wrapping the Puppeteer browser logic in a GET request
-app.get('/', function(req, res) {
-
-	// Launching the Puppeteer controlled headless browser
-	puppeteer.launch().then(async function(browser) {
-		const page = await browser.newPage();
-		await page.goto('http://digidb.io/digimon-list/');
-
-		// Targeting the DOM Nodes that contain the Digimon names
-		const digimonNames = await page.$$eval('#digiList tbody tr td:nth-child(2) a', function(digimons) {
-		// Mapping each Digimon name to an array
-			return digimons.map(function(digimon) {
-		  return digimon.innerText;
-		});
-	  });
-
-		// Closing the Puppeteer controlled headless browser
-		await browser.close();
-
-		// Sending the Digimon names to Postman
-		res.send(digimonNames);
-	});
-});
-*/
-
-// Launching the Puppeteer controlled headless browser and navigate to the Digimon website
-/*puppeteer.launch().then(async function(browser) {
-	const page = await browser.newPage();
-	await page.goto('http://digidb.io/digimon-list/');
-
-	// Targeting the DOM Nodes that contain the Digimon names
-	const digimonNames = await page.$$eval('#digiList tbody tr td:nth-child(2) a', function(digimons) {
-		// Mapping each Digimon name to an array
-		return digimons.map(function(digimon) {
-			return digimon.innerText;
-		});
-	});
-
-	// Closing the Puppeteer controlled headless browser
-	//await browser.close();
-
-	// Adding simple GET request route as a test
-	app.get('/', function(req, res) {
-		// Sending 'Test' back to Postman
-		res.send('Test');
-	});
-
-	app.get('/start', function(req, res) {
-		// Sending 'Test' back to Postman
-		res.send('Tedddt');
-	});
-});
-
-
-// Making Express listen on port 7000
-app.listen(7001, function() {
-  console.log('Running on port 7000.');
-});*/
-
-function log(...objs) {
-	console.log.call(null, [new Date().toISOString()].concat(objs).join(" "));
-}
-
 var params = {
 	bot: true,
 	allow_multi: true
@@ -96,6 +25,19 @@ var host = "hubs.mozilla.com";
 var room = "jtbhYFh/adorable-cultured-venture";
 var spawnPoint = "";
 var bot_name = "bot-" + Math.random();
+
+// web server
+app.listen(7000, function() {
+	console.log('Http server started on port 7000.');
+});
+
+// osc server
+var server = new Server(3333, '0.0.0.0');
+console.log('OSC server started on port 3333');
+
+function log(...objs) {
+	console.log.call(null, [new Date().toISOString()].concat(objs).join(" "));
+}
 
 (async () => {
 	const browser = await puppeteer.launch({
@@ -313,19 +255,21 @@ var bot_name = "bot-" + Math.random();
 
 	const experiences = async () => {
 		try {
+			await createPage();
 			await page.goto("http://sebmas.com");
 			await page.evaluate(() => console.log(navigator.userAgent));
 			await page.evaluate(async () => {
 				const person = {
 					name: "Obaseki Nosa",
-					location: "Lagos",
+					location: "dd",
 				};
 				
 				window.localStorage.setItem('user', JSON.stringify(person));
-				//log(window.localStorage.getItem('user'));
-				
 			});
-			console.log('toto');
+			await page.evaluate(async () => {
+				let value = window.localStorage.getItem('user');
+				console.log("iii" + value);
+			});
 		} catch (e) {
 			// Ignore errors. This usually happens when the page is shutting down.
 		}
