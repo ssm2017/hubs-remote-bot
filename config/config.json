@@ -1,0 +1,10 @@
+{
+	"assets_folder": "./assets",
+	"use_audio": true,
+	"audio_file": "bot-recording.mp3",
+	"use_data": true,
+	"data_file": "dev-recording.json",
+	"audio_level": 1,
+	"host": "hubs.mozilla.com",
+	"room": "jtbhYFh/adorable-cultured-venture"
+}

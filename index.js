@@ -9,7 +9,9 @@ var params = {
 	allow_multi: true
 };
 
-var settings = {
+const config = require('./config/config.json');
+
+/*var settings = {
 	assets_folder: "./assets",
 	use_audio: true,
 	audio_file: "bot-recording.mp3",
@@ -17,14 +19,17 @@ var settings = {
 	//data_file: "bot-recording.json",
 	data_file: "dev-recording.json",
 	audio_level: 1
-};
+};*/
 
 var retryCount = 5;
 var backoff = 1000;
-var host = "hubs.mozilla.com";
-var room = "jtbhYFh/adorable-cultured-venture";
+var bot_name = "bot-" + Date.now();
 var spawnPoint = "";
-var bot_name = "bot-" + Math.random();
+
+/*var host = "hubs.mozilla.com";
+var room = "jtbhYFh/adorable-cultured-venture";*/
+
+
 
 // web server
 app.listen(7000, function() {
@@ -64,12 +69,14 @@ function log(...objs) {
 		log(page);
 	  try {
 		log("Spawning bot...");
+		let host = config.host;
+		let room = config.room;
 		var baseUrl = `https://${host}/${room}` || `https://${host}/hub.html`;
 		var url = `${baseUrl}?${querystring.stringify(params)}${spawnPoint}`;
 		log(url);
 		await page.goto(url);
 		await page.evaluate(() => console.log(navigator.userAgent));
-		/*await page.evaluate(() => {
+		await page.evaluate((bot_name) => {
 		  window.APP.store.update({
 			activity: {
 			  hasChangedName: true,
@@ -77,9 +84,9 @@ function log(...objs) {
 			},
 			profile: {
 			  // Prepend (bot) to the name so other users know it's a bot
-			  displayName: "bot-a"
+			  displayName: bot_name
 		  }})
-		});*/
+		}, bot_name);
 		// Do a periodic sanity check of the state of the bots.
 		setInterval(async function() {
 		  let avatarCounts;
@@ -251,20 +258,26 @@ function log(...objs) {
 		try {
 			await createPage();
 			await page.goto("http://sebmas.com");
-			await page.evaluate(() => console.log(navigator.userAgent));
-			await page.evaluate(async () => {
+			//await page.evaluate(() => console.log(navigator.userAgent));
+			//let host = config.host;
+			await page.evaluate((bot_name) => {
+				console.log("aaaa : "+bot_name);
+				//console.log("bot name : " + global.bot_name);
+			}, bot_name);
+			/*await page.evaluate(async () => {
 				const person = {
 					name: "Obaseki Nosa",
 					location: "dd",
 				};
 				
 				window.localStorage.setItem('user', JSON.stringify(person));
-			});
-			await page.evaluate(async () => {
+			});*/
+			/*await page.evaluate(async () => {
 				let value = window.localStorage.getItem('user');
 				console.log("iii" + value);
-			});
+			});*/
 		} catch (e) {
+			console.error("error happened", e)
 			// Ignore errors. This usually happens when the page is shutting down.
 		}
 	}
@@ -276,7 +289,7 @@ function log(...objs) {
 	app.get('/start', function(req, res) {
 		spawnPoint = req.query.sp ? `#${req.query.sp}` : "";
 		params.hub_id = req.query.hub_id ? `#${req.query.hub_id}` : "";
-		bot_name = req.query.bot_name ? `${req.query.bot_name}` : "bot-" + Math.random();
+		bot_name = req.query.bot_name ? `${req.query.bot_name}` : "bot-" + Date.now();
 		res.send('Starting process...' + params.sp);
 		navigate();
 	});
@@ -289,7 +302,8 @@ function log(...objs) {
 
 	app.get('/status', function(req, res) {
 		experiences();
-		res.send('url : ' + getStatus());
+		//res.send('url : ' + getStatus());
+		res.send('ok');
 		
 	});
 
