@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<title>Hubs bot</title>
+		<!-- custom css -->
+		<style type="text/css">
+			body {
+				background-color: black;
+				color: white;
+				margin-top: 50px;
+			}
+
+			button {
+				margin: 8px;
+			}
+		</style>
+
+		<!-- send command -->
+		<script type="text/javascript">
+			function sendCommand(command, vars="") {
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function () {
+					if (this.readyState == 4 && this.status == 200) {
+						document.getElementById("response").innerHTML = this.responseText;
+					}
+				};
+				command = encodeURIComponent(command);
+				xhttp.open("GET", "http://localhost:7000/" + command, true);
+				xhttp.send(vars);
+			}
+		</script>
+	</head>
+
+	<body>
+		<p id="response"></p>
+		<div id="start-stop">
+			<ul>
+				<li><button onclick="sendCommand('start')">Start bot</button></li>
+				<li><button onclick="sendCommand('stop')">Stop bot</button></li>
+				<li><button onclick="sendCommand('status')">Status</button></li>
+			</ul>
+		</div>
+		<div id="dropping">
+			<ul>
+				<li><button onclick="sendCommand('drop')">Drop object</button></li>
+				<li><button onclick="sendCommand('drop-multiple')">Drop multiple</button></li>
+				<li><button onclick="sendCommand('stop-drop-multiple')">Stop drop multiple</button></li>
+			</ul>
+		</div>
+		<div id="move">
+			<ul>
+				<li><button onclick="sendCommand('jump-to', 'sp=sp1')">Jump to</button></li>
+				<li><button onclick="sendCommand('jump-to', 'sp=sp2')">Jump to</button></li>
+				<li><button onclick="sendCommand('jump-to', 'sp=sp3')">Jump to</button></li>
+			</ul>
+		</div>
+	</body>
+</html>

@@ -1,43 +1,31 @@
-const express = require('express'); // Adding Express
-const app = express(); // Initializing Express
-const puppeteer = require('puppeteer'); // Adding Puppeteer
+const puppeteer = require('puppeteer');
 const querystring = require("query-string");
+
+const express = require('express');
+const httpServer = express();
 const {Server} = require('node-osc');
+
+const config = require('./config/config.json');
 
 var params = {
 	bot: true,
 	allow_multi: true
 };
 
-const config = require('./config/config.json');
-
-/*var settings = {
-	assets_folder: "./assets",
-	use_audio: true,
-	audio_file: "bot-recording.mp3",
-	use_data: true,
-	//data_file: "bot-recording.json",
-	data_file: "dev-recording.json",
-	audio_level: 1
-};*/
-
 var retryCount = 5;
 var backoff = 1000;
 var bot_name = "bot-" + Date.now();
 var spawnPoint = "";
-
-/*var host = "hubs.mozilla.com";
-var room = "jtbhYFh/adorable-cultured-venture";*/
-
-
+var dropped_object_url = config.dropped_object_url;
 
 // web server
-app.listen(7000, function() {
+httpServer.listen(config.http_port, function() {
 	console.log('Http server started on port 7000.');
 });
+httpServer.use(express.static('public'));
 
 // osc server
-var server = new Server(3333, '0.0.0.0');
+var OSCserver = new Server(config.osc_port, '0.0.0.0');
 console.log('OSC server started on port 3333');
 
 function log(...objs) {
@@ -54,26 +42,36 @@ function log(...objs) {
 
 	var page = {};
 	const createPage = async () => {
-		page = await browser.newPage();
-		await page.setBypassCSP(true);
-		page.on("console", msg => log("PAGE: ", msg.text()));
-		page.on("error", err => log("ERROR: ", err.toString().split("\n")[0]));
-		page.on("pageerror", err => log("PAGE ERROR: ", err.toString().split("\n")[0]));
+		try {
+			log("creating page");
+			page = await browser.newPage();
+			await page.setBypassCSP(true);
+			page.on("console", msg => log("PAGE: ", msg.text()));
+			page.on("error", err => log("ERROR: ", err.toString().split("\n")[0]));
+			page.on("pageerror", err => log("PAGE ERROR: ", err.toString().split("\n")[0]));
+		} catch (e) {
+			log("Error creating page", e.message);
+		}
 	}
-	
+
+	var baseUrl = '';
+	var url = '';
 	// spawn the bot
 	const navigate = async () => {
-		if ((typeof page.url !== "function")) {
+	  try {
+		let pages = await browser.pages();
+		if (pages.length < 2) {
+		//if ((typeof page.url !== "function")) {
 			await createPage();
 		}
 		log(page);
-	  try {
 		log("Spawning bot...");
 		let host = config.host;
 		let room = config.room;
-		var baseUrl = `https://${host}/${room}` || `https://${host}/hub.html`;
-		var url = `${baseUrl}?${querystring.stringify(params)}${spawnPoint}`;
+		baseUrl = `https://${host}/${room}` || `https://${host}/hub.html`;
+		url = `${baseUrl}?${querystring.stringify(params)}${spawnPoint}`;
 		log(url);
+
 		await page.goto(url);
 		await page.evaluate(() => console.log(navigator.userAgent));
 		await page.evaluate((bot_name) => {
@@ -87,6 +85,7 @@ function log(...objs) {
 			  displayName: bot_name
 		  }})
 		}, bot_name);
+
 		// Do a periodic sanity check of the state of the bots.
 		setInterval(async function() {
 		  let avatarCounts;
@@ -120,10 +119,10 @@ function log(...objs) {
 		try {
 			// Interact with the page so that audio can play.
 			await page.mouse.click(100, 100);
-			if (settings.use_audio) {
+			if (config.use_audio) {
 				const audioInput = await page.waitForSelector("#bot-audio-input");
-				audioInput.uploadFile(settings.assets_folder + '/' + settings.audio_file);
-				log("Uploaded audio file.");
+				audioInput.uploadFile(config.assets_folder + '/' + config.audio_file);
+				log("Uploaded audio file : "+config.audio_file);
 			}
 		} catch (e) {
 			log("Interaction error", e.message);
@@ -143,10 +142,10 @@ function log(...objs) {
 		try {
 			// Interact with the page so that audio can play.
 			await page.mouse.click(100, 100);
-			if (settings.use_data) {
+			if (config.use_data) {
 				const dataInput = await page.waitForSelector("#bot-data-input");
-				dataInput.uploadFile(settings.assets_folder + '/' + settings.data_file);
-				log("Uploaded data file.");
+				dataInput.uploadFile(config.assets_folder + '/' + config.data_file);
+				log("Uploaded data file : "+ config.data_file);
 			}
 		} catch (e) {
 			log("Interaction error", e.message);
@@ -164,58 +163,79 @@ function log(...objs) {
 	// dropObject
 	const dropObject = async () => {
 		try {
-			await page.evaluate(async () => {
+			await page.evaluate(async (dropped_object_url) => {
 				window.APP.hubChannel.sendMessage("create object");
 				let el = document.createElement("a-entity");
-				let loaded = new Promise((r, e) => { el.addEventListener('loaded', r, {once: true})});
+				//let loaded = new Promise((r, e) => { el.addEventListener('loaded', r, {once: true})});
 				el.setAttribute('scale', '1 1 1');
 				el.setAttribute('position', `${Math.random() * 3 - 1.5} ${Math.random() * 2 + 1} ${Math.random() * 4 - 2}`);
 				el.setAttribute('rotation', '0 0 0');
-				el.setAttribute('media-loader', {src: 'https://uploads-prod.reticulum.io/files/031dca7b-2bcb-45b6-b2df-2371e71aecb1.glb', resolve: true});
+				el.setAttribute('media-loader', {src: dropped_object_url, resolve: true});
 				el.setAttribute('networked', {template: '#interactable-media'});
 
 				document.querySelector('a-scene').append(el);
-				await loaded;
+				//await loaded;
 
 				let netEl = await NAF.utils.getNetworkedEntity(el);
 
 				// phys
-				await new Promise((r,e) => window.setTimeout(r, 200))
-				async function drop() {
-				window.APP.hubChannel.sendMessage("phys");
+				//await new Promise((r,e) => window.setTimeout(r, 200));
+				//const drop = async () => {
+					window.APP.hubChannel.sendMessage("phys");
 
-				if (!NAF.utils.isMine(netEl)) await NAF.utils.takeOwnership(netEl)
+					if (!NAF.utils.isMine(netEl)) await NAF.utils.takeOwnership(netEl)
 
-				netEl.setAttribute('floaty-object', {
-					autoLockOnLoad: false,
-					gravitySpeedLimit: 0,
-					modifyGravityOnRelease: false
-				})
+					netEl.setAttribute('floaty-object', {
+						autoLockOnLoad: false,
+						gravitySpeedLimit: 0,
+						modifyGravityOnRelease: false
+					});
 
-				const DEFAULT_INTERACTABLE = 1 | 2 | 4 | 8
-				netEl.setAttribute("body-helper", {
-					type: 'dynamic',
-					gravity: { x: 0, y: -9.8, z: 0 },
-					angularDamping: 0.01,
-					linearDamping: 0.01,
-					linearSleepingThreshold: 1.6,
-					angularSleepingThreshold: 2.5,
-					collisionFilterMask: DEFAULT_INTERACTABLE
-				});
+					const DEFAULT_INTERACTABLE = 1 | 2 | 4 | 8
+					netEl.setAttribute("body-helper", {
+						type: 'dynamic',
+						gravity: { x: 0, y: -9.8, z: 0 },
+						angularDamping: 0.01,
+						linearDamping: 0.01,
+						linearSleepingThreshold: 1.6,
+						angularSleepingThreshold: 2.5,
+						collisionFilterMask: DEFAULT_INTERACTABLE
+					});
 
-				const physicsSystem = document.querySelector('a-scene').systems["hubs-systems"].physicsSystem;
-				if (netEl.components["body-helper"].uuid) {
-					physicsSystem.activateBody(netEl.components["body-helper"].uuid);
-				}
-			}
+					const physicsSystem = document.querySelector('a-scene').systems["hubs-systems"].physicsSystem;
 
-			await drop()
-		});
-			
+					if (netEl.components["body-helper"].uuid) {
+						physicsSystem.activateBody(netEl.components["body-helper"].uuid);
+					}
+				//}
 
-		log("create object");
+				//await drop()
+			}, dropped_object_url);
+
+			log("create object");
 		} catch (e) {
-		// Ignore errors. This usually happens when the page is shutting down.
+			console.error("Error trying to drop object : ", e);
+		}
+	}
+
+	var dropObjectsLoop = null;
+	const dropMultipleObjects = async () => {
+		try {
+			dropObjectsLoop = setInterval(async function() {
+				dropObject();
+			}, 2000);
+
+		} catch(e) {
+			console.error("Error trying to multiple drop", e.message);
+		}
+	}
+
+	const StopDropMultipleObjects = async () => {
+		try {
+			clearInterval(dropObjectsLoop);
+
+		} catch(e) {
+			console.error("Error trying to stop multiple drop", e.message);
 		}
 	}
 
@@ -223,70 +243,123 @@ function log(...objs) {
 	const dropImage = async () => {
 		try {
 			await page.evaluate(async () => {
-				window.APP.hubChannel.sendMessage("create image");
-				let el = document.createElement("a-entity");
-				let loaded = new Promise((r, e) => { el.addEventListener('loaded', r, {once: true})});
-				el.setAttribute('scale', '8 2 8');
-               
-				await loaded;
+			window.APP.hubChannel.sendMessage("create image");
+			let el = document.createElement("a-entity");
+			let loaded = new Promise((r, e) => { el.addEventListener('loaded', r, {once: true})});
+			el.setAttribute('scale', '8 2 8');
 
-				let netEl = await NAF.utils.getNetworkedEntity(el);
+			await loaded;
 
-		});
-			
+			let netEl = await NAF.utils.getNetworkedEntity(el);
 
-		log("create image");
+			});
+
+			log("create image");
 		} catch (e) {
-		// Ignore errors. This usually happens when the page is shutting down.
 		}
 	}
 
+	const jumpTo = async () => {
+		try {
+			url = `${baseUrl}?${querystring.stringify(params)}${spawnPoint}`;
+			await page.goto(url);
+			//await page.goto(spawnPoint);
+		} catch (e) {
+			console.error("Error trying to jump to", e.message);
+		}
+		
+	}
+
 	const disconnect = async () => {
-		console.log('closing page');
-		if ((typeof page.url === "function")) {
-			await page.close();
+		try {
+			console.log('closing page');
+			if ((typeof page.url === "function")) {
+				await page.close();
+			}
+		} catch (e) {
+			console.error("error happened trying to close the page", e)
 		}
 	}
   
 	const getStatus = async () => {
-		console.log('reading pages');
-		const pages = await browser.pages();
-		console.log(pages.map(page => page.url()));
+		try {
+			console.log('reading pages');
+			const pages = await browser.pages();
+			console.log(pages.map(page => page.url()));
+		} catch (e) {
+			console.error("error happened trying to get the status", e)
+		}
+	}
+
+	const testLocalStorage = async () => {
+		try {
+			let pages = await browser.pages();
+			console.log("debut", pages.map(page => page.url()));
+			if (pages.length < 2) {
+				page = await browser.newPage();
+			}
+			await page.goto('http://sebmas.com');
+			console.log("milieu", pages.map(page => page.url()));
+			pages = await browser.pages();
+			console.log("fin", pages.map(page => page.url()));
+			console.log(page.url());
+			await page.evaluate(() => {
+				console.log("pourquoi");
+				const myObj = {
+					a: "abcd",
+					b: "efgh",
+				};
+				// write to localStorage
+				window.localStorage.setItem('myVar', JSON.stringify(myObj));
+				console.log("stored");
+			});
+			await page.evaluate(() => {
+				// read localStorage
+				let value = window.localStorage.getItem('myVar');
+				console.log("myObj" + value);
+			});
+		} catch (e) {
+			console.error("error happened", e)
+		}
 	}
 
 	const experiences = async () => {
+		/*
+
+		notes pupeeter :
+		await page.goto(url, {waitUntil: 'networkidle'})
+		const url = await page.evaluate('location.href');
+
+		const getLocation = async (page) => page.evaluate(() => location)
+		const getLocationProp = async (page, prop) => (await getLocation(page))[prop]
+
+
+		*/
 		try {
+			const urls = [
+				'http://sebmas.com',
+				'http://lehublot.net'
+			];
 			await createPage();
-			await page.goto("http://sebmas.com");
-			//await page.evaluate(() => console.log(navigator.userAgent));
-			//let host = config.host;
-			await page.evaluate((bot_name) => {
-				console.log("aaaa : "+bot_name);
-				//console.log("bot name : " + global.bot_name);
-			}, bot_name);
-			/*await page.evaluate(async () => {
-				const person = {
-					name: "Obaseki Nosa",
-					location: "dd",
-				};
-				
-				window.localStorage.setItem('user', JSON.stringify(person));
-			});*/
-			/*await page.evaluate(async () => {
-				let value = window.localStorage.getItem('user');
-				console.log("iii" + value);
-			});*/
+			/*for (let i = 0; i < urls.length; i++) {
+				const url = urls[i];
+				await page.goto(`${url}`);
+				await page.waitForNavigation({ waitUntil: 'networkidle2' });
+			}*/
+
 		} catch (e) {
 			console.error("error happened", e)
-			// Ignore errors. This usually happens when the page is shutting down.
 		}
 	}
+
+	// -----------
 	// express
-	app.get('/', function(req, res) {
+	// -----------
+	httpServer.get('/', function(req, res) {
 		res.send('Test');
 	});
 
-	app.get('/start', function(req, res) {
+	httpServer.get('/start', function(req, res) {
 		spawnPoint = req.query.sp ? `#${req.query.sp}` : "";
 		params.hub_id = req.query.hub_id ? `#${req.query.hub_id}` : "";
 		bot_name = req.query.bot_name ? `${req.query.bot_name}` : "bot-" + Date.now();
@@ -294,54 +367,73 @@ function log(...objs) {
 		navigate();
 	});
 
-	app.get('/stop', function(req, res) {
+	httpServer.get('/stop', function(req, res) {
 		res.send('Stopping process...');
 		disconnect();
 		getStatus();
 	});
 
-	app.get('/status', function(req, res) {
-		experiences();
+	httpServer.get('/status', function(req, res) {
+		//experiences();
+		testLocalStorage();
 		//res.send('url : ' + getStatus());
 		res.send('ok');
 		
 	});
 
-	app.get('/poweroff', function(req, res) {
+	httpServer.get('/poweroff', function(req, res) {
 		log("PowerOff.");
 		process.exit(0);
 		
 	});
 
-	app.get('/speak', function(req, res) {
+	httpServer.get('/speak', function(req, res) {
 		res.send('Starting to speak...');
 		speak();
 	});
 
-	app.get('/motion', function(req, res) {
-		settings.data_file = req.query.file ? req.query.file : settings.data_file;
-		res.send('Starting to move... file = '+settings.data_file);
+	httpServer.get('/motion', function(req, res) {
+		config.data_file = req.query.file ? req.query.file : config.data_file;
+		res.send('Starting to move... file = '+config.data_file);
 		motion();
 	});
 
-	app.get('/drop', function(req, res) {
+	httpServer.get('/drop', function(req, res) {
 		res.send('Starting to drop...');
 		dropObject();
 	});
 
-	app.get('/dropimage', function(req, res) {
+	httpServer.get('/drop-multiple', function(req, res) {
+		res.send('Starting to drop...');
+		dropMultipleObjects();
+	});
+
+	httpServer.get('/stop-drop-multiple', function(req, res) {
+		res.send('Stopping to drop...');
+		StopDropMultipleObjects();
+	});
+
+	httpServer.get('/jump-to', function(req, res) {
+		res.send('Jumping to...');
+		spawnPoint = req.query.sp ? `#${req.query.sp}` : "";
+		jumpTo();
+	});
+
+	httpServer.get('/dropimage', function(req, res) {
 		res.send('Starting to drop an image...');
 		dropImage();
 	});
 
+	// -----------
 	// osc
-	server.on('listening', () => {
+	// -----------
+	OSCserver.on('listening', () => {
 		console.log('OSC Server is listening.');
 	});
 
-	server.on('message', (msg) => {
+	OSCserver.on('message', (msg) => {
 		console.log(`Message: ${msg}`);
-	//server.close();
+		//OSCserver.close();
 	});
 
   })();
