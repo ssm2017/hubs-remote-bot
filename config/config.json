@@ -6,8 +6,8 @@
 	"data_file": "dev-recording.json",
 	"audio_level": 1,
 	"host": "hubs.mozilla.com",
-	"room": "jtbhYFh/adorable-cultured-venture",
+	"room": "8MgxQq2/quiet-essential-festivity",
 	"http_port": 7000,
 	"osc_port": 3333,
-	"dropped_object_url": "https://uploads-prod.reticulum.io/files/031dca7b-2bcb-45b6-b2df-2371e71aecb1.glb" 
+	"dropped_object_url": "https://uploads-prod.reticulum.io/files/031dca7b-2bcb-45b6-b2df-2371e71aecb1.glb"
 }

@@ -17,6 +17,11 @@ var backoff = 1000;
 var bot_name = "bot-" + Date.now();
 var spawnPoint = "";
 var dropped_object_url = config.dropped_object_url;
+var phys = false;
+var pinned = true;
+var position="0 0 0";
+var rotation="0 0 0";
+var scale="1 1 1";
 
 // web server
 httpServer.listen(config.http_port, function() {
@@ -28,10 +33,16 @@ httpServer.use(express.static('public'));
 var OSCserver = new Server(config.osc_port, '0.0.0.0');
 console.log('OSC server started on port 3333');
 
+// utils
 function log(...objs) {
 	console.log.call(null, [new Date().toISOString()].concat(objs).join(" "));
 }
 
+function getRandomInt(max) {
+	return Math.floor(Math.random() * Math.floor(max));
+}
+
+// main
 (async () => {
 	const browser = await puppeteer.launch({
 	  ignoreHTTPSErrors: true,
@@ -163,54 +174,59 @@ function log(...objs) {
 	// dropObject
 	const dropObject = async () => {
 		try {
-			await page.evaluate(async (dropped_object_url) => {
+			await page.evaluate(async (dropped_object_url, phys, pinned, position, rotation, scale) => {
 				window.APP.hubChannel.sendMessage("create object");
 				let el = document.createElement("a-entity");
-				//let loaded = new Promise((r, e) => { el.addEventListener('loaded', r, {once: true})});
-				el.setAttribute('scale', '1 1 1');
-				el.setAttribute('position', `${Math.random() * 3 - 1.5} ${Math.random() * 2 + 1} ${Math.random() * 4 - 2}`);
-				el.setAttribute('rotation', '0 0 0');
+				let loaded = new Promise((r, e) => { el.addEventListener('loaded', r, {once: true})});
+				el.setAttribute('scale', scale);
+				//el.setAttribute('position', `${Math.random() * 3 - 1.5} ${Math.random() * 2 + 1} ${Math.random() * 4 - 2}`);
+				el.setAttribute('position', position);
+				el.setAttribute('rotation', rotation);
 				el.setAttribute('media-loader', {src: dropped_object_url, resolve: true});
 				el.setAttribute('networked', {template: '#interactable-media'});
-
+				//el.setAttribute('pinnable', {pinned: true});
+				//el.setAttribute('pinnable', true);
 				document.querySelector('a-scene').append(el);
-				//await loaded;
-
+				await loaded;
 				let netEl = await NAF.utils.getNetworkedEntity(el);
+				if (!NAF.utils.isMine(netEl)) await NAF.utils.takeOwnership(netEl)
+				await new Promise((r,e) => window.setTimeout(r, 1000))
+				netEl.setAttribute("pinnable", {pinned: pinned});
 
-				// phys
-				//await new Promise((r,e) => window.setTimeout(r, 200));
-				//const drop = async () => {
-					window.APP.hubChannel.sendMessage("phys");
+				if (phys) {
 
-					if (!NAF.utils.isMine(netEl)) await NAF.utils.takeOwnership(netEl)
+					// phys
+					//await new Promise((r,e) => window.setTimeout(r, 200));
+					//const drop = async () => {
+						window.APP.hubChannel.sendMessage("phys");
 
-					netEl.setAttribute('floaty-object', {
-						autoLockOnLoad: false,
-						gravitySpeedLimit: 0,
-						modifyGravityOnRelease: false
-					});
-
-					const DEFAULT_INTERACTABLE = 1 | 2 | 4 | 8
-					netEl.setAttribute("body-helper", {
-						type: 'dynamic',
-						gravity: { x: 0, y: -9.8, z: 0 },
-						angularDamping: 0.01,
-						linearDamping: 0.01,
-						linearSleepingThreshold: 1.6,
-						angularSleepingThreshold: 2.5,
-						collisionFilterMask: DEFAULT_INTERACTABLE
-					});
-
-					const physicsSystem = document.querySelector('a-scene').systems["hubs-systems"].physicsSystem;
-
-					if (netEl.components["body-helper"].uuid) {
-						physicsSystem.activateBody(netEl.components["body-helper"].uuid);
-					}
-				//}
+						netEl.setAttribute('floaty-object', {
+							autoLockOnLoad: false,
+							gravitySpeedLimit: 0,
+							modifyGravityOnRelease: false
+						});
+	
+						const DEFAULT_INTERACTABLE = 1 | 2 | 4 | 8
+						netEl.setAttribute("body-helper", {
+							type: 'dynamic',
+							gravity: { x: 0, y: -9.8, z: 0 },
+							angularDamping: 0.01,
+							linearDamping: 0.01,
+							linearSleepingThreshold: 1.6,
+							angularSleepingThreshold: 2.5,
+							collisionFilterMask: DEFAULT_INTERACTABLE
+						});
+	
+						const physicsSystem = document.querySelector('a-scene').systems["hubs-systems"].physicsSystem;
+	
+						if (netEl.components["body-helper"].uuid) {
+							physicsSystem.activateBody(netEl.components["body-helper"].uuid);
+						}
+					//}
+				}
 
 				//await drop()
-			}, dropped_object_url);
+			}, dropped_object_url, phys, pinned, position, rotation, scale);
 
 			log("create object");
 		} catch (e) {
@@ -239,18 +255,37 @@ function log(...objs) {
 		}
 	}
 
+	const createForest = async () => {
+		try {
+			for (let i=0; i<20; i++) {
+				dropped_object_url = "https://uploads-prod.reticulum.io/files/c78a69a1-7d1b-4ff4-b36c-30d3e435d7d0.glb";
+				phys = false;
+				pinned = false;
+				position = ""+ (getRandomInt(50) + 10) + " 0.2 " + (getRandomInt(50) + 5);
+				console.log("position : ",position);
+				rotation = "0 " + getRandomInt(90) + " 0";
+				let rdm_size = (getRandomInt(2)+0.2);
+				scale = ""+ rdm_size + " " + rdm_size + " " + rdm_size;
+				dropObject();
+			}
+
+		} catch(e) {
+			console.error("Error trying to create a forest", e.message);
+		}
+	}
+
 	// dropImage
 	const dropImage = async () => {
 		try {
 			await page.evaluate(async () => {
-			window.APP.hubChannel.sendMessage("create image");
-			let el = document.createElement("a-entity");
-			let loaded = new Promise((r, e) => { el.addEventListener('loaded', r, {once: true})});
-			el.setAttribute('scale', '8 2 8');
+				window.APP.hubChannel.sendMessage("create image");
+				let el = document.createElement("a-entity");
+				let loaded = new Promise((r, e) => { el.addEventListener('loaded', r, {once: true})});
+				el.setAttribute('scale', '8 2 8');
 
-			await loaded;
+				await loaded;
 
-			let netEl = await NAF.utils.getNetworkedEntity(el);
+				let netEl = await NAF.utils.getNetworkedEntity(el);
 
 			});
 
@@ -268,6 +303,43 @@ function log(...objs) {
 			console.error("Error trying to jump to", e.message);
 		}
 		
+	}
+
+	const listenTo = async () => {
+		try {
+			await page.evaluate(async () => {
+				const watchedNode = document.querySelector('[class^="ChatSidebar__message-list"]');
+				var observer = new MutationObserver(function(mutations) {
+					let output = {
+						serviceMsg: null,
+						msg: null
+					};
+					mutations.forEach(function(mutation) {
+						if (mutation.addedNodes) {
+						for (var n of mutation.addedNodes) {
+							if (n.className.startsWith('ChatSidebar__message-group')) {
+							output.serviceMsg = n.firstChild.innerText;
+							}
+							output.msg = n.lastChild.innerText;
+							if (output.serviceMsg) {
+							console.log("service: ", output.serviceMsg);
+							}
+							if (output.msg && output.msg != output.serviceMsg) {
+								console.log("msg:", output.msg);
+							}
+						}
+						}
+					});
+				});
+				// start to observe
+				observer.observe(watchedNode, {
+				childList: true,
+				subtree: true
+				});
+			});
+		} catch (e) {
+			console.error("Error trying to listen to ...", e.message);
+		}
 	}
 
 	const disconnect = async () => {
@@ -413,10 +485,20 @@ function log(...objs) {
 		StopDropMultipleObjects();
 	});
 
+	httpServer.get('/create-forest', function(req, res) {
+		res.send('Starting the forest...');
+		createForest();
+	});
+
 	httpServer.get('/jump-to', function(req, res) {
 		res.send('Jumping to...');
 		spawnPoint = req.query.sp ? `#${req.query.sp}` : "";
 		jumpTo();
+	});
+
+	httpServer.get('/listen-to', function(req, res) {
+		res.send('Listening to...');
+		listenTo();
 	});
 
 	httpServer.get('/dropimage', function(req, res) {
