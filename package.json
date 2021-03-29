@@ -11,8 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
+    "HubsBot": "file:../hubs-client-bot",
     "node-osc": "^5.2.2",
-    "puppeteer": "1.3.0",
     "query-string": "^6.14.1"
   },
   "devDependencies": {
