@@ -13,7 +13,8 @@
     "express": "^4.17.1",
     "HubsBot": "file:../hubs-client-bot",
     "node-osc": "^5.2.2",
-    "query-string": "^6.14.1"
+    "query-string": "^6.14.1",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.7"

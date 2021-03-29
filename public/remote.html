@@ -38,14 +38,18 @@
 		<p id="response"></p>
 		<div id="start-stop">
 			<ul>
-				<li><button onclick="sendCommand('start', 'bot_name=bot1&spawn_point=sp3')">Start bot</button></li>
-				<li><button onclick="sendCommand('stop')">Stop bot</button></li>
+				<!--<li><button onclick="sendCommand('start', 'bot_name=bot1&spawn_point=sp3')">Start bot</button></li>-->
+				<li><button onclick="sendCommand('start')">Start bot</button></li>
+				<li><button onclick="sendCommand('stop')">Stop all bots</button></li>
+				<li><button onclick="sendCommand('stop', 'bot_uuid=first')">Stop first bot</button></li>
+				<li><button onclick="sendCommand('stop', 'bot_uuid=last')">Stop last bot</button></li>
+				<li><button onclick="sendCommand('stop', 'bot_uuid=ee5fd130-37b6-41a1-a5fa-cdbd9ad4f265')">Stop bot uuid</button></li>
 				<li><button onclick="sendCommand('status')">Status</button></li>
 			</ul>
 		</div>
 		<div id="dropping">
 			<ul>
-				<li><button onclick="sendCommand('spawn-object', 'url=https://upload.wikimedia.org/wikipedia/commons/6/6f/Helvellyn_Striding_Edge_360_Panorama%2C_Lake_District_-_June_09.jpg&projection=360-equirectangular&position=0+0+0&scale=80+20+80')">Spawn image</button></li>
+				<li><button onclick="sendCommand('spawn-object', 'url=https://upload.wikimedia.org/wikipedia/commons/6/6f/Helvellyn_Striding_Edge_360_Panorama%2C_Lake_District_-_June_09.jpg&projection=360-equirectangular&position=0+0+0&scale=80+20+80&dynamic=false')">Spawn image</button></li>
 				<li><button onclick="sendCommand('spawn-object', 'url=https://uploads-prod.reticulum.io/files/031dca7b-2bcb-45b6-b2df-2371e71aecb1.glb&dynamic=true')">Spawn object</button></li>
 				<li><button onclick="sendCommand('spawn-multiple-objects', 'dynamic=true&pause=1000')">Spawn multiple objects</button></li>
 				<li><button onclick="sendCommand('stop-spawn-multiple-objects')">Stop spawn multiple</button></li>
@@ -54,15 +58,15 @@
 		</div>
 		<div id="move">
 			<ul>
-				<li><button onclick="sendCommand('jump-to', 'sp=sp1')">Jump to</button></li>
-				<li><button onclick="sendCommand('jump-to', 'sp=sp2')">Jump to</button></li>
-				<li><button onclick="sendCommand('jump-to', 'sp=sp3')">Jump to</button></li>
+				<li><button onclick="sendCommand('jump-to', 'sp=sp1')">Jump to sp1</button></li>
+				<li><button onclick="sendCommand('jump-to', 'sp=sp2')">Jump to sp2</button></li>
+				<li><button onclick="sendCommand('jump-to', 'sp=sp3')">Jump to sp3</button></li>
 				<li><button onclick="sendCommand('goto', 'x=0&y=0&z=0')">Goto</button></li>
 			</ul>
 		</div>
 		<div id="autres">
 			<ul>
-				<li><button onclick="sendCommand('say', 'message=ouais+gros+dddd')">Say</button></li>
+				<li><button onclick="sendCommand('say', 'message=ouais+gros+dddd&bot_uuid=last')">Say</button></li>
 				<li><button onclick="sendCommand('play-file', 'filename=bot-recording.mp3')">Speak</button></li>
 				<li><button onclick="sendCommand('play-file', 'filename=bot-recording.json')">Motions</button></li>
 				<li><button onclick="sendCommand('listen-to')">Listen to</button></li>
