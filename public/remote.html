@@ -24,7 +24,12 @@
 				var xhttp = new XMLHttpRequest();
 				xhttp.onreadystatechange = function () {
 					if (this.readyState == 4 && this.status == 200) {
-						document.getElementById("response").innerHTML = this.responseText;
+						// document.getElementById("response--raw").innerHTML = this.responseText;
+						let json_response = JSON.parse(this.responseText);
+						document.getElementById("response--command").innerHTML = json_response.command;
+						document.getElementById("response--success").innerHTML = json_response.success;
+						document.getElementById("response--message").innerHTML = json_response.message;
+						document.getElementById("response--data").innerHTML = JSON.stringify(json_response.data);
 					}
 				};
 				command = encodeURIComponent(command);
@@ -35,7 +40,16 @@
 	</head>
 
 	<body>
-		<p id="response"></p>
+		<div id="response">
+			<h2>Response</h2>
+			<ul>
+				<li>Command : <span id="response--command"></span></li>
+				<li>Success : <span id="response--success"></span></li>
+				<li>Message : <span id="response--message"></span></li>
+				<li>Data : <span id="response--data"></span></li>
+			</ul>
+			<p id="response--raw"></p>
+		</div>
 		<div id="start-stop">
 			<ul>
 				<!--<li><button onclick="sendCommand('start', 'bot_name=bot1&spawn_point=sp3')">Start bot</button></li>-->

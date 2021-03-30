@@ -9,6 +9,6 @@
 	"host": "hubs.mozilla.com",
 	"room": "jtbhYFh/adorable-cultured-venture",
 	"http_port": 7000,
-	"osc_port": 3333,
+	"osc_port": 9000,
 	"spawnped_object_url": "https://uploads-prod.reticulum.io/files/031dca7b-2bcb-45b6-b2df-2371e71aecb1.glb"
 }
