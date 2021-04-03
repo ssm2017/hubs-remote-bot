@@ -1,193 +1,467 @@
-// uuid
-const { v4: uuidv4 } = require('uuid');
-const { validate: uuidValidate } = require('uuid');
 // utils
 const utils = require('./utils.js');
 // bots
 const BotsList = require('./BotsList.js');
+const { buildJsonResponse } = require('./utils.js');
 var botsList = new BotsList();
 
 module.exports = function(httpServer) {
+
 	// home
 	httpServer.get('/', function(req, res) {
 		res.send('Ok');
 	});
-	// status
-	httpServer.get('/api/bots', function(req, res) {
-		let status = botsList.getBotsList();
-		res.json(status);
-	});
-	// get bot infos
-	httpServer.get('/api/bots/:uuid', async(req, res) => {
-		// get uuid
-		const uuid = req.params.uuid;
-		if (!uuidValidate(uuid)) {
-			res.status(400).json({
-				command: "getBot",
-				success: false,
-				message: "Wrong uuid",
-				values: []
-			});
-			return;
-		}
-		let status = botsList.getBotInfos(uuid);
-		res.json(status);
-	});
+
 	// new bot
 	httpServer.post('/api/bots', async(req, res) => {
 		try {
 			let params = {
 				spawn_point: 	req.query.spawn_point || null,
-				name: 			req.query.name || "bot-" + Date.now(),
+				name: 			req.query.name || Date.now(),
 				room_url: 		req.query.room_url || "https://hubs.mozilla.com/jtbhYFh/adorable-cultured-venture",
 				audio_volume:	process.env.AUDIO_VOLUME || 1,
 				userDataDir:	process.env.USER_DATA_DIR || "./assets/chrome-profile/User Data/",
-				uuid:		uuidv4()
+				autoLog:		process.env.AUTOLOG || true
 			};
 			console.log("params", params);
 			let response = await botsList.newBot(params);
-			res.json(response);
+			res.status(200).json(response);
 		} catch(e) {
-			console.error("Error calling runBot", e);
-			res.json({
-				command: "start",
+			res.status(500).json(buildJsonResponse({
+				command: "new bot",
 				success: false,
-				message: e.message,
-				values: []
-			})
+				message: e.message
+			}));
 		}
 	});
+
+	// get bots list
+	httpServer.get('/api/bots', function(req, res) {
+		try {
+			const result = botsList.getBotsList();
+			res.json(result);
+		} catch (e) {
+			res.status(500).json(buildJsonResponse({
+				command: "get bots list",
+				success: false,
+				message: e.message
+			}));
+		}
+	});
+
+	// get bot infos
+	httpServer.get('/api/bots/:uuid', function(req, res) {
+		try {
+			// get uuid
+			let uuid = req.params.uuid || null;
+			// check uuid
+			if (!botsList.checkUuid(uuid)) {
+				res.status(400).json(buildJsonResponse({
+					command: "get bot infos",
+					success: false,
+					message: "Wrong uuid.",
+					data: [{
+						uuid: uuid
+					}]
+				}));
+				return;
+			}
+			const result = botsList.getBotInfos(uuid);
+			res.json(result);
+		} catch (e) {
+			res.status(500).json(buildJsonResponse({
+				command: "get bot infos",
+				success: false,
+				message: e.message
+			}));
+		}
+	});
+
 	// delete bot
 	httpServer.delete('/api/bots/:uuid', async(req, res) => {
 		try {
 			// get uuid
-			let bot_uuid = req.params.uuid || null;
+			let uuid = req.params.uuid || null;
 			// check uuid
-			if (!['first', 'last', 'all'].includes(bot_uuid)) {
-				if (!uuidValidate(bot_uuid)) {
-					res.status(400).json({
-						command: "delete bot",
-						success: false,
-						message: "Wrong uuid",
-						values: []
-					});
-					return;
-				}
+			if (!botsList.checkUuid(uuid)) {
+				res.status(400).json(buildJsonResponse({
+					command: "get bot infos",
+					success: false,
+					message: "Wrong uuid.",
+					data: [{
+						uuid: uuid
+					}]
+				}));
+				return;
 			}
-			const result = await botsList.deleteBot(bot_uuid);
+			const result = await botsList.deleteBot(uuid);
 			res.json(result);
 		} catch (e) {
-			res.status(500).json({
+			res.status(500).json(buildJsonResponse({
 				command: "delete bot",
 				success: false,
 				message: e.message
-			});
-			return;
+			}));
 		}
 	});
 
 	// update bot
 	httpServer.patch('/api/bots/:uuid', async(req, res) => {
-		// get the uuid
-		let bot_uuid = req.query.bot_uuid || null;
-		if (!bot_uuid) {
-			res.json(utils.buildJsonResponse({
-				command: "bot",
-				success: false,
-				message: "Bot uuid needed"
+		try {
+			// get uuid
+			let uuid = req.params.uuid || null;
+			// check uuid
+			if (!botsList.checkUuid(uuid)) {
+				res.status(400).json(buildJsonResponse({
+					command: "update bot",
+					success: false,
+					message: "Wrong uuid.",
+					data: [{
+						uuid: uuid
+					}]
+				}));
+				return;
+			}
+			// get the name
+			let name = req.query.name || null;
+			if (!name) {
+				res.status(400).json(buildJsonResponse({
+					command: "update bot",
+					success: false,
+					message: "Name needed"
+				}));
+				return;
+			}
+			// get bot
+			const bot = botsList.getBotByUuid(uuid);
+			if (!bot) {
+				res.status(404).json(buildJsonResponse({
+					command: "update bot",
+					success: false,
+					message: "Bot not found."
+				}));
+				return;
+			}
+			await bot.changeName(name);
+			res.json(buildJsonResponse({
+				command: "update bot",
+				success: true,
+				message: "Bot renamed.",
+				data: {
+					uuid: bot.uuid,
+					name: bot.name
+				}
 			}));
-			return;
-		}
-		// get the name
-		let bot_name = req.query.bot_name || null;
-		if (!bot_name) {
-			res.json(utils.buildJsonResponse({
-				command: "renameBot",
+		} catch (e) {
+			res.status(500).json(buildJsonResponse({
+				command: "update bot",
 				success: false,
-				message: "Bot name needed"
+				message: e.message
 			}));
-			return;
 		}
-		let status = await setBotName(bot_name);
-		res.json(status);
 	});
 
 	// play file
-	httpServer.get('/api/motion/play-file', async(req, res) => {
-		let default_audio_file = process.env.AUDIO_FILE || "bot-recording.mp3";
-		let response = await playFile({
-			filename: req.query.filename || default_audio_file
-		});
-		res.json(response);
+	httpServer.post('/api/bots/:uuid/play', async(req, res) => {
+		try {
+			// get uuid
+			let uuid = req.params.uuid || null;
+			// check uuid
+			if (!botsList.checkUuid(uuid)) {
+				res.status(400).json(buildJsonResponse({
+					command: "play file",
+					success: false,
+					message: "Wrong uuid.",
+					data: [{
+						uuid: uuid
+					}]
+				}));
+				return;
+			}
+			// get bot
+			const bot = botsList.getBotByUuid(uuid);
+			if (!bot) {
+				res.status(404).json(buildJsonResponse({
+					command: "play file",
+					success: false,
+					message: "Bot not found."
+				}));
+				return;
+			}
+			// get file
+			let default_audio_file = process.env.AUDIO_FILE || "bot-recording.mp3";
+			let filename = req.query.filename || default_audio_file;
+			let asset_folder = process.env.ASSETS_FOLDER || "./assets";
+			let file_to_play = asset_folder + '/' + filename;
+			// play the file
+			await bot.playFile(file_to_play);
+			res.json(buildJsonResponse({
+				command: "play file",
+				success: true,
+				message: 'File playing.',
+				data: {
+					file: file_to_play
+				}
+			}));
+		} catch(e) {
+			res.status(500).json(buildJsonResponse({
+				command: "play file",
+				success: false,
+				message: e.message
+			}));
+		}
 	});
 
 	// spawn object
-	httpServer.get('/api/media/spawn-object', async(req, res) => {
-		let default_object_url = process.env.DEFAULT_OBJECT_URL || "https://uploads-prod.reticulum.io/files/031dca7b-2bcb-45b6-b2df-2371e71aecb1.glb";
-		let params = {
-			url: 		req.query.url || default_object_url,
-			position: 	req.query.position || null,
-			rotation: 	req.query.rotation || "0 0 0",
-			scale: 		req.query.scale || "1 1 1",
-			pinned: 	req.query.pinned || true,
-			dynamic: 	req.query.dynamic || false,
-			projection: req.query.projection || null
-		};
-		let response = await spawnObject(params);
-		res.json(response);
-	});
-	httpServer.get('/api/media/spawn-multiple-objects', async(req, res) => {
-		let default_object_url = process.env.DEFAULT_OBJECT_URL || "https://uploads-prod.reticulum.io/files/031dca7b-2bcb-45b6-b2df-2371e71aecb1.glb";
-		let params = {
-			url: 		req.query.url || default_object_url,
-			position: 	req.query.position || null,
-			rotation: 	req.query.rotation || "0 0 0",
-			scale: 		req.query.scale || "1 1 1",
-			pinned: 	req.query.pinned || false,
-			dynamic: 	req.query.dynamic || false,
-			pause: 		req.query.pause || 5000
-		};
-		let response = await spawnMultipleObjects(params);
-		res.json(response);
-	});
-	httpServer.get('/api/media/stop-spawn-multiple-objects', async(req, res) => {
-		let response = await stopSpawnMultipleObjects();
-		res.json(response);
-	});
-	httpServer.get('/api/media/delete-all-objects', async(req, res) => {
-		let response = await deleteAllObjects({});
-		res.json(response);
+	httpServer.post('/api/bots/:uuid/objects', async(req, res) => {
+		try {
+			// get uuid
+			let uuid = req.params.uuid || null;
+			// check uuid
+			if (!botsList.checkUuid(uuid)) {
+				res.status(400).json(buildJsonResponse({
+					command: "play file",
+					success: false,
+					message: "Wrong uuid.",
+					data: [{
+						uuid: uuid
+					}]
+				}));
+				return;
+			}
+			// get bot
+			const bot = botsList.getBotByUuid(uuid);
+			if (!bot) {
+				res.status(404).json(buildJsonResponse({
+					command: "play file",
+					success: false,
+					message: "Bot not found."
+				}));
+				return;
+			}
+			let default_object_url = process.env.DEFAULT_OBJECT_URL || "https://uploads-prod.reticulum.io/files/031dca7b-2bcb-45b6-b2df-2371e71aecb1.glb";
+			let params = {
+				url: 		req.query.url || default_object_url,
+				position: 	req.query.position || `${Math.random() * 3 - 1.5} ${Math.random() * 2 + 1} ${Math.random() * 4 - 2}`,
+				rotation: 	req.query.rotation || "0 0 0",
+				scale: 		req.query.scale || "1 1 1",
+				pinned: 	req.query.pinned || true,
+				dynamic: 	req.query.dynamic || false,
+				projection: req.query.projection || null,
+				interval:	req.query.interval || null
+			};
+			// loop ?
+			if (params.interval) {
+				if (params.interval > 0) {
+					if (!bot.interval) {
+						bot.interval = setInterval(() => {
+							params.position = `${Math.random() * 3 - 1.5} ${Math.random() * 2 + 1} ${Math.random() * 4 - 2}`;
+							bot.spawnObject(params);
+						}, params.interval);
+					}
+				} else {
+					clearInterval(bot.interval);
+					bot.interval = null;
+				}
+					
+			} else {
+				await bot.spawnObject(params);
+			}
+			res.json(buildJsonResponse({
+				command: "spawn",
+				success: true,
+				message: 'Spawn.',
+				data: params
+			}));
+		} catch (e) {
+			res.status(500).json(buildJsonResponse({
+				command: "spawn",
+				success: false,
+				message: e.message
+			}));
+		}
 	});
 
-	// move
-	httpServer.get('/api/move/goto', async(req, res) => {
-		let params = {
-			x: req.query.x || 0,
-			y: req.query.y || 0,
-			z: req.query.z || 0
-		};
-		let response = await goTo(params);
-		res.json(response);
-	});
-	httpServer.get('/api/move/jump-to', async(req, res) => {
-		let params = {
-			sp: req.query.sp || ""
-		};
-		let response = await jumpTo(params);
-		res.json(response);
+	// delete all objects
+	httpServer.delete('/api/bots/:uuid/objects', async(req, res) => {
+		try {
+			// get uuid
+			let uuid = req.params.uuid || null;
+			// check uuid
+			if (!botsList.checkUuid(uuid)) {
+				res.status(400).json(buildJsonResponse({
+					command: "delete all",
+					success: false,
+					message: "Wrong uuid.",
+					data: [{
+						uuid: uuid
+					}]
+				}));
+				return;
+			}
+			// get bot
+			const bot = botsList.getBotByUuid(uuid);
+			if (!bot) {
+				res.status(404).json(buildJsonResponse({
+					command: "delete all",
+					success: false,
+					message: "Bot not found."
+				}));
+				return;
+			}
+			await bot.deleteAllObjects();
+			res.json(buildJsonResponse({
+				command: "delete all",
+				success: true,
+				message: 'Deleting.'
+			}));
+		} catch (e) {
+			res.status(500).json(buildJsonResponse({
+				command: "delete all",
+				success: false,
+				message: e.message
+			}));
+		}
 	});
 
-	// say
-	httpServer.get('/api/chat/say', async(req, res) => {
-		await say({
-			message: req.query.message || "coucou",
-			bot_uuid: req.query.bot_uuid || null
-		});
-		res.send("Saying");
+	// move to
+	httpServer.post('/api/bots/:uuid/goto', async(req, res) => {
+		try {
+			// get uuid
+			let uuid = req.params.uuid || null;
+			// check uuid
+			if (!botsList.checkUuid(uuid)) {
+				res.status(400).json(buildJsonResponse({
+					command: "goto",
+					success: false,
+					message: "Wrong uuid.",
+					data: [{
+						uuid: uuid
+					}]
+				}));
+				return;
+			}
+			// get bot
+			const bot = botsList.getBotByUuid(uuid);
+			if (!bot) {
+				res.status(404).json(buildJsonResponse({
+					command: "goto",
+					success: false,
+					message: "Bot not found."
+				}));
+				return;
+			}
+			let params = {
+				x: req.query.x || 0,
+				y: req.query.y || 0,
+				z: req.query.z || 0
+			};
+			await bot.goTo(params);
+			res.json(buildJsonResponse({
+				command: "goto",
+				success: true,
+				message: 'Going to.'
+			}));
+		} catch (e) {
+			res.status(500).json(buildJsonResponse({
+				command: "goto",
+				success: false,
+				message: e.message
+			}));
+		}
 	});
-	// listen to
-	httpServer.get('/api/chat/listen-to', async(req, res) => {
-		let response = await listenTo({text: "tutu"});
-		res.json(response);
+
+	// jumpt to
+	httpServer.post('/api/bots/:uuid/jumpto', async(req, res) => {
+		try {
+			// get uuid
+			let uuid = req.params.uuid || null;
+			// check uuid
+			if (!botsList.checkUuid(uuid)) {
+				res.status(400).json(buildJsonResponse({
+					command: "jump to",
+					success: false,
+					message: "Wrong uuid.",
+					data: [{
+						uuid: uuid
+					}]
+				}));
+				return;
+			}
+			// get bot
+			const bot = botsList.getBotByUuid(uuid);
+			if (!bot) {
+				res.status(404).json(buildJsonResponse({
+					command: "jump to",
+					success: false,
+					message: "Bot not found."
+				}));
+				return;
+			}
+			await bot.jumpTo(req.query.sp || "");
+			res.json(buildJsonResponse({
+				command: "jump to",
+				success: true,
+				message: 'Jump to.'
+			}));
+		} catch (e) {
+			res.status(500).json(buildJsonResponse({
+				command: "jump to",
+				success: false,
+				message: e.message
+			}));
+		}
 	});
+
+	// say in chat
+	httpServer.post('/api/bots/:uuid/say', async(req, res) => {
+		try {
+			// get uuid
+			let uuid = req.params.uuid || null;
+			// check uuid
+			if (!botsList.checkUuid(uuid)) {
+				res.status(400).json(buildJsonResponse({
+					command: "say",
+					success: false,
+					message: "Wrong uuid.",
+					data: [{
+						uuid: uuid
+					}]
+				}));
+				return;
+			}
+			// get bot
+			const bot = botsList.getBotByUuid(uuid);
+			if (!bot) {
+				res.status(404).json(buildJsonResponse({
+					command: "say",
+					success: false,
+					message: "Bot not found."
+				}));
+				return;
+			}
+			let message = req.query.message || "Hello";
+			await bot.say(message);
+			res.json(buildJsonResponse({
+				command: "say",
+				success: true,
+				message: 'say.',
+				data: {
+					message: message
+				}
+			}));
+		} catch (e) {
+			res.status(500).json(buildJsonResponse({
+				command: "say",
+				success: false,
+				message: e.message
+			}));
+		}
+	});
+
+	// listen to the chat
+	// httpServer.get('/api/todo', async(req, res) => {
+	// 	let response = await listenTo({text: "tutu"});
+	// 	res.json(response);
+	// });
 }

@@ -1,7 +1,10 @@
+// uuid
+const { v4: uuidv4 } = require('uuid');
+const { validate: uuidValidate } = require('uuid');
 // utils
 const utils = require('./utils.js');
-// bot
-const Bot = require('./Bot.js');
+// hubsbot
+const {HubsBot} = require('HubsBot');
 
 class BotsList {
 	bots = [];
@@ -13,18 +16,17 @@ class BotsList {
 	 */
 	 async newBot(params) {
 		try {
-			let new_bot = new Bot({
-				userDataDir:params.userDataDir,
-				uuid: params.uuid,
-				name: params.name
+			let new_bot = new HubsBot({
+				userDataDir:params.userDataDir
 			});
-			await new_bot.hubsBot.enterRoom(params.room_url, {
-				name: this.name,
+			new_bot.uuid = uuidv4();
+			await new_bot.enterRoom(params.room_url, {
+				name: params.name,
 				spawnPoint: params.spawn_point,
 				audioVolume: params.audio_volume
 			});
+			new_bot.name = await new_bot.getName();
 			this.bots.push(new_bot);
-			console.log(this.bots);
 			// build response
 			return utils.buildJsonResponse({
 				command: "new bot",
@@ -47,10 +49,10 @@ class BotsList {
 
 	/**
 	 * Stop the bot.
-	 * @param {uuid} bot_uuid 
+	 * @param {uuid} uuid 
 	 * @returns 
 	 */
-	async deleteBot(bot_uuid) {
+	async deleteBot(uuid) {
 		try {
 			if (!this.bots.length) {
 				return utils.buildJsonResponse({
@@ -59,10 +61,10 @@ class BotsList {
 					message: 'No bot to delete'
 				});
 			}
-			if (bot_uuid == "all") {
+			if (uuid == "all") {
 				let bots_stopped = [];
 				for (var i=0; i< this.bots.length; i++) {
-					await this.bots[i].hubsBot.page.close();
+					await this.bots[i].page.close();
 					bots_stopped.push({
 						uuid: this.bots[i].uuid,
 						name: this.bots[i].name
@@ -76,7 +78,7 @@ class BotsList {
 					data: bots_stopped
 				});
 			} else {
-				const bot = this.getBotByUuid(bot_uuid);
+				const bot = this.getBotByUuid(uuid);
 				if (!bot) {
 					return utils.buildJsonResponse({
 						command: "delete bot",
@@ -84,7 +86,7 @@ class BotsList {
 						message: 'Bot not found'
 					});
 				}
-				await bot.hubsBot.page.close();
+				await bot.page.close();
 				this.bots.splice(bot.idx, 1);
 				return utils.buildJsonResponse({
 					command: "delete bot",
@@ -105,37 +107,44 @@ class BotsList {
 		}
 	}
 
+	checkUuid(uuid) {
+		if (['first', 'last', 'all'].includes(uuid)) {
+			return true;
+		}
+		return uuidValidate(uuid);
+	}
+
 	/**
 	 * Get the bot uuid.
-	 * @param {uuid} bot_uuid 
+	 * @param {uuid} uuid 
 	 * @returns {uuid}
 	 */
-	getBotUuid(bot_uuid) {
-		if (bot_uuid == "first") {
+	getBotUuid(uuid) {
+		if (uuid == "first") {
 			return this.bots[0].uuid;
-		} else if (bot_uuid == "last") {
+		} else if (uuid == "last") {
 			return this.bots[this.bots.length - 1].uuid;
 		}
-		if (this.bots.findIndex(x => x.uuid === bot_uuid) < 0) {
+		if (this.bots.findIndex(x => x.uuid === uuid) < 0) {
 			return null;
 		}
-		return bot_uuid;
+		return uuid;
 	}
 
 	/**
 	 * Get bot by uuid.
-	 * @param {uuid} bot_uuid 
+	 * @param {uuid} uuid 
 	 * @returns {object}
 	 */
-	getBotByUuid(bot_uuid) {
+	getBotByUuid(uuid) {
 		if (!this.bots.length) {
 			return null;
 		}
-		bot_uuid = this.getBotUuid(bot_uuid);
-		if (!bot_uuid) {
+		uuid = this.getBotUuid(uuid);
+		if (!uuid) {
 			return null;
 		}
-		let index = this.bots.findIndex(x => x.uuid === bot_uuid)
+		let index = this.bots.findIndex(x => x.uuid === uuid)
 		if (index >= 0) {
 			const bot = this.bots[index];
 			bot.idx = index;
@@ -152,15 +161,15 @@ class BotsList {
 		let bot_status = {};
 		bot_status.count = utils.objectLength(this.bots);
 		let bots_list = [];
-		for (const bot in this.bots) {
+		for (const idx in this.bots) {
 			bots_list.push({
-				uuid: this.bots[bot].uuid,
-				name: this.bots[bot].name
+				uuid: this.bots[idx].uuid,
+				name: this.bots[idx].name
 			});
 		}
 		bot_status.bots = bots_list;
 		return utils.buildJsonResponse({
-			command: "status",
+			command: "bots list",
 			success: true,
 			message: "Ok",
 			data: bot_status
@@ -172,23 +181,26 @@ class BotsList {
 			return utils.buildJsonResponse({
 				command: "get bot infos",
 				success: false,
-				message: 'No bot to get infos for'
+				message: 'No bot to get infos from.'
 			});
+		}
+		if (uuid == "all") {
+			return this.getBotsList();
 		}
 		let bot = this.getBotByUuid(uuid);
 		if (!bot) {
 			return utils.buildJsonResponse({
 				command: "get bot infos",
 				success: false,
-				message: 'Bot not found'
+				message: 'Bot not found.'
 			});
 		}
 		return utils.buildJsonResponse({
 			command: "get bot infos",
 			success: true,
-			message: 'Bot found',
+			message: 'Bot found.',
 			data: {
-				uuid: uuid,
+				uuid: bot.uuid,
 				name: bot.name
 			}
 		});

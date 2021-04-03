@@ -1,0 +1,375 @@
+{
+	"info": {
+		"_postman_id": "ba36addd-39cd-46e2-98c7-341f0c6f9524",
+		"name": "hubs-bot",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "home",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "new bot",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/bots",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"bots"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "tututa",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete bot",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/bots/last",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"bots",
+						"last"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bot info",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/bots",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"bots"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "play",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/bots/last/play?filename=gd87-03-23d1t01.mp3",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"bots",
+						"last",
+						"play"
+					],
+					"query": [
+						{
+							"key": "filename",
+							"value": "bot-recording.json",
+							"disabled": true
+						},
+						{
+							"key": "filename",
+							"value": "gd87-03-23d1t01.mp3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "objects new",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/bots/first/objects",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"bots",
+						"first",
+						"objects"
+					],
+					"query": [
+						{
+							"key": "dynamic",
+							"value": "true",
+							"disabled": true
+						},
+						{
+							"key": "interval",
+							"value": "2000",
+							"disabled": true
+						},
+						{
+							"key": "interval",
+							"value": "0",
+							"disabled": true
+						},
+						{
+							"key": "url",
+							"value": "https://uploads-prod.reticulum.io/files/e545834b-caf0-4634-8756-60457e39d28e.png",
+							"disabled": true
+						},
+						{
+							"key": "projection",
+							"value": "360-equirectangular",
+							"disabled": true
+						},
+						{
+							"key": "scale",
+							"value": "80 20 80",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "objects delete all",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/bots/last/objects",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"bots",
+						"last",
+						"objects"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "dropimage",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/dropimage",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"dropimage"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "goto",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/bots/last/goto",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"bots",
+						"last",
+						"goto"
+					],
+					"query": [
+						{
+							"key": "x",
+							"value": "0",
+							"disabled": true
+						},
+						{
+							"key": "y",
+							"value": "2",
+							"disabled": true
+						},
+						{
+							"key": "z",
+							"value": "0",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create forest",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/create-forest",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"create-forest"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "say",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/bots/first/say?message=test1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"bots",
+						"first",
+						"say"
+					],
+					"query": [
+						{
+							"key": "message",
+							"value": "test1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update bot",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/bots/last?name=testdddddeee",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"bots",
+						"last"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "testdddddeee"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "jumpto",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/bots/first/jumpto?sp=sp1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"bots",
+						"first",
+						"jumpto"
+					],
+					"query": [
+						{
+							"key": "sp",
+							"value": "sp1"
+						},
+						{
+							"key": "sp",
+							"value": "sp2",
+							"disabled": true
+						},
+						{
+							"key": "sp",
+							"value": "sp3",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "http://localhost:7000"
+		}
+	]
+}
