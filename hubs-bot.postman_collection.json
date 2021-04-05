@@ -344,6 +344,45 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "get waypoints",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/bots/first/waypoints",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"bots",
+						"first",
+						"waypoints"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get assets",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/system/assets",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"system",
+						"assets"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [

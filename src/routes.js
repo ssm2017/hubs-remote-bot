@@ -1,3 +1,4 @@
+const fs = require('fs');
 // utils
 const utils = require('./utils.js');
 // bots
@@ -191,8 +192,8 @@ module.exports = function(httpServer) {
 			// get file
 			let default_audio_file = process.env.AUDIO_FILE || "bot-recording.mp3";
 			let filename = req.query.filename || default_audio_file;
-			let asset_folder = process.env.ASSETS_FOLDER || "./assets";
-			let file_to_play = asset_folder + '/' + filename;
+			let assets_folder = process.env.ASSETS_FOLDER || "./assets";
+			let file_to_play = assets_folder + '/' + filename;
 			// play the file
 			await bot.playFile(file_to_play);
 			res.json(buildJsonResponse({
@@ -371,6 +372,49 @@ module.exports = function(httpServer) {
 		}
 	});
 
+	// get waypoints
+	httpServer.get('/api/bots/:uuid/waypoints', async(req, res) => {
+		try {
+			// get uuid
+			let uuid = req.params.uuid || null;
+			// check uuid
+			if (!botsList.checkUuid(uuid)) {
+				res.status(400).json(buildJsonResponse({
+					command: "get waypoints",
+					success: false,
+					message: "Wrong uuid.",
+					data: [{
+						uuid: uuid
+					}]
+				}));
+				return;
+			}
+			// get bot
+			const bot = botsList.getBotByUuid(uuid);
+			if (!bot) {
+				res.status(404).json(buildJsonResponse({
+					command: "get waypoints",
+					success: false,
+					message: "Bot not found."
+				}));
+				return;
+			}
+			const result = await bot.getWaypoints();
+			res.json(buildJsonResponse({
+				command: "get waypoints",
+				success: true,
+				message: "waypoints found",
+				data: result
+			}));
+		} catch (e) {
+			res.status(500).json(buildJsonResponse({
+				command: "get waypoints",
+				success: false,
+				message: e.message
+			}));
+		}
+	});
+
 	// jumpt to
 	httpServer.post('/api/bots/:uuid/jumpto', async(req, res) => {
 		try {
@@ -459,6 +503,40 @@ module.exports = function(httpServer) {
 		}
 	});
 
+	httpServer.get('/api/system/assets', async(req, res) => {
+		try {
+			let assets_folder = process.env.ASSETS_FOLDER + '/' || "./assets/";
+			let filenames = {
+				mp3: [],
+				json: []
+			};
+			const files = fs.readdirSync(assets_folder)
+			if (files.length) {
+				for (const file of files) {
+					if (file.indexOf(".mp3") == file.length - 4) {
+						filenames.mp3.push(file);
+					} else if (file.indexOf(".json") == file.length - 5) {
+						filenames.json.push(file);
+					}
+				}
+			}
+			res.json(buildJsonResponse({
+				command: "get assets",
+				success: true,
+				message: 'Assets list.',
+				data: {
+					files: filenames
+				}
+			}));
+
+		} catch (e) {
+			res.status(500).json(buildJsonResponse({
+				command: "get assets",
+				success: false,
+				message: e.message
+			}));
+		}
+	});
 	// listen to the chat
 	// httpServer.get('/api/todo', async(req, res) => {
 	// 	let response = await listenTo({text: "tutu"});
