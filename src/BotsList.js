@@ -34,7 +34,8 @@ class BotsList {
 				message: "Bot created",
 				data: [{
 					uuid: new_bot.uuid,
-					name: new_bot.name
+					name: new_bot.name,
+					room_url: params.room_url
 				}]
 			});
 		} catch(e) {
@@ -162,9 +163,12 @@ class BotsList {
 		bot_status.count = utils.objectLength(this.bots);
 		let bots_list = [];
 		for (const idx in this.bots) {
+			let url = new URL(this.bots[idx].page.url());
+			let room_url = url.origin + url.pathname;
 			bots_list.push({
 				uuid: this.bots[idx].uuid,
-				name: this.bots[idx].name
+				name: this.bots[idx].name,
+				room_url: room_url
 			});
 		}
 		bot_status.bots = bots_list;
@@ -172,7 +176,7 @@ class BotsList {
 			command: "bots list",
 			success: true,
 			message: "Ok",
-			data: bot_status
+			data: bots_list
 		});
 	}
 
@@ -195,13 +199,16 @@ class BotsList {
 				message: 'Bot not found.'
 			});
 		}
+		let url = new URL(bot.page.url());
+		let room_url = url.origin + url.pathname;
 		return utils.buildJsonResponse({
 			command: "get bot infos",
 			success: true,
 			message: 'Bot found.',
 			data: {
 				uuid: bot.uuid,
-				name: bot.name
+				name: bot.name,
+				room_url: room_url
 			}
 		});
 	}

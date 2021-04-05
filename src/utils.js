@@ -77,7 +77,7 @@ class Utils {
 			data: data
 		};
 		console.log(response);
-		return response;
+		return data;
 	}
 }
 module.exports = Utils;

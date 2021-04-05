@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 // utils
 const utils = require('./utils.js');
 // bots
@@ -17,14 +18,16 @@ module.exports = function(httpServer) {
 	httpServer.post('/api/bots', async(req, res) => {
 		try {
 			let params = {
-				spawn_point: 	req.query.spawn_point || null,
-				name: 			req.query.name || Date.now(),
-				room_url: 		req.query.room_url || "https://hubs.mozilla.com/jtbhYFh/adorable-cultured-venture",
+				spawn_point: 	req.body.spawn_point || null,
+				name: 			req.body.name || Date.now(),
+				room_url: 		req.body.room_url || "https://hubs.mozilla.com/jtbhYFh/adorable-cultured-venture",
 				audio_volume:	process.env.AUDIO_VOLUME || 1,
 				userDataDir:	process.env.USER_DATA_DIR || "./assets/chrome-profile/User Data/",
 				autoLog:		process.env.AUTOLOG || true
 			};
 			console.log("params", params);
+			console.log("req query", req.query);
+			console.log("req body", req.body);
 			let response = await botsList.newBot(params);
 			res.status(200).json(response);
 		} catch(e) {
@@ -67,6 +70,7 @@ module.exports = function(httpServer) {
 				}));
 				return;
 			}
+			console.log("bots", botsList.bots);
 			const result = botsList.getBotInfos(uuid);
 			res.json(result);
 		} catch (e) {
@@ -124,7 +128,7 @@ module.exports = function(httpServer) {
 				return;
 			}
 			// get the name
-			let name = req.query.name || null;
+			let name = req.body.name || null;
 			if (!name) {
 				res.status(400).json(buildJsonResponse({
 					command: "update bot",
@@ -537,6 +541,12 @@ module.exports = function(httpServer) {
 			}));
 		}
 	});
+	// httpServer.get('/client', (req, res) => {
+	// 	res.sendFile(path.join(__dirname, '../client/build/index.html'));
+	// })
+	httpServer.get('/*', (req, res) => {
+		res.sendFile(path.join(__dirname, '../client/build/index.html'));
+	})
 	// listen to the chat
 	// httpServer.get('/api/todo', async(req, res) => {
 	// 	let response = await listenTo({text: "tutu"});
