@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import BotDataService from "../services/BotService";
 import BotPanel from "./BotPanel";
 
@@ -45,9 +46,10 @@ const BotsList = () => {
   };
 
   const noBotTemplate = (
-    <div class="alert alert-info" role="alert">No bot.</div>
+    <div className="alert alert-info" role="alert">No bot.</div>
   );
   const botsListTemplate = (
+    <div>
     <div className="list row">
       <div className="col-md-6">
         <h4>Bots List {bots.length}</h4>
@@ -73,6 +75,7 @@ const BotsList = () => {
         >
           Remove All
         </button>
+        <Link to="/add" className="m-3 btn btn-sm btn-success">New bot</Link>
       </div>
       <div className="col-md-6">
         {currentBot ? (
@@ -86,7 +89,9 @@ const BotsList = () => {
           </div>
         )}
       </div>
+      
     </div>
+  </div>
   );
   const botsQty = bots.length;
   return <div>{botsQty ? botsListTemplate : noBotTemplate}</div>;

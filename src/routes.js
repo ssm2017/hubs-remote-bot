@@ -5,6 +5,7 @@ const utils = require('./utils.js');
 // bots
 const BotsList = require('./BotsList.js');
 const { buildJsonResponse } = require('./utils.js');
+
 var botsList = new BotsList();
 
 module.exports = function(httpServer) {
@@ -42,7 +43,29 @@ module.exports = function(httpServer) {
 	// get bots list
 	httpServer.get('/api/bots', function(req, res) {
 		try {
-			const result = botsList.getBotsList();
+			// const result = botsList.getBotsList();
+			const result = [
+				{
+					uuid: "abcd",
+					name: "a"
+				},
+				{
+					uuid: "abcde",
+					name: "aa"
+				},
+				{
+					uuid: "abcdf",
+					name: "aaa"
+				},
+				{
+					uuid: "abcdg",
+					name: "aaaa"
+				},
+				{
+					uuid: "abcdh",
+					name: "aaaaa"
+				},
+			];
 			res.json(result);
 		} catch (e) {
 			res.status(500).json(buildJsonResponse({
@@ -333,7 +356,7 @@ module.exports = function(httpServer) {
 	httpServer.post('/api/bots/:uuid/goto', async(req, res) => {
 		try {
 			// get uuid
-			let uuid = req.params.uuid || null;
+			/*let uuid = req.params.uuid || null;
 			// check uuid
 			if (!botsList.checkUuid(uuid)) {
 				res.status(400).json(buildJsonResponse({
@@ -355,24 +378,35 @@ module.exports = function(httpServer) {
 					message: "Bot not found."
 				}));
 				return;
-			}
+			}*/
 			let params = {
-				x: req.query.x || 0,
-				y: req.query.y || 0,
-				z: req.query.z || 0
+				x: req.body.x || 0,
+				y: req.body.y || 0,
+				z: req.body.z || 0
 			};
-			await bot.goTo(params);
-			res.json(buildJsonResponse({
-				command: "goto",
-				success: true,
-				message: 'Going to.'
-			}));
+			// check values
+			if (isNaN(params.x) || isNaN(params.y) || isNaN(params.z)) {
+				res.status(400).json({
+					error: {
+						status: 400,
+						message: "x, y or z must be a number."
+					}
+				});
+				return;
+			}
+			
+			// await bot.goTo(params);
+			res.status(200).json({
+				status: 200,
+				message: `The bot has gone to: "${params.x} ${params.y} ${params.z}"`
+			});
 		} catch (e) {
-			res.status(500).json(buildJsonResponse({
-				command: "goto",
-				success: false,
-				message: e.message
-			}));
+			res.status(500).json({
+				error: {
+					status: 500,
+					message: e.message
+				}
+			});
 		}
 	});
 
@@ -446,7 +480,6 @@ module.exports = function(httpServer) {
 				}));
 				return;
 			}
-			console.log('=============', req.body.waypoint);
 			await bot.jumpTo(req.body.waypoint || "");
 			res.json(buildJsonResponse({
 				command: "jump to",

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import BotDataService from "../services/BotService";
 
 const Bot = props => {
@@ -94,6 +95,7 @@ const Bot = props => {
           >
             Update
           </button>
+          <Link to={"/bots"} className="btn btn-primary">Bots list</Link>
           <p>{message}</p>
         </div>
       ) : (

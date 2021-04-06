@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import BotDataService from "../services/BotService";
 
 const AddBot = () => {
@@ -49,6 +50,7 @@ const AddBot = () => {
           <button className="btn btn-success" onClick={newBot}>
             Add
           </button>
+          <Link to={"/bots"} className="btn btn-primary">Bots list</Link>
         </div>
       ) : (
         <div>
@@ -81,6 +83,7 @@ const AddBot = () => {
           <button onClick={saveBot} className="btn btn-success">
             Submit
           </button>
+          <Link to={"/bots"} className="btn btn-primary">Bots list</Link>
         </div>
       )}
     </div>

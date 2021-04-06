@@ -5,20 +5,20 @@ class BotDataService {
     return http.get("/bots");
   };
 
-  get = id => {
-    return http.get(`/bots/${id}`);
+  get = uuid => {
+    return http.get(`/bots/${uuid}`);
   };
 
   create = data => {
     return http.post("/bots", data);
   };
 
-  update = (id, data) => {
-    return http.patch(`/bots/${id}`, data);
+  update = (uuid, data) => {
+    return http.patch(`/bots/${uuid}`, data);
   };
 
-  remove = id => {
-    return http.delete(`/bots/${id}`);
+  remove = uuid => {
+    return http.delete(`/bots/${uuid}`);
   };
 
   removeAll = () => {
@@ -29,16 +29,20 @@ class BotDataService {
     return http.get('/system/assets');
   }
 
-  playFile = (id, data) => {
-    return http.post(`/bots/${id}/play`, data);
+  playFile = (uuid, data) => {
+    return http.post(`/bots/${uuid}/play`, data);
   }
 
-  getWaypointsList = (id) => {
-    return http.get(`/bots/${id}/waypoints`);
+  getWaypointsList = (uuid) => {
+    return http.get(`/bots/${uuid}/waypoints`);
   }
 
-  jumpTo = (id, data) => {
-    return http.post(`/bots/${id}/jumpto`, data);
+  jumpTo = (uuid, data) => {
+    return http.post(`/bots/${uuid}/jumpto`, data);
+  }
+
+  goTo = (uuid, data) => {
+    return http.post(`/bots/${uuid}/goto`, data);
   }
 }
 

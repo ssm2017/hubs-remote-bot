@@ -13,3 +13,11 @@
   max-width: 300px;
   margin: auto;
 }
+
+.container {
+  padding-top: 50px;
+}
+
+li.nav-item {
+  color: white;
+}
