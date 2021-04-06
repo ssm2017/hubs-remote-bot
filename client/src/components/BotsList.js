@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import BotDataService from "../services/BotService";
-import { Link } from "react-router-dom";
+import BotPanel from "./BotPanel";
 
 const BotsList = () => {
   const [bots, setBots] = useState([]);
@@ -45,7 +45,7 @@ const BotsList = () => {
   };
 
   const noBotTemplate = (
-    <div>No bot.</div>
+    <div class="alert alert-info" role="alert">No bot.</div>
   );
   const botsListTemplate = (
     <div className="list row">
@@ -77,32 +77,7 @@ const BotsList = () => {
       <div className="col-md-6">
         {currentBot ? (
           <div>
-            <h4>Bot</h4>
-            <div>
-              <label>
-                <strong>Name:</strong>
-              </label>{" "}
-              {currentBot.name}
-            </div>
-            <div>
-              <label>
-                <strong>Room Url:</strong>
-              </label>{" "}
-              {currentBot.room_url}
-            </div>
-            <div>
-              <label>
-                <strong>Uuid:</strong>
-              </label>{" "}
-              {currentBot.uuid}
-            </div>
-
-            <Link
-              to={"/bots/" + currentBot.uuid}
-              className="badge badge-warning"
-            >
-              Edit
-            </Link>
+            <BotPanel bot={currentBot}/>
           </div>
         ) : (
           <div>

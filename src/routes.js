@@ -195,7 +195,7 @@ module.exports = function(httpServer) {
 			}
 			// get file
 			let default_audio_file = process.env.AUDIO_FILE || "bot-recording.mp3";
-			let filename = req.query.filename || default_audio_file;
+			let filename = req.body.filename || default_audio_file;
 			let assets_folder = process.env.ASSETS_FOLDER || "./assets";
 			let file_to_play = assets_folder + '/' + filename;
 			// play the file
@@ -446,7 +446,8 @@ module.exports = function(httpServer) {
 				}));
 				return;
 			}
-			await bot.jumpTo(req.query.sp || "");
+			console.log('=============', req.body.waypoint);
+			await bot.jumpTo(req.body.waypoint || "");
 			res.json(buildJsonResponse({
 				command: "jump to",
 				success: true,
@@ -536,6 +537,50 @@ module.exports = function(httpServer) {
 		} catch (e) {
 			res.status(500).json(buildJsonResponse({
 				command: "get assets",
+				success: false,
+				message: e.message
+			}));
+		}
+	});
+	httpServer.get('/api/bots/:uuid/audiocontext', async(req, res) => {
+		try {
+			// get uuid
+			let uuid = req.params.uuid || null;
+			// check uuid
+			if (!botsList.checkUuid(uuid)) {
+				res.status(400).json(buildJsonResponse({
+					command: "say",
+					success: false,
+					message: "Wrong uuid.",
+					data: [{
+						uuid: uuid
+					}]
+				}));
+				return;
+			}
+			// get bot
+			const bot = botsList.getBotByUuid(uuid);
+			if (!bot) {
+				res.status(404).json(buildJsonResponse({
+					command: "say",
+					success: false,
+					message: "Bot not found."
+				}));
+				return;
+			}
+			let message = req.query.message || "Hello";
+			let response = await bot.getAudioContext();
+			res.json(buildJsonResponse({
+				command: "say",
+				success: true,
+				message: 'say.',
+				data: {
+					message: response
+				}
+			}));
+		} catch (e) {
+			res.status(500).json(buildJsonResponse({
+				command: "say",
 				success: false,
 				message: e.message
 			}));

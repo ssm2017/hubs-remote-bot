@@ -27,6 +27,15 @@
 			"request": {
 				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"abcd\",\r\n    \"spawn_point\": \"sp1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
 					"raw": "{{url}}/api/bots",
 					"host": [
@@ -40,6 +49,11 @@
 						{
 							"key": "name",
 							"value": "tututa",
+							"disabled": true
+						},
+						{
+							"key": "spawn_point",
+							"value": "sp1",
 							"disabled": true
 						}
 					]
