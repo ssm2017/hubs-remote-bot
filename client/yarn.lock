@@ -1783,6 +1783,11 @@
   "resolved" "https://registry.npmjs.org/alphanum-sort/-/alphanum-sort-1.0.2.tgz"
   "version" "1.0.2"
 
+"amdefine@>=0.0.4":
+  "integrity" "sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU="
+  "resolved" "https://registry.npmjs.org/amdefine/-/amdefine-1.0.1.tgz"
+  "version" "1.0.1"
+
 "ansi-colors@^3.0.0":
   "integrity" "sha512-hHUXGagefjN2iRrID63xckIvotOXOojhQKWIPUZ4mNUZ9nLZW+7FMNoE1lOkEhNWYsx/7ysGIuJYCiMAA9FnrA=="
   "resolved" "https://registry.npmjs.org/ansi-colors/-/ansi-colors-3.2.4.tgz"
@@ -2006,10 +2011,24 @@
   "resolved" "https://registry.npmjs.org/assign-symbols/-/assign-symbols-1.0.0.tgz"
   "version" "1.0.0"
 
+"ast-transform@0.0.0":
+  "integrity" "sha1-dJRAWIh9goPhidlUYAlHvJj+AGI="
+  "resolved" "https://registry.npmjs.org/ast-transform/-/ast-transform-0.0.0.tgz"
+  "version" "0.0.0"
+  dependencies:
+    "escodegen" "~1.2.0"
+    "esprima" "~1.0.4"
+    "through" "~2.3.4"
+
 "ast-types-flow@^0.0.7", "ast-types-flow@0.0.7":
   "integrity" "sha1-9wtzXGvKGlycItmCw+Oef+ujva0="
   "resolved" "https://registry.npmjs.org/ast-types-flow/-/ast-types-flow-0.0.7.tgz"
   "version" "0.0.7"
+
+"ast-types@^0.7.0":
+  "integrity" "sha1-kC0uDWDQcb3NRtwRXhgJ7RHBOKk="
+  "resolved" "https://registry.npmjs.org/ast-types/-/ast-types-0.7.8.tgz"
+  "version" "0.7.8"
 
 "astral-regex@^1.0.0":
   "integrity" "sha512-+Ryf6g3BKoRc7jfp7ad8tM4TtMiaWvbF/1/sQcZPkkS7ag3D5nMBCe2UfOTONtAkaG0tO0ij3C5Lwmf1EiyjHg=="
@@ -2367,7 +2386,7 @@
   "resolved" "https://registry.npmjs.org/browser-process-hrtime/-/browser-process-hrtime-1.0.0.tgz"
   "version" "1.0.0"
 
-"browser-resolve@^1.11.3":
+"browser-resolve@^1.11.3", "browser-resolve@^1.8.1":
   "integrity" "sha512-exDi1BYWB/6raKHmDTCicQfTkqwN5fioMFV4j8BsfMU4R2DK/QfZfK7kOVkmWCNANf0snkBzqGqAJBao9gZMdQ=="
   "resolved" "https://registry.npmjs.org/browser-resolve/-/browser-resolve-1.11.3.tgz"
   "version" "1.11.3"
@@ -2404,6 +2423,15 @@
     "des.js" "^1.0.0"
     "inherits" "^2.0.1"
     "safe-buffer" "^5.1.2"
+
+"browserify-optional@^1.0.0":
+  "integrity" "sha1-HhNyLP3g2F8SFnbCpyztUzoBiGk="
+  "resolved" "https://registry.npmjs.org/browserify-optional/-/browserify-optional-1.0.1.tgz"
+  "version" "1.0.1"
+  dependencies:
+    "ast-transform" "0.0.0"
+    "ast-types" "^0.7.0"
+    "browser-resolve" "^1.8.1"
 
 "browserify-rsa@^4.0.0":
   "integrity" "sha1-IeCr+vbyApzy+vsTNWenAdQTVSQ="
@@ -2739,6 +2767,11 @@
     "define-property" "^0.2.5"
     "isobject" "^3.0.0"
     "static-extend" "^0.1.1"
+
+"classnames@^2.2.6":
+  "integrity" "sha512-OlQdbZ7gLfGarSqxesMesDa5uz7KFbID8Kpq/SxIoNGDqY8lSYs0D+hhtBXhcdB3rcbXArFr7vlHheLk1voeNA=="
+  "resolved" "https://registry.npmjs.org/classnames/-/classnames-2.3.1.tgz"
+  "version" "2.3.1"
 
 "clean-css@^4.2.3":
   "integrity" "sha512-VcMWDN54ZN/DS+g58HYL5/n4Zrqe8vHJpGA8KdgUXFU4fuP/aHNw8eld9SyEIyabIMJX/0RaY/fplOo5hYLSFA=="
@@ -3935,6 +3968,17 @@
     "optionator" "^0.8.1"
     "source-map" "~0.6.1"
 
+"escodegen@~1.2.0":
+  "integrity" "sha1-Cd55Z3kcyVi3+Jot220jRRrzJ+E="
+  "resolved" "https://registry.npmjs.org/escodegen/-/escodegen-1.2.0.tgz"
+  "version" "1.2.0"
+  dependencies:
+    "esprima" "~1.0.4"
+    "estraverse" "~1.5.0"
+    "esutils" "~1.0.0"
+  optionalDependencies:
+    "source-map" "~0.1.30"
+
 "eslint-config-react-app@^5.2.1":
   "integrity" "sha512-pGIZ8t0mFLcV+6ZirRgYK6RVqUIKRIi9MmgzUEmrIknsn3AdO0I32asO86dJgloHq+9ZPl8UIg8mYrvgP5u2wQ=="
   "resolved" "https://registry.npmjs.org/eslint-config-react-app/-/eslint-config-react-app-5.2.1.tgz"
@@ -4117,6 +4161,11 @@
   "resolved" "https://registry.npmjs.org/esprima/-/esprima-4.0.1.tgz"
   "version" "4.0.1"
 
+"esprima@~1.0.4":
+  "integrity" "sha1-n1V+CPw7TSbs6d00+Pv0drYlha0="
+  "resolved" "https://registry.npmjs.org/esprima/-/esprima-1.0.4.tgz"
+  "version" "1.0.4"
+
 "esquery@^1.0.1":
   "integrity" "sha512-weltsSqdeWIX9G2qQZz7KlTRJdkkOCTPgLYJUz1Hacf48R4YOwGPHO3+ORfWedqJKbq5WQmsgK90n+pFLIKt/Q=="
   "resolved" "https://registry.npmjs.org/esquery/-/esquery-1.2.0.tgz"
@@ -4141,15 +4190,30 @@
   "resolved" "https://registry.npmjs.org/estraverse/-/estraverse-5.0.0.tgz"
   "version" "5.0.0"
 
+"estraverse@~1.5.0":
+  "integrity" "sha1-hno+jlip+EYYr7bC3bzZFrfLr3E="
+  "resolved" "https://registry.npmjs.org/estraverse/-/estraverse-1.5.1.tgz"
+  "version" "1.5.1"
+
 "esutils@^2.0.2":
   "integrity" "sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g=="
   "resolved" "https://registry.npmjs.org/esutils/-/esutils-2.0.3.tgz"
   "version" "2.0.3"
 
+"esutils@~1.0.0":
+  "integrity" "sha1-gVHTWOIMisx/t0XnRywAJf5JZXA="
+  "resolved" "https://registry.npmjs.org/esutils/-/esutils-1.0.0.tgz"
+  "version" "1.0.0"
+
 "etag@~1.8.1":
   "integrity" "sha1-Qa4u62XvpiJorr/qg6x9eSmbCIc="
   "resolved" "https://registry.npmjs.org/etag/-/etag-1.8.1.tgz"
   "version" "1.8.1"
+
+"eve@~0.5.1":
+  "integrity" "sha1-Z9CAuXJSkdfjieNMJoYN2X8d66o="
+  "resolved" "https://registry.npmjs.org/eve/-/eve-0.5.4.tgz"
+  "version" "0.5.4"
 
 "eventemitter3@^4.0.0":
   "integrity" "sha512-qerSRB0p+UDEssxTtm6EDKcE7W4OaoisfIMl4CngyEhjpYglocpNg6UEqCvemdGhosAsg4sO2dXJOdyBifPGCg=="
@@ -8543,6 +8607,17 @@
     "regenerator-runtime" "^0.13.3"
     "whatwg-fetch" "^3.0.0"
 
+"react-burger-menu@^3.0.6":
+  "integrity" "sha512-Xikyl8VRkQBOyFVoMKpbScTLG6LlW64rajiquyCGwtpPswrDxaifusKckzTWAOH0At40Boguhj5lXq451NO0LA=="
+  "resolved" "https://registry.npmjs.org/react-burger-menu/-/react-burger-menu-3.0.6.tgz"
+  "version" "3.0.6"
+  dependencies:
+    "browserify-optional" "^1.0.0"
+    "classnames" "^2.2.6"
+    "eve" "~0.5.1"
+    "prop-types" "^15.7.2"
+    "snapsvg-cjs" "0.0.6"
+
 "react-dev-utils@^10.2.1":
   "integrity" "sha512-XxTbgJnYZmxuPtY3y/UV0D8/65NKkmaia4rXzViknVnZeVlklSh8u6TnaEYPfAi/Gh1TP4mEOXHI6jQOPbeakQ=="
   "resolved" "https://registry.npmjs.org/react-dev-utils/-/react-dev-utils-10.2.1.tgz"
@@ -8573,7 +8648,7 @@
     "strip-ansi" "6.0.0"
     "text-table" "0.2.0"
 
-"react-dom@^16.13.1":
+"react-dom@^16.13.1", "react-dom@>=0.14.0 <18.0.0":
   "integrity" "sha512-81PIMmVLnCNLO/fFOQxdQkvEq/+Hfpv24XNJfpyZhTRfO0QcmQIF/PgCa1zCOj2w1hrn12MFLyaJ/G0+Mxtfag=="
   "resolved" "https://registry.npmjs.org/react-dom/-/react-dom-16.13.1.tgz"
   "version" "16.13.1"
@@ -8689,7 +8764,7 @@
   optionalDependencies:
     "fsevents" "2.1.2"
 
-"react@^16.13.1", "react@>=15":
+"react@^16.13.1", "react@>=0.14.0 <18.0.0", "react@>=15":
   "integrity" "sha512-YMZQQq32xHLX0bz5Mnibv1/LHb3Sqzngu7xstSM+vrkE5Kzr9xE0yMByK5kMoTK30YVJE61WfbxIFFvfeDKT1w=="
   "resolved" "https://registry.npmjs.org/react/-/react-16.13.1.tgz"
   "version" "16.13.1"
@@ -9582,6 +9657,20 @@
     "source-map-resolve" "^0.5.0"
     "use" "^3.1.0"
 
+"snapsvg-cjs@0.0.6":
+  "integrity" "sha1-Oy9WryVz09Nkw+1b+IhXRfTS3eE="
+  "resolved" "https://registry.npmjs.org/snapsvg-cjs/-/snapsvg-cjs-0.0.6.tgz"
+  "version" "0.0.6"
+  dependencies:
+    "snapsvg" "0.5.1"
+
+"snapsvg@0.5.1":
+  "integrity" "sha1-DK9Sx5GJopB0b8RGzF6GP2vd3+M="
+  "resolved" "https://registry.npmjs.org/snapsvg/-/snapsvg-0.5.1.tgz"
+  "version" "0.5.1"
+  dependencies:
+    "eve" "~0.5.1"
+
 "sockjs-client@1.4.0":
   "integrity" "sha512-5zaLyO8/nri5cua0VtOrFXBPK1jbL4+1cebT/mmKA1E1ZXOvJrII75bPu0l0k843G/+iAbhEqzyKr0w/eCCj7g=="
   "resolved" "https://registry.npmjs.org/sockjs-client/-/sockjs-client-1.4.0.tgz"
@@ -9652,6 +9741,13 @@
   "integrity" "sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g=="
   "resolved" "https://registry.npmjs.org/source-map/-/source-map-0.6.1.tgz"
   "version" "0.6.1"
+
+"source-map@~0.1.30":
+  "integrity" "sha1-wkvBRspRfBRx9drL4lcbK3+eM0Y="
+  "resolved" "https://registry.npmjs.org/source-map/-/source-map-0.1.43.tgz"
+  "version" "0.1.43"
+  dependencies:
+    "amdefine" ">=0.0.4"
 
 "spdx-correct@^3.0.0":
   "integrity" "sha512-lr2EZCctC2BNR7j7WzJ2FpDznxky1sjfxvvYEyzxNyb6lZXHODmEoJeFu4JupYlkfha1KZpJyoqiJ7pgA1qq8Q=="
@@ -10156,7 +10252,7 @@
   "resolved" "https://registry.npmjs.org/throat/-/throat-4.1.0.tgz"
   "version" "4.1.0"
 
-"through@^2.3.6":
+"through@^2.3.6", "through@~2.3.4":
   "integrity" "sha1-DdTJ/6q8NXlgsbckEV1+Doai4fU="
   "resolved" "https://registry.npmjs.org/through/-/through-2.3.8.tgz"
   "version" "2.3.8"

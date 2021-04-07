@@ -9,6 +9,7 @@
     "axios": "^0.19.2",
     "bootstrap": "^4.4.1",
     "react": "^16.13.1",
+    "react-burger-menu": "^3.0.6",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.1.2",
     "react-router-hash-link": "^2.4.0",
