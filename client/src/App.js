@@ -1,23 +1,33 @@
 import React from "react";
 import { Switch, Route } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
-import AddBot from "./components/AddBot";
+import { ThemeProvider } from "@material-ui/styles";
+import {
+  CssBaseline,
+  createMuiTheme
+} from "@material-ui/core";
+
+import AddBot from "./components/panels/AddBot";
 import Bot from "./components/Bot";
 import BotsList from "./components/BotsList";
 
+const theme = createMuiTheme({
+  palette: {
+    type: "dark"
+  }
+});
+
 function App() {
   return (
-    <div>
-      <div className="container mt-3">
-        <Switch>
-          <Route exact path={["/", "/bots"]} component={BotsList} />
-          <Route exact path="/add" component={AddBot} />
-          <Route path="/bots/:uuid" component={Bot} />
-        </Switch>
-      </div>
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Switch>
+        <Route exact path={["/", "/bots"]} component={BotsList} />
+        <Route exact path="/add" component={AddBot} />
+        <Route path="/bots/:uuid" component={Bot} />
+      </Switch>
+    </ThemeProvider>
   );
 }
 

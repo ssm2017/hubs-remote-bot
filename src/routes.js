@@ -43,29 +43,29 @@ module.exports = function(httpServer) {
 	// get bots list
 	httpServer.get('/api/bots', function(req, res) {
 		try {
-			// const result = botsList.getBotsList();
-			const result = [
-				{
-					uuid: "abcd",
-					name: "a"
-				},
-				{
-					uuid: "abcde",
-					name: "aa"
-				},
-				{
-					uuid: "abcdf",
-					name: "aaa"
-				},
-				{
-					uuid: "abcdg",
-					name: "aaaa"
-				},
-				{
-					uuid: "abcdh",
-					name: "aaaaa"
-				},
-			];
+			const result = botsList.getBotsList();
+			// const result = [
+			// 	{
+			// 		uuid: "abcd",
+			// 		name: "a"
+			// 	},
+			// 	{
+			// 		uuid: "abcde",
+			// 		name: "aa"
+			// 	},
+			// 	{
+			// 		uuid: "abcdf",
+			// 		name: "aaa"
+			// 	},
+			// 	{
+			// 		uuid: "abcdg",
+			// 		name: "aaaa"
+			// 	},
+			// 	{
+			// 		uuid: "abcdh",
+			// 		name: "aaaaa"
+			// 	},
+			// ];
 			res.json(result);
 		} catch (e) {
 			res.status(500).json(buildJsonResponse({

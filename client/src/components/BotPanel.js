@@ -9,7 +9,7 @@ const BotPanel = props => {
 	const [showPanel, setShowPanel] = useState([]);
 	return (
 		<div className="botpanel">
-			<nav className="navbar fixed-top navbar-expand navbar-dark bg-dark">
+			<nav className="navbar fixed-right navbar-expand navbar-dark bg-dark">
 				<a href="/bots" className="navbar-brand">
 				bezKoder
 				</a>
