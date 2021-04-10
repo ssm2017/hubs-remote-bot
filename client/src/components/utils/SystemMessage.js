@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from 'react';
+import Alert from '@material-ui/lab/Alert';
 
-const SystemMessages = props => {
-	const [levelState, setLevelState] = useState([]);
+const SystemMessage = props => {
+	const [levelState, setLevelState] = useState("info");
 	
 	useEffect(() => {
 		switch (props.level) {
@@ -17,17 +18,21 @@ const SystemMessages = props => {
 			case 400:
 			case 404:
 			case 500:
-				setLevelState("danger");
+				setLevelState("error");
 				break;
 			default:
 				setLevelState(props.level);
-	
 		}
 	}, [props])
 	return (
-		<div className="system-messages">
-			<div className={`alert alert-${levelState}`} role="alert">{props.message}</div>
-		</div>
+		
+		<Alert
+			elevation={6}
+			variant="filled"
+			severity={levelState}
+		>
+			{props.message}
+		</Alert>
 	);
 }
-export default SystemMessages;
+export default SystemMessage;

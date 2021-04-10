@@ -1,35 +1,34 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import BotDataService from "../services/BotService";
 import BotPanel from "./BotPanel";
 import AddBot from "./panels/AddBot";
 
-import AppBar       from '@material-ui/core/AppBar';
-import CssBaseline  from '@material-ui/core/CssBaseline';
-import Divider      from '@material-ui/core/Divider';
-import Drawer       from '@material-ui/core/Drawer';
-import Hidden       from '@material-ui/core/Hidden';
-import IconButton   from '@material-ui/core/IconButton';
-import InboxIcon    from '@material-ui/icons/MoveToInbox';
-import List         from '@material-ui/core/List';
-import ListItem     from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import MailIcon     from '@material-ui/icons/Mail';
-import MenuIcon     from '@material-ui/icons/Menu';
-import Toolbar      from '@material-ui/core/Toolbar';
-import Typography   from '@material-ui/core/Typography';
-import MuiAlert     from '@material-ui/lab/Alert';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import AccessibilityIcon from '@material-ui/icons/Accessibility';
+import {
+  AppBar,
+  CssBaseline,
+  Divider,
+  Drawer,
+  Hidden,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  Typography,
+  makeStyles,
+  useTheme
+} from '@material-ui/core';
 
-// import { AppContext } from "./utils/botCreatedContext.js"
+import {
+  Menu as MenuIcon,
+  AddCircleOutline as AddCircleOutlineIcon,
+  Accessibility as AccessibilityIcon
+} from '@material-ui/icons';
+
+import SystemMessage from './utils/SystemMessage';
 
 const drawerWidth = 240;
-
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -65,7 +64,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const BotsList = (props) => {
-  // const { onBotCreated } = useContext(AppContext);
 
   // on init
   useEffect(() => {
@@ -109,7 +107,7 @@ const BotsList = (props) => {
     console.log("a faire");
   }
 
-  // new bot panel
+  // new bot created
   const onHandleNewBotCreated = (bot) => {
     retrieveBots();
     setnewBotOpenned(false);
@@ -125,10 +123,10 @@ const BotsList = (props) => {
   }
 
   // theming
-  const { window } = props;
   const classes = useStyles();
   const theme = useTheme();
   // drawer
+  const { window } = props;
   const [mobileMode, setmobileMode] = useState(false);
   const container = window !== undefined ? () => window().document.body : undefined;
   const handleDrawerToggle = () => {
@@ -166,7 +164,7 @@ const BotsList = (props) => {
     <Drawer
       container={container}
       variant="temporary"
-      anchor={theme.direction === 'rtl' ? 'right' : 'left'}
+      anchor='left'
       open={mobileMode}
       onClose={handleDrawerToggle}
       classes={{
@@ -193,8 +191,8 @@ const BotsList = (props) => {
   );
 
   const noBotTemplate = (
-    <div class="empty-botsList">
-      <Alert severity="warning">No Bot</Alert>
+    <div className="empty-botsList">
+      <SystemMessage level="warning" message="No bot found." />
       <AddBot onCreate={(bot) => {onHandleNewBotCreated(bot)}}/>
     </div>
   );
@@ -206,13 +204,9 @@ const BotsList = (props) => {
           <AddBot onCreate={(bot) => {onHandleNewBotCreated(bot)}}/>
         ) : (
           currentBot.uuid ? (
-            <div>test
               <BotPanel bot={currentBot}/>
-            </div>
           ) : (
-            <div>
-              <p>Please select a Bot...</p>
-            </div>
+            <SystemMessage level="info" message="Please select a bot..." />
           )
         )}
       </div>
@@ -233,7 +227,7 @@ const BotsList = (props) => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap>
-            Responsive drawer
+            Hubs Bots Remote{currentBot.name ? " : " + currentBot.name : ''}
           </Typography>
         </Toolbar>
       </AppBar>

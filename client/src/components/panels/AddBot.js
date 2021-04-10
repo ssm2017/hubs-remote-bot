@@ -1,11 +1,15 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import BotDataService from "../../services/BotService";
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-// import { AppContext } from "../utils/botCreatedContext.js"
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 const AddBot = (props) => {
   const initialBotState = {
@@ -15,6 +19,16 @@ const AddBot = (props) => {
   };
 
   const [bot, setBot] = useState(initialBotState);
+
+  const [openConfirmation, setOpenConfirmation] = useState(false);
+
+  const handleClickOpenConfirmation = () => {
+    setOpenConfirmation(true);
+  };
+
+  const handleCloseConfirmation = () => {
+    setOpenConfirmation(false);
+  };
 
   const handleInputChange = event => {
     const { name, value } = event.target;
@@ -59,21 +73,36 @@ const AddBot = (props) => {
         </CardContent>
         <CardActions>
           <Button
-            onClick={saveBot}
+            onClick={handleClickOpenConfirmation}
             color="primary"
             variant="contained"
           >
             Create bot
           </Button>
-          <Button
-            href="/"
-            color="primary"
-            variant="contained"
-          >
-            Back to list
-          </Button>
         </CardActions>
       </Card>
+      {/* Confirmation */}
+      <Dialog
+        open={openConfirmation}
+        onClose={handleCloseConfirmation}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Confirm bot creation?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Do you really want to create a new bot ?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirmation} autoFocus color="secondary" variant="contained">
+            No
+          </Button>
+          <Button onClick={saveBot} color="primary" variant="contained">
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

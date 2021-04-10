@@ -1,7 +1,32 @@
 import React, { useState, useEffect } from "react";
 import BotDataService from "../../services/BotService";
 
+import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
+
+import { makeStyles } from '@material-ui/core/styles';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import NativeSelect from '@material-ui/core/NativeSelect';
+import Alert from '@material-ui/lab/Alert';
+
+const useStyles = makeStyles((theme) => ({
+	formControl: {
+	  margin: theme.spacing(1),
+	  minWidth: 120,
+	},
+	selectEmpty: {
+	  marginTop: theme.spacing(2),
+	},
+  }));
+
 const PlayFile = props => {
+	const classes = useStyles();
 	const initialFileState = {
 		filename: null
 	};
@@ -63,55 +88,80 @@ const PlayFile = props => {
 		});
 	};
 
-	return (
-		<div className="card">
-			<div className="card-header">
-				<h5 className="mb-0">PlayFile</h5>
-			</div>
-			<div className="card-body">
-				<div className="form-group">
-					<label for="play_json">Play Json</label>
-					<select
-						type="text"
-						className="form-control"
-						id="play_json"
-						name="filename"
-						value={currentJsonFile.filename}
-						onChange={handleJsonInputChange}
-					>
-						<option>Select a file...</option>
-					{jsonFiles &&
-						jsonFiles.map((filename) => (
-							<option value={filename}>{filename}</option>
-					))}
-					</select>
-					<button className="badge badge-danger mr-2" onClick={playJson}>
-						Play Json
-					</button>
-				</div>
+	const noJsonFilesAvailable = (
+		<Alert  elevation={6} variant="filled" severity="info">No animation file available on the server.</Alert>
+	);
 
-				<div className="form-group">
-					<label for="play_mp3">Play Mp3</label>
-					<select
-						type="text"
-						className="form-control"
-						id="play_mp3"
-						name="filename"
-						value={currentMp3File.filename}
-						onChange={handleMp3InputChange}
+	const jsonFilesAvailable = (
+		<FormControl variant="outlined" className={classes.formControl}>
+				<InputLabel htmlFor="play_json">Select animation file</InputLabel>
+				<NativeSelect
+					value={currentJsonFile.filename || ''}
+					onChange={handleJsonInputChange}
+					inputProps={{
+						name: 	'filename',
+						id: 	'play_json',
+						type:	"text"
+					}}
 					>
-						<option>Select a file...</option>
+						<option key={0} aria-label="None" value=""></option>
 					{jsonFiles &&
-						mp3Files.map((filename) => (
-							<option value={filename}>{filename}</option>
+						jsonFiles.map((filename, index) => (
+							<option key={index +1} value={filename}>{filename}</option>
 					))}
-					</select>
-					<button className="badge badge-danger mr-2" onClick={playMp3}>
-						Play Mp3
-					</button>
-				</div>
-			</div>
-		</div>
+				</NativeSelect>
+				{currentJsonFile.filename ?
+				<Button 
+					onClick={playJson}
+					variant="contained"
+				>
+					Play Json
+				</Button>
+				: "" }
+			</FormControl>
+	);
+
+	const noAudioFilesAvailable = (
+		<Alert  elevation={6} variant="filled" severity="info">No audio file available on the server.</Alert>
+	);
+
+	const audioFilesAvailable = (
+		<FormControl variant="outlined" className={classes.formControl}>
+				<InputLabel htmlFor="play_mp3">Select audio file</InputLabel>
+				<NativeSelect
+					value={currentMp3File.filename || ''}
+					onChange={handleMp3InputChange}
+					inputProps={{
+						name: 	'filename',
+						id: 	'play_mp3',
+						type:	"text"
+					}}
+				>
+					<option key={0} aria-label="None" value=""></option>
+				{mp3Files &&
+					mp3Files.map((filename, index) => (
+						<option key={index +1} value={filename}>{filename}</option>
+				))}
+				</NativeSelect>
+				{currentMp3File.filename ?
+				<Button
+					onClick={playMp3}
+					variant="contained"
+				>
+					Play Mp3
+				</Button>
+				: "" }
+			</FormControl>
+	);
+
+	return (
+		<Card>
+			<CardContent>
+			<Typography variant="h5" component="h2">Play File</Typography>
+			{jsonFiles.length ? jsonFilesAvailable : noJsonFilesAvailable}
+			{mp3Files.length ? audioFilesAvailable : noAudioFilesAvailable}
+			</CardContent>
+		</Card>
 	);
 };
 

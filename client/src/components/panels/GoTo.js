@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import BotDataService from "../../services/BotService";
-import SystemMessages from "../utils/SystemMessages";
+import SystemMessage from "../utils/SystemMessage";
+
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
+import InputLabel from '@material-ui/core/InputLabel';
 
 const GoTo = props => {
 	const initialPositionState = {
@@ -38,60 +46,58 @@ const GoTo = props => {
 		BotDataService.goTo(props.bot.uuid, data)
 		.then(response => {
 			setCurrentSystemMessage(response.data);
-			console.log("response",response.data);
+			console.log("response from go to",response.data);
 		})
 		.catch(e => {
 			setCurrentSystemMessage(e.response.data.error);
-			console.log("error response",e.response);
+			console.log("error response from go to",e.response);
 		});
 	};
 
 	return (
-		<div className="card">
-			<div className="card-header">
-				<h5 className="mb-0">goTo</h5>
-			</div>
-			<div className="card-body">
-				<div class="messages">
-					<SystemMessages level={currentSystemMessage.status} message={currentSystemMessage.message} />
-				</div>
-				<div className="form-group">
-					<label for="position_x">Position x</label>
-					<input
+		<Card>
+			<CardContent>
+				<Typography variant="h5" component="h2">Go to</Typography>
+				{currentSystemMessage.message ?
+					<SystemMessage level={currentSystemMessage.status} message={currentSystemMessage.message} />
+				: ''}
+				<InputLabel htmlFor="position_x">Position X</InputLabel>
+				<TextField
 					type="number"
 					className="form-control"
 					id="position_x"
 					required
-					value={currentPosition.position.x}
+					value={currentPosition.position.x || ''}
 					onChange={handlePositionChange}
 					name="x"
-					/>
-					<label for="position_y">Position y</label>
-					<input
+				/>
+				<InputLabel htmlFor="position_y">Position Y</InputLabel>
+				<TextField
 					type="number"
 					className="form-control"
 					id="position_y"
 					required
-					value={currentPosition.position.y}
+					value={currentPosition.position.y || ''}
 					onChange={handlePositionChange}
 					name="y"
-					/>
-					<label for="position_z">Position z</label>
-					<input
+				/>
+				<InputLabel htmlFor="position_z">Position Z</InputLabel>
+				<TextField
 					type="text"
 					className="form-control"
 					id="position_z"
 					required
-					value={currentPosition.position.z}
+					value={currentPosition.position.z || ''}
 					onChange={handlePositionChange}
 					name="z"
-					/>
-					<button className="badge badge-danger mr-2" onClick={goTo}>
-						GoTo
-					</button>
-				</div>
-			</div>
-		</div>
+				/>
+			</CardContent>
+			<CardActions>
+				<Button color="primary" variant="contained" onClick={goTo}>
+					Go To
+				</Button>
+			</CardActions>
+		</Card>
 	);
 };
 

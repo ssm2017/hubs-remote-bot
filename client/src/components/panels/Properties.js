@@ -23,7 +23,7 @@ const Properties = props => {
 		  <CardActions>
 		  <Button
 					href={`/bots/${props.bot.uuid}`}
-					variant="outlined"
+					variant="contained"
 					color="primary"
 					>
 					Edit
