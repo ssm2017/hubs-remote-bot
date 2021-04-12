@@ -16,19 +16,19 @@ import {
   ListItemText,
   Toolbar,
   Typography,
-  makeStyles,
-  useTheme
+  makeStyles
 } from '@material-ui/core';
 
 import {
   Menu as MenuIcon,
   AddCircleOutline as AddCircleOutlineIcon,
-  Accessibility as AccessibilityIcon
+  Accessibility as AccessibilityIcon,
+  MoreVert as MoreVertIcon
 } from '@material-ui/icons';
 
 import SystemMessage from './utils/SystemMessage';
 
-const drawerWidth = 240;
+const drawerWidth = 200;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,13 +41,15 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   appBar: {
-    [theme.breakpoints.up('sm')]: {
-      width: `calc(100% - ${drawerWidth}px)`,
-      marginLeft: drawerWidth,
-    },
+    zIndex: theme.zIndex.drawer + 1,
   },
   menuButton: {
     marginRight: theme.spacing(2),
+    [theme.breakpoints.up('sm')]: {
+      display: 'none',
+    },
+  },
+  moreButton: {
     [theme.breakpoints.up('sm')]: {
       display: 'none',
     },
@@ -60,12 +62,20 @@ const useStyles = makeStyles((theme) => ({
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
+    [theme.breakpoints.up('sm')]: {
+      marginRight: "200px"
+    }
   },
+  title: {
+    flexGrow: 1,
+  }
 }));
 
 const BotsList = (props) => {
+    // theming
+    const classes = useStyles();
 
-  // on init
+  // get the bots list on init
   useEffect(() => {
     retrieveBots();
   }, []);
@@ -81,10 +91,7 @@ const BotsList = (props) => {
         console.log(e);
       });
   };
-  const refreshList = () => {
-    retrieveBots();
-    setCurrentBot(initialCurrentBotState);
-  };
+
   // selected bot
   const initialCurrentBotState = {
     uuid: null,
@@ -94,8 +101,8 @@ const BotsList = (props) => {
   const [currentBot, setCurrentBot] = useState(initialCurrentBotState);
   const [selectedBotIndex, setSelectedBotIndex] = useState(-1);
   const selectBot = (bot, index) => {
-    if (mobileMode) {
-      handleDrawerToggle();
+    if (showMobileMenu) {
+      handleBotsListDrawerToggle();
     }
     if (newBotOpenned) {
       setnewBotOpenned(false);
@@ -103,9 +110,6 @@ const BotsList = (props) => {
     setCurrentBot(bot);
     setSelectedBotIndex(index);
   };
-  const autoSelectBot = () => {
-    console.log("a faire");
-  }
 
   // new bot created
   const onHandleNewBotCreated = (bot) => {
@@ -114,26 +118,32 @@ const BotsList = (props) => {
   }
   const [newBotOpenned, setnewBotOpenned] = useState(false);
   const handleOpenNewBot = () => {
-    if (mobileMode) {
-      handleDrawerToggle();
+    if (showMobileMenu) {
+      handleBotsListDrawerToggle();
     }
     setCurrentBot(initialCurrentBotState);
     setSelectedBotIndex(-1);
     setnewBotOpenned(true);
   }
 
-  // theming
-  const classes = useStyles();
-  const theme = useTheme();
-  // drawer
+  // drawers
   const { window } = props;
-  const [mobileMode, setmobileMode] = useState(false);
   const container = window !== undefined ? () => window().document.body : undefined;
-  const handleDrawerToggle = () => {
-    setmobileMode(!mobileMode);
+
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const handleBotsListDrawerToggle = () => {
+    setShowMobileMenu(!showMobileMenu);
   };
 
-  const drawer = (
+  const [showMobileTools, setShowMobileTools] = useState(false);
+  const handleToolsDrawerToggle = () => {
+    setShowMobileTools(!showMobileTools);
+  };
+
+  // useEffect(() => {
+	// }, [showMobileTools]);
+
+  const botsListDrawer = (
     <div>
       <div className={classes.toolbar} />
         <List>
@@ -160,13 +170,13 @@ const BotsList = (props) => {
     </div>
   );
 
-  const desktopMenuTemplate = (
+  const mobileMenuTemplate = (
     <Drawer
       container={container}
       variant="temporary"
       anchor='left'
-      open={mobileMode}
-      onClose={handleDrawerToggle}
+      open={showMobileMenu}
+      onClose={handleBotsListDrawerToggle}
       classes={{
         paper: classes.drawerPaper,
       }}
@@ -174,11 +184,12 @@ const BotsList = (props) => {
         keepMounted: true, // Better open performance on mobile.
       }}
     >
-      {drawer}
+      {botsListDrawer}
     </Drawer>
   );
 
-  const mobileMenuTemplate = (
+  const desktopMenuTemplate = (
+    <div>
     <Drawer
       classes={{
         paper: classes.drawerPaper,
@@ -186,8 +197,9 @@ const BotsList = (props) => {
       variant="permanent"
       open
     >
-      {drawer}
+      {botsListDrawer}
     </Drawer>
+  </div>
   );
 
   const noBotTemplate = (
@@ -204,7 +216,7 @@ const BotsList = (props) => {
           <AddBot onCreate={(bot) => {onHandleNewBotCreated(bot)}}/>
         ) : (
           currentBot.uuid ? (
-              <BotPanel bot={currentBot}/>
+              <BotPanel onToggleTools={(status) => {setShowMobileTools(status)}} showToolsMenu={showMobileTools} bot={currentBot}/>
           ) : (
             <SystemMessage level="info" message="Please select a bot..." />
           )
@@ -212,33 +224,48 @@ const BotsList = (props) => {
       </div>
   );
 
+  const appBar = (
+    <AppBar position="fixed" className={classes.appBar}>
+      <Toolbar>
+        <IconButton
+          color="inherit"
+          aria-label="open drawer"
+          edge="start"
+          onClick={handleBotsListDrawerToggle}
+          className={classes.menuButton}
+        >
+          <MenuIcon />
+        </IconButton>
+        <Typography variant="h6" noWrap  className={classes.title}>
+          Hubs Bots Remote{currentBot.name ? " : " + currentBot.name : ''}
+        </Typography>
+        {currentBot.uuid &&
+        <IconButton
+          color="inherit"
+          aria-label="open tools"
+          edge="end"
+          onClick={handleToolsDrawerToggle}
+          className={classes.moreButton}
+        >
+          <MoreVertIcon />
+        </IconButton>
+        }
+      </Toolbar>
+    </AppBar>
+  );
+
   const botsListTemplate = (
       <div className={classes.root}>
       <CssBaseline />
-      <AppBar position="fixed" className={classes.appBar}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            className={classes.menuButton}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap>
-            Hubs Bots Remote{currentBot.name ? " : " + currentBot.name : ''}
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      {appBar}
       <nav className={classes.drawer}>
         {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
         <Hidden smUp implementation="css">
-          {desktopMenuTemplate}
+          {mobileMenuTemplate}
         </Hidden>
         
         <Hidden xsDown implementation="css">
-          {mobileMenuTemplate}
+          {desktopMenuTemplate}
         </Hidden>
       </nav>
 

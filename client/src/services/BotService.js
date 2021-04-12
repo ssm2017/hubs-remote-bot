@@ -3,6 +3,7 @@ import http from "../http-common";
 class BotDataService {
   getAll = () => {
     return http.get("/bots");
+    // return http.get("/fake/bots");
   };
 
   get = uuid => {
@@ -35,6 +36,7 @@ class BotDataService {
 
   getWaypointsList = (uuid) => {
     return http.get(`/bots/${uuid}/waypoints`);
+    // return http.get(`/fake/bots/waypoints`);
   }
 
   jumpTo = (uuid, data) => {

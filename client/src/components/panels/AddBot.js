@@ -36,6 +36,7 @@ const AddBot = (props) => {
   };
 
   const saveBot = () => {
+    handleCloseConfirmation();
     var data = {
       name: bot.name,
       room_url: bot.room_url

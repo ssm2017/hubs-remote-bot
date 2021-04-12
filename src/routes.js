@@ -29,7 +29,7 @@ module.exports = function(httpServer) {
 			console.log("params", params);
 			console.log("req query", req.query);
 			console.log("req body", req.body);
-			let response = {};//await botsList.newBot(params);
+			let response = await botsList.newBot(params);
 			res.status(200).json(response);
 		} catch(e) {
 			res.status(500).json(buildJsonResponse({
@@ -43,29 +43,7 @@ module.exports = function(httpServer) {
 	// get bots list
 	httpServer.get('/api/bots', function(req, res) {
 		try {
-			// const result = botsList.getBotsList();
-			const result = [
-				{
-					uuid: "abcd",
-					name: "a"
-				},
-				{
-					uuid: "abcde",
-					name: "aa"
-				},
-				{
-					uuid: "abcdf",
-					name: "aaa"
-				},
-				{
-					uuid: "abcdg",
-					name: "aaaa"
-				},
-				{
-					uuid: "abcdh",
-					name: "aaaaa"
-				},
-			];
+			const result = botsList.getBotsList();
 			res.json(result);
 		} catch (e) {
 			res.status(500).json(buildJsonResponse({
@@ -74,6 +52,32 @@ module.exports = function(httpServer) {
 				message: e.message
 			}));
 		}
+	});
+	// fake bots list
+	httpServer.get('/api/fake/bots', function(req, res) {
+		const result = [
+			{
+				uuid: "abcd",
+				name: "a"
+			},
+			{
+				uuid: "abcde",
+				name: "aa"
+			},
+			{
+				uuid: "abcdf",
+				name: "aaa"
+			},
+			{
+				uuid: "abcdg",
+				name: "aaaa"
+			},
+			{
+				uuid: "abcdh",
+				name: "aaaaa"
+			},
+		];
+		res.json(result);
 	});
 
 	// get bot infos
@@ -356,29 +360,28 @@ module.exports = function(httpServer) {
 	httpServer.post('/api/bots/:uuid/goto', async(req, res) => {
 		try {
 			// get uuid
-			/*let uuid = req.params.uuid || null;
+			let uuid = req.params.uuid || null;
 			// check uuid
 			if (!botsList.checkUuid(uuid)) {
-				res.status(400).json(buildJsonResponse({
-					command: "goto",
-					success: false,
-					message: "Wrong uuid.",
-					data: [{
-						uuid: uuid
-					}]
-				}));
+				res.status(400).json({
+					error: {
+						status: 400,
+						message: "Wrong uuid."
+					}
+				});
 				return;
 			}
 			// get bot
 			const bot = botsList.getBotByUuid(uuid);
 			if (!bot) {
-				res.status(404).json(buildJsonResponse({
-					command: "goto",
-					success: false,
-					message: "Bot not found."
-				}));
+				res.status(404).json({
+					error: {
+						status: 404,
+						message: "Bot not found."
+					}
+				});
 				return;
-			}*/
+			}
 			let params = {
 				x: req.body.x || 0,
 				y: req.body.y || 0,
@@ -395,7 +398,7 @@ module.exports = function(httpServer) {
 				return;
 			}
 			
-			// await bot.goTo(params);
+			await bot.goTo(params);
 			res.status(200).json({
 				status: 200,
 				message: `The bot has gone to: "${params.x} ${params.y} ${params.z}"`
@@ -452,6 +455,20 @@ module.exports = function(httpServer) {
 			}));
 		}
 	});
+	// fake waypoints
+	httpServer.get('/api/fake/bots/waypoints', async(req, res) => {
+		const result = [
+			{name: "sp1"},
+			{name: "sp2"},
+			{name: "sp3"}
+		];
+		res.json(buildJsonResponse({
+			command: "get waypoints",
+			success: true,
+			message: "waypoints found",
+			data: result
+		}));
+	});
 
 	// jumpt to
 	httpServer.post('/api/bots/:uuid/jumpto', async(req, res) => {
@@ -460,24 +477,23 @@ module.exports = function(httpServer) {
 			let uuid = req.params.uuid || null;
 			// check uuid
 			if (!botsList.checkUuid(uuid)) {
-				res.status(400).json(buildJsonResponse({
-					command: "jump to",
-					success: false,
-					message: "Wrong uuid.",
-					data: [{
-						uuid: uuid
-					}]
-				}));
+				res.status(400).json({
+					error: {
+						status: 400,
+						message: "Wrong uuid."
+					}
+				});
 				return;
 			}
 			// get bot
 			const bot = botsList.getBotByUuid(uuid);
 			if (!bot) {
-				res.status(404).json(buildJsonResponse({
-					command: "jump to",
-					success: false,
-					message: "Bot not found."
-				}));
+				res.status(404).json({
+					error: {
+						status: 404,
+						message: "Bot not found."
+					}
+				});
 				return;
 			}
 			await bot.jumpTo(req.body.waypoint || "");
@@ -487,11 +503,12 @@ module.exports = function(httpServer) {
 				message: 'Jump to.'
 			}));
 		} catch (e) {
-			res.status(500).json(buildJsonResponse({
-				command: "jump to",
-				success: false,
-				message: e.message
-			}));
+			res.status(500).json({
+				error: {
+					status: 500,
+					message: e.message
+				}
+			});
 		}
 	});
 

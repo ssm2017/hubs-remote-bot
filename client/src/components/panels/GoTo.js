@@ -31,6 +31,7 @@ const GoTo = props => {
 		  }));
 	};
 
+	// system message
 	const initialSystemMessage = {
 		message: null,
 		status: 0
@@ -58,9 +59,9 @@ const GoTo = props => {
 		<Card>
 			<CardContent>
 				<Typography variant="h5" component="h2">Go to</Typography>
-				{currentSystemMessage.message ?
+				{currentSystemMessage.message &&
 					<SystemMessage level={currentSystemMessage.status} message={currentSystemMessage.message} />
-				: ''}
+				}
 				<InputLabel htmlFor="position_x">Position X</InputLabel>
 				<TextField
 					type="number"

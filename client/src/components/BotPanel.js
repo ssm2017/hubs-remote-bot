@@ -1,112 +1,250 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Properties from './panels/Properties';
 import PlayFile from './panels/PlayFile';
 import JumpTo from './panels/JumpTo';
 import GoTo from './panels/GoTo';
 
 import {
-	AppBar,
-	CssBaseline,
-	Divider,
+	Checkbox,
 	Drawer,
 	Hidden,
-	IconButton,
-	List,
-	ListItem,
-	ListItemIcon,
-	ListItemText,
-	Toolbar,
-	Typography,
+	FormControl,
+	FormLabel,
+	FormGroup,
+	RadioGroup,
+	FormControlLabel,
+	Radio,
+	Switch,
 	makeStyles,
-	useTheme,
-	Button,
-	ButtonGroup
+	Grid
 } from '@material-ui/core';
-  
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 
-const ITEM_HEIGHT = 48;
+const TOOLS_DRAWER_WIDTH = 200;
+
+const useStyles = makeStyles((theme) => ({
+	fab: {
+		margin: 0,
+		top: 'auto',
+		right: 20,
+		bottom: 20,
+		left: 'auto',
+		position: 'fixed'
+	},
+	root: {
+		display: 'flex',
+	},
+	drawer: {
+		[theme.breakpoints.up('sm')]: {
+			width: TOOLS_DRAWER_WIDTH,
+			flexShrink: 0,
+		},
+	},
+	appBar: {
+		zIndex: theme.zIndex.drawer + 1,
+	},
+	menuButton: {
+		marginRight: theme.spacing(2),
+		[theme.breakpoints.up('sm')]: {
+			display: 'none',
+		},
+	},
+	// necessary for content to be below app bar
+	toolbar: theme.mixins.toolbar,
+		drawerPaper: {
+		width: TOOLS_DRAWER_WIDTH,
+	},
+	content: {
+		flexGrow: 1,
+		padding: theme.spacing(3),
+	},
+	title: {
+		flexGrow: 1,
+	},
+	toolsPanel: {
+		marginTop: "100px",
+		padding: "10px"
+	}
+  }));
+
+const panelsList = [
+	{
+		command: "properties",
+		title: "Properties"
+	},
+	{
+		command: "play_file",
+		title: "Play file"
+	},
+	{
+		command: "jump_to",
+		title: "Jump to"
+	},
+	{
+		command: "go_to",
+		title: "Go to"
+	}
+];
+
+const DefaultToolsDisplayList = [
+	"properties", "jump_to"
+];
 
 const BotPanel = props => {
-	const [showPanel, setShowPanel] = useState([]);
+	// tools menu
+	const [showMobileTools, setShowMobileTools] = useState(props.showToolsMenu);
+	useEffect(() => {
+		setShowMobileTools(props.showToolsMenu);
+	}, [props.showToolsMenu]);
+	
+	const handleToolsDrawerToggle = () => {
+		setShowMobileTools(!showMobileTools);
+		props.onToggleTools(!showMobileTools);
 
-	const [anchorEl, setAnchorEl] = React.useState(null);
-	const open = Boolean(anchorEl);
-
-	const handleClick = (event) => {
-		setAnchorEl(event.currentTarget);
-		console.log("handle click from menu in botpanel", event.currentTarget);
 	};
 
-	const handleClose = () => {
-		setAnchorEl(null);
-	};
+	const [toolsDisplayList, setToolsDisplayList] = useState(DefaultToolsDisplayList);
 
-	const selectTool = (panelName) => {
-		handleClose();
-		setShowPanel(panelName);
+	const handleToolsDisplayListChange = (event) => {
+		if (soloMode) {
+			setToolsDisplayList([event.target.name]);
+		} else {
+			// remove if exist
+			const idx = toolsDisplayList.indexOf(event.target.name);
+			if (idx > -1) {
+				let newArray = toolsDisplayList.filter(function(ele){ 
+					return ele !== event.target.name; 
+				});
+				setToolsDisplayList(newArray);
+			} else {
+				// add a new one
+				setToolsDisplayList([...toolsDisplayList, event.target.name]);
+			}
+		}
 	}
 
-	const toolBar = (
-		<div className="toolBar">
-			<Hidden xsDown implementation="css">
-				<ButtonGroup variant="contained" color="primary" aria-label="contained primary button group">
-					<Button disabled={showPanel === "properties"} onClick={() => setShowPanel("properties")}>Properties</Button>
-					<Button onClick={() => setShowPanel("playfile")}>Play File</Button>
-					<Button onClick={() => setShowPanel("jumpto")}>Jump To</Button>
-					<Button onClick={() => setShowPanel("goto")}>Go To</Button>
-				</ButtonGroup>
-			</Hidden>
-			
-			<Hidden smUp implementation="css">
-			<IconButton
-					aria-label="more"
-					aria-controls="tools-menu"
-					aria-haspopup="true"
-					onClick={handleClick}
-				>
-					<MoreVertIcon />
-				</IconButton>
-				<Menu
-					id="tools-menu"
-					anchorEl={anchorEl}
-					keepMounted
-					open={open}
-					onClose={handleClose}
-					PaperProps={{
-					style: {
-						maxHeight: ITEM_HEIGHT * 4.5,
-						width: '20ch',
-					},
-					}}
-				>
-					<MenuItem key={0} onClick={() => selectTool("properties")}>
-						Properties
-					</MenuItem>
-					<MenuItem key={1} onClick={() => selectTool("playfile")}>
-						Play File
-					</MenuItem>
-					<MenuItem key={2} onClick={() => selectTool("jumpto")}>
-						Jump To
-					</MenuItem>
-					<MenuItem key={3} onClick={() => selectTool("goto")}>
-						Go To
-					</MenuItem>
-				</Menu>
-			</Hidden>
+	const classes = useStyles();
+	const [soloMode, setSoloMode] = useState(false);
+	const handleSetSoloMode = (event) => {
+		setSoloMode(event.target.checked);
+	  };
+
+	const toolsPanel = (
+		<div className={classes.toolsPanel}>
+			<FormControlLabel
+				control={
+					<Switch
+						checked={soloMode}
+						onChange={handleSetSoloMode}
+						name="solo_mode"
+						color="primary"
+					/>
+				}
+				label="Solo mode"
+			/>
+			{soloMode ? (
+				<FormControl component="fieldset">
+					<FormLabel component="legend">Tools</FormLabel>
+					<RadioGroup aria-label="gender" name="gender1" value="aaa" onChange={(event) => handleToolsDisplayListChange(event)}>
+						{panelsList.map((panel, index) => (
+							<FormControlLabel
+								key={index}
+								value={panel.command}
+								control={
+									<Radio
+									key={index}
+									checked={toolsDisplayList.includes(panel.command)}
+									name={panel.command}
+									/>
+								}
+								label={panel.title}
+							/>
+						))}
+					</RadioGroup>
+				</FormControl>
+			) : (
+			<FormControl component="fieldset" className={classes.formControl}>
+				<FormLabel component="legend">Assign responsibility</FormLabel>
+				<FormGroup onChange={(event) => handleToolsDisplayListChange(event)}>
+				{panelsList.map((panel, index) => (
+					<FormControlLabel
+						control={
+							<Checkbox
+								key={index}
+								checked={toolsDisplayList.includes(panel.command)}
+								name={panel.command}
+							/>
+						}
+						label={panel.title}
+						key={index}
+					/>
+				))}
+				</FormGroup>
+			</FormControl>
+			)}
 		</div>
+	);
+
+	const mobileMenuTemplate = (
+		<Drawer
+			// container={container}
+			variant="temporary"
+			anchor='right'
+			open={showMobileTools}
+			onClose={handleToolsDrawerToggle}
+			classes={{
+				paper: classes.drawerPaper,
+			}}
+			ModalProps={{
+				keepMounted: true, // Better open performance on mobile.
+			}}
+			>
+			{toolsPanel}
+		</Drawer>
+	);
+
+	const desktopMenuTemplate = (
+		<div>
+		<Drawer
+			classes={{
+				paper: classes.drawerPaper,
+			}}
+			variant="permanent"
+			open
+			anchor='right'
+			>
+			{toolsPanel}
+		</Drawer>
+	</div>
 	);
 
 	return (
 		<div className="botpanel">
-			{toolBar}
+		<nav className={classes.drawer}>
+			{/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+			<Hidden smUp implementation="css">
+			{mobileMenuTemplate}
+			</Hidden>
+			
+			<Hidden xsDown implementation="css">
+			{desktopMenuTemplate}
+			</Hidden>
+		</nav>
+
 			<div className="container">
-				{showPanel === "properties" && <Properties bot={props.bot}/>}
-				{showPanel === "playfile" && <PlayFile bot={props.bot}/>}
-				{showPanel === "jumpto" && <JumpTo bot={props.bot}/>}
-				{showPanel === "goto" && <GoTo bot={props.bot}/>}
+				<Grid container spacing={3}>
+					<Grid item xs>
+						{toolsDisplayList.includes("properties") && <Properties bot={props.bot}/>}
+					</Grid>
+					<Grid item xs>
+						{toolsDisplayList.includes("play_file") && <PlayFile bot={props.bot}/>}
+					</Grid>
+					<Grid item xs>
+						{toolsDisplayList.includes("jump_to") && <JumpTo bot={props.bot}/>}
+					</Grid>
+					<Grid item xs>
+						{toolsDisplayList.includes("go_to") && <GoTo bot={props.bot}/>}
+					</Grid>
+				</Grid>
 			</div>
 		</div>
 	);
