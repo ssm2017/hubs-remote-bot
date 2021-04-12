@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^8.2.0",
+    "eslint": "^7.24.0",
     "express": "^4.17.1",
     "HubsBot": "file:../hubs-client-bot",
     "osc": "^2.4.1",

@@ -86,7 +86,7 @@ const panelsList = [
 ];
 
 const DefaultToolsDisplayList = [
-	"properties", "jump_to"
+	"properties"
 ];
 
 const BotPanel = props => {

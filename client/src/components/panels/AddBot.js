@@ -20,16 +20,6 @@ const AddBot = (props) => {
 
   const [bot, setBot] = useState(initialBotState);
 
-  const [openConfirmation, setOpenConfirmation] = useState(false);
-
-  const handleClickOpenConfirmation = () => {
-    setOpenConfirmation(true);
-  };
-
-  const handleCloseConfirmation = () => {
-    setOpenConfirmation(false);
-  };
-
   const handleInputChange = event => {
     const { name, value } = event.target;
     setBot({ ...bot, [name]: value });
@@ -49,6 +39,16 @@ const AddBot = (props) => {
       .catch(e => {
         console.log(e);
       });
+  };
+
+  const [openConfirmation, setOpenConfirmation] = useState(false);
+
+  const handleClickOpenConfirmation = () => {
+    setOpenConfirmation(true);
+  };
+
+  const handleCloseConfirmation = () => {
+    setOpenConfirmation(false);
   };
 
   return (

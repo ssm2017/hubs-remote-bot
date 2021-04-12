@@ -44,7 +44,11 @@ const JumpTo = props => {
 		})
 		.catch(e => {
 		  	console.log(e);
-			setCurrentSystemMessage({message:e.message, status: e.data.status});
+			  if (e.hasOwnProperty("data")) {
+				  setCurrentSystemMessage({message:e.message, status: e.data.status});
+			  } else {
+				setCurrentSystemMessage({message:e.message, status: "error"});
+			  }
 		});
 	};
 	useEffect(() => {
@@ -111,7 +115,7 @@ const JumpTo = props => {
 					<SystemMessage level={currentSystemMessage.status} message={currentSystemMessage.message} />
 				}
 				{/* {waypointsList.length ? waypointsAvailable : setCurrentSystemMessage({message:"No waypoint found", status: "warning"})} */}
-				{waypointsList.length ? waypointsAvailable : "coucou"}
+				{waypointsList.length ? waypointsAvailable : "No waypoint found."}
 			</CardContent>
 		</Card>
 	);

@@ -58,23 +58,28 @@ module.exports = function(httpServer) {
 		const result = [
 			{
 				uuid: "abcd",
-				name: "a"
+				name: "a",
+				room_url: "abcd"
 			},
 			{
 				uuid: "abcde",
-				name: "aa"
+				name: "aa",
+				room_url: "abcd"
 			},
 			{
 				uuid: "abcdf",
-				name: "aaa"
+				name: "aaa",
+				room_url: "abcd"
 			},
 			{
 				uuid: "abcdg",
-				name: "aaaa"
+				name: "aaaa",
+				room_url: "abcd"
 			},
 			{
 				uuid: "abcdh",
-				name: "aaaaa"
+				name: "aaaaa",
+				room_url: "abcd"
 			},
 		];
 		res.json(result);
