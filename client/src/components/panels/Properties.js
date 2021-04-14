@@ -76,6 +76,7 @@ const Properties = (props) => {
         console.log(response.data);
         setEditMode(false);
         setBotsList();
+        setSelectedBot(null);
       })
       .catch((e) => {
         console.log(e);

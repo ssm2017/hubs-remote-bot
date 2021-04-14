@@ -11,36 +11,88 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
+import clsx from 'clsx';
+import { makeStyles } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { green } from '@material-ui/core/colors';
+
+// progress bar style
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  wrapper: {
+    margin: theme.spacing(1),
+    position: 'relative',
+  },
+  buttonSuccess: {
+    backgroundColor: green[500],
+    '&:hover': {
+      backgroundColor: green[700],
+    },
+  },
+  fabProgress: {
+    color: green[500],
+    position: 'absolute',
+    top: -6,
+    left: -6,
+    zIndex: 1,
+  },
+  buttonProgress: {
+    color: green[500],
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12,
+  },
+}));
+
 const AddBot = (props) => {
+  const classes = useStyles();
+
+  // init values
   const initialBotState = {
     uuid: null,
     name: "",
-    room_url: "",
+    room_url: ""
   };
-
   const [bot, setBot] = useState(initialBotState);
 
+  // text fields content
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setBot({ ...bot, [name]: value });
   };
 
+  // save the bot
   const saveBot = () => {
-    handleCloseConfirmation();
-    var data = {
-      name: bot.name,
-      room_url: bot.room_url,
-    };
-    BotDataService.create(data)
+    if (!loading) {
+      setSuccess(false);
+      setLoading(true);
+      var data = {
+        name: bot.name,
+        room_url: bot.room_url,
+      };
+      BotDataService.create(data)
       .then((response) => {
-        console.log("Bot from create a new bot", response.data[0]);
+        setSuccess(true);
+        setLoading(false);
+        handleCloseConfirmation();
         props.onCreate(response.data[0]);
       })
       .catch((e) => {
         console.log(e);
+        setSuccess(false);
+        setLoading(false);
+        handleCloseConfirmation();
       });
+    }
+      
   };
 
+  // manage confirmation
   const [openConfirmation, setOpenConfirmation] = useState(false);
 
   const handleClickOpenConfirmation = () => {
@@ -50,6 +102,14 @@ const AddBot = (props) => {
   const handleCloseConfirmation = () => {
     setOpenConfirmation(false);
   };
+
+  // manage progress bar
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const buttonClassname = clsx({
+    [classes.buttonSuccess]: success,
+  });
 
   return (
     <div className="add-bot">
@@ -79,17 +139,33 @@ const AddBot = (props) => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Confirm bot creation?"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{loading ? "Creating bot" : "Confirm bot creation?"}</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">Do you really want to create a new bot ?</DialogContentText>
-        </DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            {loading ? `Please wait`:`Do you really want to create a new bot ?`}</DialogContentText>
+          </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseConfirmation} autoFocus color="secondary" variant="contained">
+          <Button
+            onClick={handleCloseConfirmation}
+            autoFocus color="secondary"
+            variant="contained"
+            disabled={loading}
+          >
             No
           </Button>
-          <Button onClick={saveBot} color="primary" variant="contained">
+          {/* <Button onClick={saveBot} color="primary" variant="contained">
+            Yes
+          </Button> */}
+          <Button
+            variant="contained"
+            color="primary"
+            className={buttonClassname}
+            disabled={loading}
+            onClick={saveBot}
+          >
             Yes
           </Button>
+          {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
         </DialogActions>
       </Dialog>
     </div>

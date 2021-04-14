@@ -1,15 +1,22 @@
 import React from 'react';
 import selectedBotContext from './selectedBotContext';
 
+const defaultSelectedBot = {
+  uuid: null,
+  name: "",
+  room_url: "",
+};
+
 const SelectedBotContextProvider = (props) => {
-  const [selectedBot, setSelectedBot] = React.useState({
-    uuid: null,
-    name: "",
-    room_url: "",
-  });
+  const [selectedBot, setSelectedBot] = React.useState(defaultSelectedBot);
 
   const setSelectedBotValue = (value) => {
-    setSelectedBot(value);
+    if (value) {
+      setSelectedBot(value);
+    } else {
+      setSelectedBot(defaultSelectedBot);
+    }
+    
   }
 
   return (
