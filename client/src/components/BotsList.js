@@ -1,5 +1,9 @@
-import React, { useState, useEffect } from "react";
-import BotDataService from "../services/BotService";
+import React, { useState, useEffect, useContext } from "react";
+
+import botsListContext from "../contexts/botsListContext";
+import selectedBotContext from "../contexts/selectedBotContext";
+// import BotsListContextProvider from '../contexts/BotsListContextProvider';
+
 import BotPanel from "./BotPanel";
 import AddBot from "./panels/AddBot";
 
@@ -16,26 +20,26 @@ import {
   ListItemText,
   Toolbar,
   Typography,
-  makeStyles
-} from '@material-ui/core';
+  makeStyles,
+} from "@material-ui/core";
 
 import {
   Menu as MenuIcon,
   AddCircleOutline as AddCircleOutlineIcon,
   Accessibility as AccessibilityIcon,
-  MoreVert as MoreVertIcon
-} from '@material-ui/icons';
+  MoreVert as MoreVertIcon,
+} from "@material-ui/icons";
 
-import SystemMessage from './utils/SystemMessage';
+import SystemMessage from "./utils/SystemMessage";
 
 const drawerWidth = 200;
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex',
+    display: "flex",
   },
   drawer: {
-    [theme.breakpoints.up('sm')]: {
+    [theme.breakpoints.up("sm")]: {
       width: drawerWidth,
       flexShrink: 0,
     },
@@ -45,13 +49,13 @@ const useStyles = makeStyles((theme) => ({
   },
   menuButton: {
     marginRight: theme.spacing(2),
-    [theme.breakpoints.up('sm')]: {
-      display: 'none',
+    [theme.breakpoints.up("sm")]: {
+      display: "none",
     },
   },
   moreButton: {
-    [theme.breakpoints.up('sm')]: {
-      display: 'none',
+    [theme.breakpoints.up("sm")]: {
+      display: "none",
     },
   },
   // necessary for content to be below app bar
@@ -62,43 +66,47 @@ const useStyles = makeStyles((theme) => ({
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
-    [theme.breakpoints.up('sm')]: {
-      marginRight: "200px"
-    }
+    [theme.breakpoints.up("sm")]: {
+      marginRight: "200px",
+    },
   },
   title: {
     flexGrow: 1,
-  }
+  },
 }));
 
 const BotsList = (props) => {
-    // theming
-    const classes = useStyles();
+  // theming
+  const classes = useStyles();
 
+  const {botsList, setBotsList} = useContext(botsListContext);
   // get the bots list on init
   useEffect(() => {
-    retrieveBots();
+    // retrieveBots();
+    setBotsList();
   }, []);
 
   // botsList list
-  const [botsList, setBotsList] = useState([]);
-  const retrieveBots = () => {
-    return BotDataService.getAll()
-      .then(response => {
-        setBotsList(response.data);
-      })
-      .catch(e => {
-        console.log(e);
-      });
-  };
+  // const [botsList, setBotsList] = useState([]);
+  // const retrieveBots = () => {
+  //   return BotDataService.getAll()
+  //     .then((response) => {
+  //       setBotsList(response.data);
+  //     })
+  //     .catch((e) => {
+  //       console.log(e);
+  //     });
+  // };
+  
 
   // selected bot
   const initialCurrentBotState = {
     uuid: null,
     name: "",
-    room_url: ""
+    room_url: "",
   };
-  const [currentBot, setCurrentBot] = useState(initialCurrentBotState);
+  // const [selectedBot, setSelectedBot] = useState(initialCurrentBotState);
+  const {selectedBot, setSelectedBot} = useContext(selectedBotContext);
   const [selectedBotIndex, setSelectedBotIndex] = useState(-1);
   const selectBot = (bot, index) => {
     if (showMobileMenu) {
@@ -107,24 +115,25 @@ const BotsList = (props) => {
     if (newBotOpenned) {
       setnewBotOpenned(false);
     }
-    setCurrentBot(bot);
+    setSelectedBot(bot);
     setSelectedBotIndex(index);
   };
 
   // new bot created
   const onHandleNewBotCreated = (bot) => {
-    retrieveBots();
+    // retrieveBots();
+    setBotsList();
     setnewBotOpenned(false);
-  }
+  };
   const [newBotOpenned, setnewBotOpenned] = useState(false);
   const handleOpenNewBot = () => {
     if (showMobileMenu) {
       handleBotsListDrawerToggle();
     }
-    setCurrentBot(initialCurrentBotState);
+    setSelectedBot(initialCurrentBotState);
     setSelectedBotIndex(-1);
     setnewBotOpenned(true);
-  }
+  };
 
   // drawers
   const { window } = props;
@@ -141,31 +150,30 @@ const BotsList = (props) => {
   };
 
   // useEffect(() => {
-	// }, [showMobileTools]);
+  // }, [showMobileTools]);
 
   const botsListDrawer = (
     <div>
       <div className={classes.toolbar} />
-        <List>
-          <ListItem button
-            onClick={() => handleOpenNewBot()}
-            >
-            <ListItemIcon><AddCircleOutlineIcon /></ListItemIcon>
-            <ListItemText primary="New bot" />
-          </ListItem>
-        </List>
-        <Divider />
-        <List>
-      {botsList && botsList.map((bot, index) => (
-        <ListItem button
-          key={index}
-          onClick={() => selectBot(bot, index)}
-          selected={selectedBotIndex === index}
-          >
-          <ListItemIcon><AccessibilityIcon /></ListItemIcon>
-          <ListItemText primary={bot.name} />
+      <List>
+        <ListItem button onClick={() => handleOpenNewBot()}>
+          <ListItemIcon>
+            <AddCircleOutlineIcon />
+          </ListItemIcon>
+          <ListItemText primary="New bot" />
         </ListItem>
-        ))}
+      </List>
+      <Divider />
+      <List>
+        {botsList &&
+          botsList.map((bot, index) => (
+            <ListItem button key={index} onClick={() => selectBot(bot, index)} selected={selectedBotIndex === index}>
+              <ListItemIcon>
+                <AccessibilityIcon />
+              </ListItemIcon>
+              <ListItemText primary={bot.name} />
+            </ListItem>
+          ))}
       </List>
     </div>
   );
@@ -174,7 +182,7 @@ const BotsList = (props) => {
     <Drawer
       container={container}
       variant="temporary"
-      anchor='left'
+      anchor="left"
       open={showMobileMenu}
       onClose={handleBotsListDrawerToggle}
       classes={{
@@ -190,38 +198,50 @@ const BotsList = (props) => {
 
   const desktopMenuTemplate = (
     <div>
-    <Drawer
-      classes={{
-        paper: classes.drawerPaper,
-      }}
-      variant="permanent"
-      open
-    >
-      {botsListDrawer}
-    </Drawer>
-  </div>
+      <Drawer
+        classes={{
+          paper: classes.drawerPaper,
+        }}
+        variant="permanent"
+        open
+      >
+        {botsListDrawer}
+      </Drawer>
+    </div>
   );
 
   const noBotTemplate = (
     <div className="empty-botsList">
       <SystemMessage level="warning" message="No bot found." />
-      <AddBot onCreate={(bot) => {onHandleNewBotCreated(bot)}}/>
+      <AddBot
+        onCreate={(bot) => {
+          onHandleNewBotCreated(bot);
+        }}
+      />
     </div>
   );
 
   const mainContentTemplate = (
     <div className={classes.content}>
-        <div className={classes.toolbar} />
-        {newBotOpenned ? (
-          <AddBot onCreate={(bot) => {onHandleNewBotCreated(bot)}}/>
-        ) : (
-          currentBot.uuid ? (
-              <BotPanel onToggleTools={(status) => {setShowMobileTools(status)}} showToolsMenu={showMobileTools} bot={currentBot}/>
-          ) : (
-            <SystemMessage level="info" message="Please select a bot..." />
-          )
-        )}
-      </div>
+      <div className={classes.toolbar} />
+      {newBotOpenned ? (
+        <AddBot
+          onCreate={(bot) => {
+            onHandleNewBotCreated(bot);
+          }}
+        />
+      ) : selectedBot.uuid ? (
+        <BotPanel
+          onToggleTools={(status) => {
+            setShowMobileTools(status);
+          }}
+          showToolsMenu={showMobileTools}
+          bot={selectedBot}
+        />
+      ) : (
+        <SystemMessage level="info" message="Please select a bot..." />
+      )}
+    </div>
   );
 
   const appBar = (
@@ -236,26 +256,26 @@ const BotsList = (props) => {
         >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" noWrap  className={classes.title}>
-          Hubs Bots Remote{currentBot.name ? " : " + currentBot.name : ''}
+        <Typography variant="h6" noWrap className={classes.title}>
+          Hubs Bots Remote{selectedBot.name ? " : " + selectedBot.name : ""}
         </Typography>
-        {currentBot.uuid &&
-        <IconButton
-          color="inherit"
-          aria-label="open tools"
-          edge="end"
-          onClick={handleToolsDrawerToggle}
-          className={classes.moreButton}
-        >
-          <MoreVertIcon />
-        </IconButton>
-        }
+        {selectedBot.uuid && (
+          <IconButton
+            color="inherit"
+            aria-label="open tools"
+            edge="end"
+            onClick={handleToolsDrawerToggle}
+            className={classes.moreButton}
+          >
+            <MoreVertIcon />
+          </IconButton>
+        )}
       </Toolbar>
     </AppBar>
   );
 
   const botsListTemplate = (
-      <div className={classes.root}>
+    <div className={classes.root}>
       <CssBaseline />
       {appBar}
       <nav className={classes.drawer}>
@@ -263,7 +283,7 @@ const BotsList = (props) => {
         <Hidden smUp implementation="css">
           {mobileMenuTemplate}
         </Hidden>
-        
+
         <Hidden xsDown implementation="css">
           {desktopMenuTemplate}
         </Hidden>
@@ -271,7 +291,7 @@ const BotsList = (props) => {
 
       {/* Main Content */}
       {mainContentTemplate}
-  </div>
+    </div>
   );
 
   return <div className="botsList">{botsList.length ? botsListTemplate : noBotTemplate}</div>;

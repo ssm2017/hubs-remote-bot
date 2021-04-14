@@ -6,14 +6,17 @@
   "scripts": {
     "dev": "nodemon server",
     "client": "cd client && npm start",
-    "build": "cd client && npm run build"
+    "build": "cd client && npm run build",
+    "prettier": "prettier --write '*.js' 'src/*.js' 'src/**/*.js' 'src/**/**/*.js'",
+    "lint:js": "eslint '*.js' 'src/*.js' 'src/**/*.js' 'src/**/**/*.js'",
+    "lint:html": "htmlhint 'src/**/*.html' && node scripts/indent-linter.js 'src/**/*.html'",
+    "lint": "npm run lint:js && npm run lint:html"
   },
   "keywords": [],
-  "author": "",
+  "author": "ssm2017",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^8.2.0",
-    "eslint": "^7.24.0",
     "express": "^4.17.1",
     "HubsBot": "file:../hubs-client-bot",
     "osc": "^2.4.1",
@@ -21,6 +24,9 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.8.0",
+    "eslint-plugin-prettier": "^3.3.1",
     "nodemon": "^2.0.7"
   }
 }

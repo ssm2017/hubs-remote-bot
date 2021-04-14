@@ -6,11 +6,11 @@ class BotDataService {
     // return http.get("/fake/bots");
   };
 
-  get = uuid => {
+  get = (uuid) => {
     return http.get(`/bots/${uuid}`);
   };
 
-  create = data => {
+  create = (data) => {
     return http.post("/bots", data);
   };
 
@@ -18,7 +18,7 @@ class BotDataService {
     return http.patch(`/bots/${uuid}`, data);
   };
 
-  remove = uuid => {
+  remove = (uuid) => {
     return http.delete(`/bots/${uuid}`);
   };
 
@@ -27,25 +27,25 @@ class BotDataService {
   };
 
   getAssetsList = () => {
-    return http.get('/system/assets');
-  }
+    return http.get("/system/assets");
+  };
 
   playFile = (uuid, data) => {
     return http.post(`/bots/${uuid}/play`, data);
-  }
+  };
 
   getWaypointsList = (uuid) => {
     return http.get(`/bots/${uuid}/waypoints`);
     // return http.get(`/fake/bots/waypoints`);
-  }
+  };
 
   jumpTo = (uuid, data) => {
     return http.post(`/bots/${uuid}/jumpto`, data);
-  }
+  };
 
   goTo = (uuid, data) => {
     return http.post(`/bots/${uuid}/goto`, data);
-  }
+  };
 }
 
 export default new BotDataService();

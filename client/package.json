@@ -1,5 +1,6 @@
 {
-  "name": "react-hooks-crud",
+  "name": "hubs-bot-remote",
+  "author": "ssm2017",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -10,13 +11,9 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "axios": "^0.19.2",
-    "bootstrap": "^4.4.1",
-    "eslint": "^6.8.0",
     "react": "^16.13.1",
-    "react-burger-menu": "^3.0.6",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.1.2",
-    "react-router-hash-link": "^2.4.0",
     "react-scripts": "3.4.1"
   },
   "proxy": "http://localhost:7000/api",
@@ -24,7 +21,11 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prettier": "prettier --write '*.js' 'src/*.js' 'src/**/*.js' 'src/**/**/*.js'",
+    "lint:js": "eslint '*.js' 'src/*.js' 'src/**/*.js' 'src/**/**/*.js'",
+    "lint:html": "htmlhint 'src/**/*.html' && node scripts/indent-linter.js 'src/**/*.html'",
+    "lint": "npm run lint:js && npm run lint:html"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -40,5 +41,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.8.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-react-hooks": "^1.7.0"
   }
 }
