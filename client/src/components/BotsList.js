@@ -3,13 +3,13 @@ import React, { useState, useEffect, useContext } from "react";
 import botsListContext from "../contexts/botsListContext";
 import selectedBotContext from "../contexts/selectedBotContext";
 // import BotsListContextProvider from '../contexts/BotsListContextProvider';
+import ConfigPanel from "./panels/ConfigPanel";
 
 import BotPanel from "./BotPanel";
 import AddBot from "./panels/AddBot";
 
 import {
   AppBar,
-  Checkbox,
   CssBaseline,
   Divider,
   Drawer,
@@ -35,7 +35,6 @@ import SystemMessage from "./utils/SystemMessage";
 import configContext from "../contexts/configContext";
 
 const drawerWidth = 200;
-const autoRefresh = false;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -63,12 +62,17 @@ const useStyles = makeStyles((theme) => ({
   },
   // necessary for content to be below app bar
   toolbar: theme.mixins.toolbar,
+  mobileToolbarHeader: {
+    padding: "10px",
+    textAlign: "center"
+  },
   drawerPaper: {
     width: drawerWidth,
   },
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
+    marginTop: "50px",
     [theme.breakpoints.up("sm")]: {
       marginRight: "200px",
     },
@@ -152,7 +156,6 @@ const BotsList = (props) => {
 
   const botsListDrawer = (
     <div>
-      <div className={classes.toolbar} />
       <List>
         <ListItem button onClick={() => handleOpenNewBot()}>
           <ListItemIcon>
@@ -190,7 +193,14 @@ const BotsList = (props) => {
         keepMounted: true, // Better open performance on mobile.
       }}
     >
+    <div className={classes.mobileToolbarHeader}>
+      <Typography variant="h5" component="h2">
+          Bots
+        </Typography>
+        </div>
+        <Divider />
       {botsListDrawer}
+      
     </Drawer>
   );
 
@@ -203,6 +213,7 @@ const BotsList = (props) => {
         variant="permanent"
         open
       >
+        <div className={classes.toolbar}/>
         {botsListDrawer}
       </Drawer>
     </div>
@@ -221,7 +232,6 @@ const BotsList = (props) => {
 
   const mainContentTemplate = (
     <div className={classes.content}>
-      <div className={classes.toolbar} />
       {newBotOpenned ? (
         <AddBot
           onCreate={(bot) => {
@@ -230,15 +240,16 @@ const BotsList = (props) => {
         />
       ) : selectedBot.uuid ? (
         <BotPanel
-          onToggleTools={(status) => {
-            setShowMobileTools(status);
-          }}
-          showToolsMenu={showMobileTools}
           bot={selectedBot}
         />
       ) : (
         <SystemMessage level="info" message="Please select a bot..." />
       )}
+      <ConfigPanel
+        showToolsMenu={showMobileTools}
+        onToggleTools={(status) => {
+          setShowMobileTools(status);
+        }}/>
     </div>
   );
 
@@ -252,12 +263,12 @@ const BotsList = (props) => {
           onClick={handleBotsListDrawerToggle}
           className={classes.menuButton}
         >
-          <MenuIcon />
+        <MenuIcon />
         </IconButton>
         <Typography variant="h6" noWrap className={classes.title}>
-          Hubs Bots Remote({botsList.length}) {selectedBot.name ? " : " + selectedBot.name : ""}
+          HBR({botsList.length}) {selectedBot.name ? " : " + selectedBot.name : ""}
         </Typography>
-        {selectedBot.uuid && (
+        {/* {selectedBot.uuid && ( */}
           <IconButton
             color="inherit"
             aria-label="open tools"
@@ -267,7 +278,7 @@ const BotsList = (props) => {
           >
             <MoreVertIcon />
           </IconButton>
-        )}
+        {/* )} */}
       </Toolbar>
     </AppBar>
   );
@@ -289,6 +300,7 @@ const BotsList = (props) => {
 
       {/* Main Content */}
       {mainContentTemplate}
+      
     </div>
   );
 

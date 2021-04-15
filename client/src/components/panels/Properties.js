@@ -129,8 +129,6 @@ const Properties = (props) => {
     </Card>
   );
 
-  
-
   const editTemplate = (
     <div className="edit-bot">
       <Card>
