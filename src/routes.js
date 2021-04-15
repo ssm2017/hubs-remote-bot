@@ -275,14 +275,14 @@ module.exports = function (httpServer) {
         process.env.DEFAULT_OBJECT_URL ||
         "https://uploads-prod.reticulum.io/files/031dca7b-2bcb-45b6-b2df-2371e71aecb1.glb";
       let params = {
-        url: req.query.url || default_object_url,
-        position: req.query.position || `${Math.random() * 3 - 1.5} ${Math.random() * 2 + 1} ${Math.random() * 4 - 2}`,
-        rotation: req.query.rotation || "0 0 0",
-        scale: req.query.scale || "1 1 1",
-        pinned: req.query.pinned || true,
-        dynamic: req.query.dynamic || false,
-        projection: req.query.projection || null,
-        interval: req.query.interval || null,
+        url: req.body.url || default_object_url,
+        position: req.body.position || `${Math.random() * 3 - 1.5} ${Math.random() * 2 + 1} ${Math.random() * 4 - 2}`,
+        rotation: req.body.rotation || "0 0 0",
+        scale: req.body.scale || "1 1 1",
+        pinned: req.body.pinned || true,
+        dynamic: req.body.dynamic || false,
+        projection: req.body.projection || null,
+        interval: req.body.interval || null,
       };
       // loop ?
       if (params.interval) {

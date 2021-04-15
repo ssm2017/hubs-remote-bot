@@ -54,6 +54,10 @@ class BotDataService {
   sayInChat = (uuid, data) => {
     return http.post(`/bots/${uuid}/say`, data);
   }
+
+  spawnObjects = (uuid, data) => {
+    return http.post(`/bots/${uuid}/objects`, data);
+  }
 }
 
 export default new BotDataService();

@@ -107,7 +107,6 @@ const JumpTo = (props) => {
         {currentSystemMessage.message && (
           <SystemMessage level={currentSystemMessage.status} message={currentSystemMessage.message} />
         )}
-        {/* {waypointsList.length ? waypointsAvailable : setCurrentSystemMessage({message:"No waypoint found", status: "warning"})} */}
         {waypointsList.length ? waypointsAvailable : "No waypoint found."}
       </CardContent>
     </Card>

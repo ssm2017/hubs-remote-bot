@@ -4,6 +4,7 @@ import PlayFile from "./panels/PlayFile";
 import JumpTo from "./panels/JumpTo";
 import GoTo from "./panels/GoTo";
 import SayInChat from "./panels/SayInChat";
+import SpawnObjects from "./panels/SpawnObjects";
 
 import Grid from "@material-ui/core/Grid";
 
@@ -21,21 +22,43 @@ const BotPanel = (props) => {
       alignItems="flex-start"
       spacing={2}
     >
+      
+      {config.panels.includes("properties") &&
       <Grid item>
-        {config.panels.includes("properties") && <Properties bot={props.bot} />}
+        <Properties bot={props.bot} />
       </Grid>
+      }
+
+      {config.panels.includes("play_file") &&
       <Grid item>
-        {config.panels.includes("play_file") && <PlayFile bot={props.bot} />}
+        <PlayFile bot={props.bot} />
       </Grid>
+      }
+
+      {config.panels.includes("jump_to") &&
       <Grid item>
-        {config.panels.includes("jump_to") && <JumpTo bot={props.bot} />}
+        <JumpTo bot={props.bot} />
       </Grid>
+      }
+
+      {config.panels.includes("go_to") &&
       <Grid item>
-        {config.panels.includes("go_to") && <GoTo bot={props.bot} />}
+        <GoTo bot={props.bot} />
       </Grid>
+      }
+
+      {config.panels.includes("say") &&
       <Grid item>
-        {config.panels.includes("say") && <SayInChat bot={props.bot} />}
+        <SayInChat bot={props.bot} />
       </Grid>
+      }
+
+      {config.panels.includes("spawn") &&
+      <Grid item>
+        <SpawnObjects bot={props.bot} />
+      </Grid>
+      }
+      
     </Grid>
   );
 };

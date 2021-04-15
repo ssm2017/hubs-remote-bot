@@ -74,6 +74,10 @@ const panelsList = [
     command: "say",
     title: "Say in chat",
   },
+  {
+    command: "spawn",
+    title: "Spawn objects",
+  },
 ];
 
 const ConfigPanel = (props) => {
