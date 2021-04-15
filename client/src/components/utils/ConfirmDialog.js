@@ -82,7 +82,6 @@ const ConfirmDialog = (props) => {
   const [success, setSuccess] = React.useState(props.success);
   React.useEffect(()=>{
     setLoading(props.loading);
-    console.log("loading triered", props.loading);
   }, [props.loading])
   React.useEffect(()=>{
     setSuccess(props.success);

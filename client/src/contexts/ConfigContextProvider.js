@@ -14,7 +14,6 @@ const ConfigContextProvider = (props) => {
   //     panels: ["properties"]
   //   });
   const setConfigValue = (name, value) => {
-    console.log("config provider called", name, value);
     setConfig({...config, [name]: value});
   }
 

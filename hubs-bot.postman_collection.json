@@ -103,8 +103,17 @@
 			"request": {
 				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filename\": \"bot-recording.mp3\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "{{url}}/api/bots/last/play?filename=gd87-03-23d1t01.mp3",
+					"raw": "{{url}}/api/bots/last/play",
 					"host": [
 						"{{url}}"
 					],
@@ -122,7 +131,8 @@
 						},
 						{
 							"key": "filename",
-							"value": "gd87-03-23d1t01.mp3"
+							"value": "gd87-03-23d1t01.mp3",
+							"disabled": true
 						}
 					]
 				}
@@ -219,12 +229,12 @@
 			"response": []
 		},
 		{
-			"name": "goto",
+			"name": "set position",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "{{url}}/api/bots/last/goto",
+					"raw": "{{url}}/api/bots/last/position",
 					"host": [
 						"{{url}}"
 					],
@@ -232,7 +242,7 @@
 						"api",
 						"bots",
 						"last",
-						"goto"
+						"position"
 					],
 					"query": [
 						{
@@ -328,8 +338,17 @@
 			"request": {
 				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"waypoint\": \"sp2\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "{{url}}/api/bots/first/jumpto?sp=sp1",
+					"raw": "{{url}}/api/bots/first/jumpto",
 					"host": [
 						"{{url}}"
 					],
@@ -342,7 +361,8 @@
 					"query": [
 						{
 							"key": "sp",
-							"value": "sp1"
+							"value": "sp1",
+							"disabled": true
 						},
 						{
 							"key": "sp",
@@ -393,6 +413,46 @@
 						"api",
 						"system",
 						"assets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get audiocontext",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/bots/first/audiocontext",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"bots",
+						"first",
+						"audiocontext"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get position",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/bots/first/position",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"bots",
+						"first",
+						"position"
 					]
 				}
 			},

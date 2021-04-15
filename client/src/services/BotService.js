@@ -2,8 +2,8 @@ import http from "../http-common";
 
 class BotDataService {
   getAll = () => {
-    // return http.get("/bots");
-    return http.get("/fake/bots");
+    return http.get("/bots");
+    // return http.get("/fake/bots");
   };
 
   get = (uuid) => {
@@ -43,8 +43,12 @@ class BotDataService {
     return http.post(`/bots/${uuid}/jumpto`, data);
   };
 
-  goTo = (uuid, data) => {
-    return http.post(`/bots/${uuid}/goto`, data);
+  setPosition = (uuid, data) => {
+    return http.post(`/bots/${uuid}/position`, data);
+  };
+
+  getPosition = (uuid) => {
+    return http.get(`/bots/${uuid}/position`);
   };
 }
 
