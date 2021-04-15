@@ -13,17 +13,23 @@ const BotPanel = (props) => {
   const {config, setConfig} = React.useContext(configContext);
 
   return (
-    <Grid container spacing={3}>
-      <Grid item xs>
+    <Grid
+      container
+      direction="row"
+      justify="flex-start"
+      alignItems="flex-start"
+      spacing={2}
+    >
+      <Grid item>
         {config.panels.includes("properties") && <Properties bot={props.bot} />}
       </Grid>
-      <Grid item xs>
+      <Grid item>
         {config.panels.includes("play_file") && <PlayFile bot={props.bot} />}
       </Grid>
-      <Grid item xs>
+      <Grid item>
         {config.panels.includes("jump_to") && <JumpTo bot={props.bot} />}
       </Grid>
-      <Grid item xs>
+      <Grid item>
         {config.panels.includes("go_to") && <GoTo bot={props.bot} />}
       </Grid>
     </Grid>

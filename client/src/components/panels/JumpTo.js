@@ -37,18 +37,14 @@ const JumpTo = (props) => {
 
   const getWaypoints = () => {
     BotDataService.getWaypointsList(props.bot.uuid)
-      .then((response) => {
-        setWaypointsList(response.data);
-        console.log(response.data);
-      })
-      .catch((e) => {
-        console.log(e);
-        if (e.hasOwnProperty("data")) {
-          setCurrentSystemMessage({ message: e.message, status: e.data.status });
-        } else {
-          setCurrentSystemMessage({ message: e.message, status: "error" });
-        }
-      });
+    .then((response) => {
+      setWaypointsList(response.data);
+      console.log(response.data);
+    })
+    .catch((e) => {
+      console.log(e.response);
+      setCurrentSystemMessage(e.response.data.error);
+    });
   };
   React.useEffect(() => {
     getWaypoints();

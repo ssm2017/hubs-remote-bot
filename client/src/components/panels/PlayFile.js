@@ -1,5 +1,6 @@
 import React from "react";
 import BotDataService from "../../services/BotService";
+import SystemMessage from "../utils/SystemMessage";
 
 import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
@@ -23,6 +24,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const PlayFile = (props) => {
+  // system messages
+  const initialSystemMessage = {
+    message: null,
+    status: 0,
+  };
+  const [currentSystemMessage, setCurrentSystemMessage] = React.useState(initialSystemMessage);
+
   const classes = useStyles();
   const initialFileState = {
     filename: null,
@@ -39,14 +47,15 @@ const PlayFile = (props) => {
 
   const getFiles = () => {
     BotDataService.getAssetsList()
-      .then((response) => {
-        setJsonFiles(response.data.files.json);
-        setMp3Files(response.data.files.mp3);
-        console.log(response.data);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    .then((response) => {
+      setJsonFiles(response.data.json);
+      setMp3Files(response.data.mp3);
+      console.log(response.data);
+    })
+    .catch((e) => {
+      console.log(e);
+      setCurrentSystemMessage(e.response.data.error);
+    });
   };
 
   const handleJsonInputChange = (event) => {
@@ -64,12 +73,15 @@ const PlayFile = (props) => {
       filename: currentJsonFile.filename,
     };
     BotDataService.playFile(props.bot.uuid, data)
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    .then((response) => {
+      console.log(response.data);
+      setCurrentJsonFile(initialFileState);
+    })
+    .catch((e) => {
+      console.log(e);
+      setCurrentJsonFile(initialFileState);
+      setCurrentSystemMessage(e.response.data.error);
+    });
   };
 
   const playMp3 = () => {
@@ -79,9 +91,12 @@ const PlayFile = (props) => {
     BotDataService.playFile(props.bot.uuid, data)
       .then((response) => {
         console.log(response.data);
+        setCurrentMp3File(initialFileState);
       })
       .catch((e) => {
         console.log(e);
+        setCurrentMp3File(initialFileState);
+        setCurrentSystemMessage(e.response.data.error);
       });
   };
 
@@ -163,6 +178,9 @@ const PlayFile = (props) => {
         <Typography variant="h5" component="h2">
           Play File
         </Typography>
+        {currentSystemMessage.message && (
+          <SystemMessage level={currentSystemMessage.status} message={currentSystemMessage.message} />
+        )}
         {jsonFiles.length ? jsonFilesAvailable : noJsonFilesAvailable}
         {mp3Files.length ? audioFilesAvailable : noAudioFilesAvailable}
       </CardContent>

@@ -50,13 +50,14 @@ module.exports = function (httpServer) {
   httpServer.get("/api/bots", function (req, res) {
     try {
       const result = botsList.getBotsList();
-      res.json(result);
+      res.status(200).json(result);
     } catch (e) {
       res.status(500).json(
         buildJsonResponse({
-          command: "get bots list",
-          success: false,
-          message: e.message,
+          error: {
+            status: 500,
+            message: e.message,
+          }
         })
       );
     }
@@ -90,7 +91,7 @@ module.exports = function (httpServer) {
         room_url: "https://hubs.mozilla.com/jtbhYFh/adorable-cultured-venture",
       },
     ];
-    res.json(result);
+    res.status(200).json(result);
   });
 
   // get bot infos
@@ -100,31 +101,24 @@ module.exports = function (httpServer) {
       let uuid = req.params.uuid || null;
       // check uuid
       if (!botsList.checkUuid(uuid)) {
-        res.status(400).json(
-          buildJsonResponse({
-            command: "get bot infos",
-            success: false,
-            message: "Wrong uuid.",
-            data: [
-              {
-                uuid: uuid,
-              },
-            ],
-          })
-        );
+        res.status(404).json({
+          error: {
+            status: 404,
+            message: "Bot not found.",
+          }
+        });
         return;
       }
       console.log("bots", botsList.bots);
       const result = botsList.getBotInfos(uuid);
-      res.json(result);
+      res.status(200).json(result);
     } catch (e) {
-      res.status(500).json(
-        buildJsonResponse({
-          command: "get bot infos",
-          success: false,
+      res.status(500).json({
+        error: {
+          status: 500,
           message: e.message,
-        })
-      );
+        }
+      });
     }
   });
 
@@ -135,30 +129,23 @@ module.exports = function (httpServer) {
       let uuid = req.params.uuid || null;
       // check uuid
       if (!botsList.checkUuid(uuid)) {
-        res.status(400).json(
-          buildJsonResponse({
-            command: "get bot infos",
-            success: false,
-            message: "Wrong uuid.",
-            data: [
-              {
-                uuid: uuid,
-              },
-            ],
-          })
-        );
+        res.status(400).json({
+          error: {
+            status: 400,
+            message: "Wrong uuid."
+          }
+        });
         return;
       }
       const result = await botsList.deleteBot(uuid);
-      res.json(result);
+      res.status(200).json(result);
     } catch (e) {
-      res.status(500).json(
-        buildJsonResponse({
-          command: "delete bot",
-          success: false,
+      res.status(500).json({
+        error: {
+          status: 500,
           message: e.message,
-        })
-      );
+        }
+      });
     }
   });
 
@@ -169,64 +156,48 @@ module.exports = function (httpServer) {
       let uuid = req.params.uuid || null;
       // check uuid
       if (!botsList.checkUuid(uuid)) {
-        res.status(400).json(
-          buildJsonResponse({
-            command: "update bot",
-            success: false,
-            message: "Wrong uuid.",
-            data: [
-              {
-                uuid: uuid,
-              },
-            ],
-          })
-        );
+        res.status(400).json({
+          error: {
+            status: 400,
+            message: "Wrong uuid."
+          }
+        });
         return;
       }
       // get the name
       let name = req.body.name || null;
       if (!name) {
-        res.status(400).json(
-          buildJsonResponse({
-            command: "update bot",
-            success: false,
-            message: "Name needed",
-          })
-        );
+        res.status(400).json({
+          error: {
+            status: 400,
+            message: "Name needed.",
+          }
+        });
         return;
       }
       // get bot
       const bot = botsList.getBotByUuid(uuid);
       if (!bot) {
-        res.status(404).json(
-          buildJsonResponse({
-            command: "update bot",
-            success: false,
+        res.status(404).json({
+          error: {
+            status: 404,
             message: "Bot not found.",
-          })
-        );
+          }
+        });
         return;
       }
       await bot.changeName(name);
-      res.json(
-        buildJsonResponse({
-          command: "update bot",
-          success: true,
-          message: "Bot renamed.",
-          data: {
-            uuid: bot.uuid,
-            name: bot.name,
-          },
-        })
-      );
+      res.status(200).json({
+        uuid: bot.uuid,
+        name: bot.name,
+      });
     } catch (e) {
-      res.status(500).json(
-        buildJsonResponse({
-          command: "update bot",
-          success: false,
+      res.status(500).json({
+        error: {
+          status: 500,
           message: e.message,
-        })
-      );
+        }
+      });
     }
   });
 
@@ -237,30 +208,23 @@ module.exports = function (httpServer) {
       let uuid = req.params.uuid || null;
       // check uuid
       if (!botsList.checkUuid(uuid)) {
-        res.status(400).json(
-          buildJsonResponse({
-            command: "play file",
-            success: false,
-            message: "Wrong uuid.",
-            data: [
-              {
-                uuid: uuid,
-              },
-            ],
-          })
-        );
+        res.status(400).json({
+          error: {
+            status: 400,
+            message: "Wrong uuid."
+          }
+        });
         return;
       }
       // get bot
       const bot = botsList.getBotByUuid(uuid);
       if (!bot) {
-        res.status(404).json(
-          buildJsonResponse({
-            command: "play file",
-            success: false,
+        res.status(404).json({
+          error: {
+            status: 404,
             message: "Bot not found.",
-          })
-        );
+          }
+        });
         return;
       }
       // get file
@@ -270,24 +234,14 @@ module.exports = function (httpServer) {
       let file_to_play = assets_folder + "/" + filename;
       // play the file
       await bot.playFile(file_to_play);
-      res.json(
-        buildJsonResponse({
-          command: "play file",
-          success: true,
-          message: "File playing.",
-          data: {
-            file: file_to_play,
-          },
-        })
-      );
+      res.status(200).json({file: file_to_play});
     } catch (e) {
-      res.status(500).json(
-        buildJsonResponse({
-          command: "play file",
-          success: false,
+      res.status(500).json({
+        error: {
+          status: 500,
           message: e.message,
-        })
-      );
+        }
+      });
     }
   });
 
@@ -298,30 +252,23 @@ module.exports = function (httpServer) {
       let uuid = req.params.uuid || null;
       // check uuid
       if (!botsList.checkUuid(uuid)) {
-        res.status(400).json(
-          buildJsonResponse({
-            command: "play file",
-            success: false,
-            message: "Wrong uuid.",
-            data: [
-              {
-                uuid: uuid,
-              },
-            ],
-          })
-        );
+        res.status(400).json({
+          error: {
+            status: 400,
+            message: "Wrong uuid."
+          }
+        });
         return;
       }
       // get bot
       const bot = botsList.getBotByUuid(uuid);
       if (!bot) {
-        res.status(404).json(
-          buildJsonResponse({
-            command: "play file",
-            success: false,
+        res.status(404).json({
+          error: {
+            status: 404,
             message: "Bot not found.",
-          })
-        );
+          }
+        });
         return;
       }
       let default_object_url =
@@ -353,22 +300,14 @@ module.exports = function (httpServer) {
       } else {
         await bot.spawnObject(params);
       }
-      res.json(
-        buildJsonResponse({
-          command: "spawn",
-          success: true,
-          message: "Spawn.",
-          data: params,
-        })
-      );
+      res.status(200).json(params);
     } catch (e) {
-      res.status(500).json(
-        buildJsonResponse({
-          command: "spawn",
-          success: false,
+      res.status(500).json({
+        error: {
+          status: 500,
           message: e.message,
-        })
-      );
+        }
+      });
     }
   });
 
@@ -379,48 +318,34 @@ module.exports = function (httpServer) {
       let uuid = req.params.uuid || null;
       // check uuid
       if (!botsList.checkUuid(uuid)) {
-        res.status(400).json(
-          buildJsonResponse({
-            command: "delete all",
-            success: false,
-            message: "Wrong uuid.",
-            data: [
-              {
-                uuid: uuid,
-              },
-            ],
-          })
-        );
+        res.status(400).json({
+          error: {
+            status: 400,
+            message: "Wrong uuid."
+          }
+        });
         return;
       }
       // get bot
       const bot = botsList.getBotByUuid(uuid);
       if (!bot) {
-        res.status(404).json(
-          buildJsonResponse({
-            command: "delete all",
-            success: false,
+        res.status(404).json({
+          error: {
+            status: 404,
             message: "Bot not found.",
-          })
-        );
+          }
+        });
         return;
       }
       await bot.deleteAllObjects();
-      res.json(
-        buildJsonResponse({
-          command: "delete all",
-          success: true,
-          message: "Deleting.",
-        })
-      );
+      res.status(200).json({uuid:uuid});
     } catch (e) {
-      res.status(500).json(
-        buildJsonResponse({
-          command: "delete all",
-          success: false,
+      res.status(500).json({
+        error: {
+          status: 500,
           message: e.message,
-        })
-      );
+        }
+      });
     }
   });
 
@@ -434,8 +359,8 @@ module.exports = function (httpServer) {
         res.status(400).json({
           error: {
             status: 400,
-            message: "Wrong uuid.",
-          },
+            message: "Wrong uuid."
+          }
         });
         return;
       }
@@ -446,7 +371,7 @@ module.exports = function (httpServer) {
           error: {
             status: 404,
             message: "Bot not found.",
-          },
+          }
         });
         return;
       }
@@ -473,8 +398,8 @@ module.exports = function (httpServer) {
         res.status(400).json({
           error: {
             status: 400,
-            message: "Wrong uuid.",
-          },
+            message: "Wrong uuid."
+          }
         });
         return;
       }
@@ -485,7 +410,7 @@ module.exports = function (httpServer) {
           error: {
             status: 404,
             message: "Bot not found.",
-          },
+          }
         });
         return;
       }
@@ -507,8 +432,9 @@ module.exports = function (httpServer) {
 
       await bot.goTo(params);
       res.status(200).json({
-        status: 200,
-        message: `The bot has gone to: "${params.x} ${params.y} ${params.z}"`,
+        x: params.x,
+        y: params.y,
+        z: params.z
       });
     } catch (e) {
       res.status(500).json({
@@ -527,62 +453,40 @@ module.exports = function (httpServer) {
       let uuid = req.params.uuid || null;
       // check uuid
       if (!botsList.checkUuid(uuid)) {
-        res.status(400).json(
-          buildJsonResponse({
-            command: "get waypoints",
-            success: false,
-            message: "Wrong uuid.",
-            data: [
-              {
-                uuid: uuid,
-              },
-            ],
-          })
-        );
+        res.status(400).json({
+          error: {
+            status: 400,
+            message: "Wrong uuid."
+          }
+        });
         return;
       }
       // get bot
       const bot = botsList.getBotByUuid(uuid);
       if (!bot) {
-        res.status(404).json(
-          buildJsonResponse({
-            command: "get waypoints",
-            success: false,
+        res.status(404).json({
+          error: {
+            status: 404,
             message: "Bot not found.",
-          })
-        );
+          }
+        });
         return;
       }
       const result = await bot.getWaypoints();
-      res.json(
-        buildJsonResponse({
-          command: "get waypoints",
-          success: true,
-          message: "waypoints found",
-          data: result,
-        })
-      );
+      res.status(200).json(result);
     } catch (e) {
-      res.status(500).json(
-        buildJsonResponse({
-          command: "get waypoints",
-          success: false,
+      res.status(500).json({
+        error: {
+          status: 500,
           message: e.message,
-        })
-      );
+        }
+      });
     }
   });
   // fake waypoints
   httpServer.get("/api/fake/bots/waypoints", async (req, res) => {
     const result = [{ name: "sp1" }, { name: "sp2" }, { name: "sp3" }];
-    res.json(
-      buildJsonResponse({
-        command: "get waypoints",
-        success: true,
-        message: "waypoints found",
-        data: result,
-      })
-    );
+    res.json(result);
   });
 
   // jumpt to
@@ -595,8 +499,8 @@ module.exports = function (httpServer) {
         res.status(400).json({
           error: {
             status: 400,
-            message: "Wrong uuid.",
-          },
+            message: "Wrong uuid."
+          }
         });
         return;
       }
@@ -607,18 +511,12 @@ module.exports = function (httpServer) {
           error: {
             status: 404,
             message: "Bot not found.",
-          },
+          }
         });
         return;
       }
       await bot.jumpTo(req.body.waypoint || "");
-      res.json(
-        buildJsonResponse({
-          command: "jump to",
-          success: true,
-          message: "Jump to.",
-        })
-      );
+      res.status(200).json(req.body.waypoint);
     } catch (e) {
       res.status(500).json({
         error: {
@@ -636,52 +534,35 @@ module.exports = function (httpServer) {
       let uuid = req.params.uuid || null;
       // check uuid
       if (!botsList.checkUuid(uuid)) {
-        res.status(400).json(
-          buildJsonResponse({
-            command: "say",
-            success: false,
-            message: "Wrong uuid.",
-            data: [
-              {
-                uuid: uuid,
-              },
-            ],
-          })
-        );
+        res.status(400).json({
+          error: {
+            status: 400,
+            message: "Wrong uuid."
+          }
+        });
         return;
       }
       // get bot
       const bot = botsList.getBotByUuid(uuid);
       if (!bot) {
-        res.status(404).json(
-          buildJsonResponse({
-            command: "say",
-            success: false,
+        res.status(404).json({
+          error: {
+            status: 404,
             message: "Bot not found.",
-          })
-        );
+          }
+        });
         return;
       }
       let message = req.query.message || "Hello";
       await bot.say(message);
-      res.json(
-        buildJsonResponse({
-          command: "say",
-          success: true,
-          message: "say.",
-          data: {
-            message: message,
-          },
-        })
-      );
+      res.status(200).json(message);
     } catch (e) {
-      res.status(500).json(
-        buildJsonResponse({
-          command: "say",
-          success: false,
+      res.status(500).json({
+        error: {
+          status: 500,
           message: e.message,
-        })
-      );
+        }
+      });
     }
   });
 
@@ -702,24 +583,14 @@ module.exports = function (httpServer) {
           }
         }
       }
-      res.json(
-        buildJsonResponse({
-          command: "get assets",
-          success: true,
-          message: "Assets list.",
-          data: {
-            files: filenames,
-          },
-        })
-      );
+      res.status(200).json(filenames);
     } catch (e) {
-      res.status(500).json(
-        buildJsonResponse({
-          command: "get assets",
-          success: false,
+      res.status(500).json({
+        error: {
+          status: 500,
           message: e.message,
-        })
-      );
+        }
+      });
     }
   });
   httpServer.get("/api/bots/:uuid/audiocontext", async (req, res) => {
@@ -728,52 +599,35 @@ module.exports = function (httpServer) {
       let uuid = req.params.uuid || null;
       // check uuid
       if (!botsList.checkUuid(uuid)) {
-        res.status(400).json(
-          buildJsonResponse({
-            command: "say",
-            success: false,
-            message: "Wrong uuid.",
-            data: [
-              {
-                uuid: uuid,
-              },
-            ],
-          })
-        );
+        res.status(400).json({
+          error: {
+            status: 400,
+            message: "Wrong uuid."
+          }
+        });
         return;
       }
       // get bot
       const bot = botsList.getBotByUuid(uuid);
       if (!bot) {
-        res.status(404).json(
-          buildJsonResponse({
-            command: "say",
-            success: false,
+        res.status(404).json({
+          error: {
+            status: 404,
             message: "Bot not found.",
-          })
-        );
+          }
+        });
         return;
       }
       let message = req.query.message || "Hello";
       let response = await bot.getAudioContext();
-      res.json(
-        buildJsonResponse({
-          command: "say",
-          success: true,
-          message: "say.",
-          data: {
-            message: response,
-          },
-        })
-      );
+      res.status(200).json(response);
     } catch (e) {
-      res.status(500).json(
-        buildJsonResponse({
-          command: "say",
-          success: false,
+      res.status(500).json({
+        error: {
+          status: 500,
           message: e.message,
-        })
-      );
+        }
+      });
     }
   });
   // httpServer.get('/client', (req, res) => {
