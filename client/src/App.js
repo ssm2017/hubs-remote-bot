@@ -7,6 +7,7 @@ import { CssBaseline, createMuiTheme } from "@material-ui/core";
 import BotsListContextProvider from "./contexts/BotsListContextProvider";
 import SelectedBotContextProvider from "./contexts/SelectedBotContextProvider";
 import BotsList from "./components/BotsList";
+import ConfigContextProvider from "./contexts/ConfigContextProvider";
 
 const theme = createMuiTheme({
   palette: {
@@ -16,14 +17,16 @@ const theme = createMuiTheme({
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <BotsListContextProvider>
-        <SelectedBotContextProvider>
-          <CssBaseline />
-          <BotsList />
-        </SelectedBotContextProvider>
-      </BotsListContextProvider>
-    </ThemeProvider>
+    <ConfigContextProvider>
+      <ThemeProvider theme={theme}>
+        <BotsListContextProvider>
+          <SelectedBotContextProvider>
+            <CssBaseline />
+            <BotsList />
+          </SelectedBotContextProvider>
+        </BotsListContextProvider>
+      </ThemeProvider>
+    </ConfigContextProvider>
   );
 }
 

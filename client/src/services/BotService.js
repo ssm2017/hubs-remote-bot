@@ -2,8 +2,8 @@ import http from "../http-common";
 
 class BotDataService {
   getAll = () => {
-    return http.get("/bots");
-    // return http.get("/fake/bots");
+    // return http.get("/bots");
+    return http.get("/fake/bots");
   };
 
   get = (uuid) => {

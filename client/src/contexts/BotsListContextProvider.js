@@ -6,7 +6,6 @@ const BotsListContextProvider = (props) => {
   const [botsList, setBotsList] = React.useState([]);
 
   const setBotsListdValue = () => {
-    console.log("called", botsList);
     BotDataService.getAll()
     .then((response) => {
       setBotsList(response.data);

@@ -32,7 +32,7 @@ import {
 } from "@material-ui/icons";
 
 import SystemMessage from "./utils/SystemMessage";
-import useStickyState from "./utils/useStickyState";
+import configContext from "../contexts/configContext";
 
 const drawerWidth = 200;
 const autoRefresh = false;
@@ -79,8 +79,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const BotsList = (props) => {
-  // manage config
-  const [configAutorefresh, setConfigAutorefresh] = useStickyState(false, "enableAutoRefresh");
+  // get config
+  const {config, setConfig} = useContext(configContext);
 
   // theming
   const classes = useStyles();
@@ -88,8 +88,9 @@ const BotsList = (props) => {
   const {botsList, setBotsList} = useContext(botsListContext);
   // get the bots list on init
   useEffect(() => {
-    if (configAutorefresh) {
+    if (config.enableAutoRefresh) {
       const interval = setInterval(() => {
+        console.log("Refresh bots list");
         setBotsList();
       }, 2000 );
       return () => clearInterval(interval);

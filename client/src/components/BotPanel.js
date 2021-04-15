@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Properties from "./panels/Properties";
 import PlayFile from "./panels/PlayFile";
 import JumpTo from "./panels/JumpTo";
@@ -11,6 +11,7 @@ import {
   FormControl,
   FormLabel,
   FormGroup,
+  FormHelperText,
   RadioGroup,
   FormControlLabel,
   Radio,
@@ -19,7 +20,7 @@ import {
   Grid,
 } from "@material-ui/core";
 
-import useStickyState from "./utils/useStickyState";
+import configContext from "../contexts/configContext";
 
 const TOOLS_DRAWER_WIDTH = 200;
 
@@ -87,14 +88,24 @@ const panelsList = [
   },
 ];
 
-const DefaultToolsDisplayList = ["properties"];
-
 const BotPanel = (props) => {
+  const classes = useStyles();
+
   // manage config
-  const [configAutorefresh, setConfigAutorefresh] = useStickyState(false, "enableAutoRefresh");
-  const handleToggleConfigAutorefresh = () => {
-    setConfigAutorefresh(!configAutorefresh);
+  const {config, setConfig} = useContext(configContext);
+  const handleToggleConfigAutorefresh = (event) => {
+    setConfig("enableAutoRefresh", event.target.checked);
   }
+  const [soloMode, setSoloMode] = useState(false);
+  const handleToggleConfigSoloMode = (event) => {
+    setSoloMode(event.target.checked);
+    if (config.panels.length >1) {
+      setConfig("panels", ["properties"]);
+    }
+  }
+  useEffect(() => {
+    setConfig("soloMode", soloMode);
+  }, [soloMode]);
 
   // tools menu
   const [showMobileTools, setShowMobileTools] = useState(props.showToolsMenu);
@@ -107,77 +118,81 @@ const BotPanel = (props) => {
     props.onToggleTools(!showMobileTools);
   };
 
-  const [toolsDisplayList, setToolsDisplayList] = useState(DefaultToolsDisplayList);
-
   const handleToolsDisplayListChange = (event) => {
-    if (soloMode) {
-      setToolsDisplayList([event.target.name]);
+    if (config.soloMode) {
+      setConfig("panels", [event.target.name]);
     } else {
       // remove if exist
-      const idx = toolsDisplayList.indexOf(event.target.name);
+      const idx = config.panels.indexOf(event.target.name);
       if (idx > -1) {
-        let newArray = toolsDisplayList.filter(function (ele) {
+        let newArray = config.panels.filter(function (ele) {
           return ele !== event.target.name;
         });
-        setToolsDisplayList(newArray);
+        setConfig("panels", newArray);
       } else {
         // add a new one
-        setToolsDisplayList([...toolsDisplayList, event.target.name]);
+        setConfig("panels", [...config.panels, event.target.name]);
       }
     }
-  };
-
-  const classes = useStyles();
-  const [soloMode, setSoloMode] = useState(false);
-  const handleSetSoloMode = (event) => {
-    setSoloMode(event.target.checked);
   };
 
   const toolsPanel = (
     <div className={classes.toolsPanel}>
       <FormControlLabel
-        label="AR"
+        label="Auto refresh"
         control={<Checkbox
           key="toggleAutoRefresh"
-          checked={configAutorefresh}
-          name="AR"
-          value="AutoRefreshBotsList"
-          onChange={(event) => handleToggleConfigAutorefresh(event)} />}
-        />
-      <FormControlLabel
-        control={<Switch checked={soloMode} onChange={handleSetSoloMode} name="solo_mode" color="primary" />}
-        label="Solo mode"
+          checked={config.enableAutoRefresh}
+          name="auto_refresh"
+          onChange={handleToggleConfigAutorefresh} />}
       />
-      {soloMode ? (
+      <FormHelperText>Need page refresh</FormHelperText>
+      <FormControlLabel
+        label="Solo mode"
+        control={<Switch
+          key="toggleSoloMode"
+          checked={config.soloMode}
+          name="solo_mode"
+          color="primary" />}
+          onChange={handleToggleConfigSoloMode}
+      />
+      {config.soloMode ? (
         <FormControl component="fieldset">
-          <FormLabel component="legend">Tools</FormLabel>
+          <FormLabel component="legend">Select panel</FormLabel>
           <RadioGroup
-            aria-label="gender"
-            name="gender1"
-            value="aaa"
+            aria-label="panels"
+            name="panels"
             onChange={(event) => handleToolsDisplayListChange(event)}
           >
             {panelsList.map((panel, index) => (
               <FormControlLabel
                 key={index}
                 value={panel.command}
-                control={<Radio key={index} checked={toolsDisplayList.includes(panel.command)} name={panel.command} />}
                 label={panel.title}
+                control={<Radio
+                  key={index}
+                  name={panel.command}
+                  checked={config.panels.includes(panel.command)}
+                />}
               />
             ))}
           </RadioGroup>
         </FormControl>
       ) : (
         <FormControl component="fieldset" className={classes.formControl}>
-          <FormLabel component="legend">Assign responsibility</FormLabel>
+          <FormLabel component="legend">Select panels</FormLabel>
           <FormGroup onChange={(event) => handleToolsDisplayListChange(event)}>
             {panelsList.map((panel, index) => (
               <FormControlLabel
-                control={
-                  <Checkbox key={index} checked={toolsDisplayList.includes(panel.command)} name={panel.command} />
-                }
-                label={panel.title}
                 key={index}
+                label={panel.title}
+                control={
+                  <Checkbox
+                    key={index}
+                    name={panel.command}
+                    checked={config.panels.includes(panel.command)}
+                  />
+                }
               />
             ))}
           </FormGroup>
@@ -235,16 +250,16 @@ const BotPanel = (props) => {
       <div className="container">
         <Grid container spacing={3}>
           <Grid item xs>
-            {toolsDisplayList.includes("properties") && <Properties bot={props.bot} />}
+            {config.panels.includes("properties") && <Properties bot={props.bot} />}
           </Grid>
           <Grid item xs>
-            {toolsDisplayList.includes("play_file") && <PlayFile bot={props.bot} />}
+            {config.panels.includes("play_file") && <PlayFile bot={props.bot} />}
           </Grid>
           <Grid item xs>
-            {toolsDisplayList.includes("jump_to") && <JumpTo bot={props.bot} />}
+            {config.panels.includes("jump_to") && <JumpTo bot={props.bot} />}
           </Grid>
           <Grid item xs>
-            {toolsDisplayList.includes("go_to") && <GoTo bot={props.bot} />}
+            {config.panels.includes("go_to") && <GoTo bot={props.bot} />}
           </Grid>
         </Grid>
       </div>
