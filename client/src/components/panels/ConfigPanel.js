@@ -70,6 +70,10 @@ const panelsList = [
     command: "go_to",
     title: "Go to",
   },
+  {
+    command: "say",
+    title: "Say in chat",
+  },
 ];
 
 const ConfigPanel = (props) => {

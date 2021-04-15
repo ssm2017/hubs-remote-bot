@@ -553,7 +553,7 @@ module.exports = function (httpServer) {
         });
         return;
       }
-      let message = req.query.message || "Hello";
+      let message = req.body.message || "Hello";
       await bot.say(message);
       res.status(200).json(message);
     } catch (e) {

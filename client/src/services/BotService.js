@@ -2,8 +2,8 @@ import http from "../http-common";
 
 class BotDataService {
   getAll = () => {
-    // return http.get("/bots");
-    return http.get("/fake/bots");
+    return http.get("/bots");
+    // return http.get("/fake/bots");
   };
 
   get = (uuid) => {
@@ -50,6 +50,10 @@ class BotDataService {
   getPosition = (uuid) => {
     return http.get(`/bots/${uuid}/position`);
   };
+
+  sayInChat = (uuid, data) => {
+    return http.post(`/bots/${uuid}/say`, data);
+  }
 }
 
 export default new BotDataService();
