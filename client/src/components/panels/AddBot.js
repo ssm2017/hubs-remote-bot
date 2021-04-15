@@ -1,56 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import BotDataService from "../../services/BotService";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
 
-import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { green } from '@material-ui/core/colors';
+import ConfirmDialog from "../utils/ConfirmDialog";
+import SystemMessage from "../utils/SystemMessage";
 
-// progress bar style
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  wrapper: {
-    margin: theme.spacing(1),
-    position: 'relative',
-  },
-  buttonSuccess: {
-    backgroundColor: green[500],
-    '&:hover': {
-      backgroundColor: green[700],
-    },
-  },
-  fabProgress: {
-    color: green[500],
-    position: 'absolute',
-    top: -6,
-    left: -6,
-    zIndex: 1,
-  },
-  buttonProgress: {
-    color: green[500],
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    marginTop: -12,
-    marginLeft: -12,
-  },
-}));
+import {
+  TextField,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Typography
+
+} from "@material-ui/core";
 
 const AddBot = (props) => {
-  const classes = useStyles();
+
+  // input name error
+  const [nameError, setNameError] = useState(false);
+  const [nameErrorMessage, setNameErrorMessage] = useState("");
+
+  // system message
+  const [systemMessage, setSystemMessage] = useState({
+    visible: false,
+    level: null,
+    message: null
+  });
 
   // init values
   const initialBotState = {
@@ -63,111 +38,116 @@ const AddBot = (props) => {
   // text fields content
   const handleInputChange = (event) => {
     const { name, value } = event.target;
+    if (name === "name" && value.length > 26) {
+      setNameError(true);
+      setNameErrorMessage("26 chars max");
+    }
     setBot({ ...bot, [name]: value });
   };
 
   // save the bot
   const saveBot = () => {
-    if (!loading) {
-      setSuccess(false);
-      setLoading(true);
+    if (!confirmDialogLoading) {
+      setConfirmDialogLoading(true);
       var data = {
         name: bot.name,
         room_url: bot.room_url,
       };
       BotDataService.create(data)
       .then((response) => {
-        setSuccess(true);
-        setLoading(false);
-        handleCloseConfirmation();
+        setConfirmDialogLoading(false);
+        setOpenConfirmDialog(false);
         props.onCreate(response.data[0]);
+        setSystemMessage({
+          visible: true,
+          level: 200,
+          message: "Bot saved."
+        });
       })
       .catch((e) => {
         console.log(e);
-        setSuccess(false);
-        setLoading(false);
-        handleCloseConfirmation();
+        setConfirmDialogLoading(false);
+        setOpenConfirmDialog(false);
+        setSystemMessage({
+          visible: true,
+          level: "error",
+          message: JSON.stringify(e.response)
+        });
       });
     }
-      
   };
 
-  // manage confirmation
-  const [openConfirmation, setOpenConfirmation] = useState(false);
+  // confirmDialog
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [confirmDialogLoading, setConfirmDialogLoading] = useState(false);
 
-  const handleClickOpenConfirmation = () => {
-    setOpenConfirmation(true);
-  };
+  const handleOpenConfirmDialog = () => {
+    setOpenConfirmDialog(true);
+  }
 
-  const handleCloseConfirmation = () => {
-    setOpenConfirmation(false);
-  };
+  const confirmDialogYesClicked = () => {
+    saveBot();
+  }
 
-  // manage progress bar
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-
-  const buttonClassname = clsx({
-    [classes.buttonSuccess]: success,
-  });
+  const confirmDialogCloseClicked = () => {
+    setOpenConfirmDialog(false);
+    setConfirmDialogLoading(false);
+  }
 
   return (
     <div className="add-bot">
       <Card>
         <CardContent>
+        <Typography variant="h5" component="h2">
+          Add bot
+        </Typography>
+          {systemMessage.visible &&
+            <SystemMessage level={systemMessage.level} message={systemMessage.message} />
+          }
           <form noValidate autoComplete="off">
-            <TextField id="name" name="name" value={bot.name} onChange={handleInputChange} label="Name" />
+            <TextField
+              inputRef={input => input && input.focus()}
+              id="name"
+              name="name"
+              label="Name"
+              value={bot.name}
+              onChange={handleInputChange}
+              error={nameError}
+              helperText={nameErrorMessage}
+              inputProps={{
+                maxLength: 26,
+              }}
+            />
             <TextField
               id="room_url"
               name="room_url"
+              label="Room url"
               value={bot.room_url}
               onChange={handleInputChange}
-              label="Room url"
             />
           </form>
         </CardContent>
         <CardActions>
-          <Button onClick={handleClickOpenConfirmation} color="primary" variant="contained">
+          <Button
+            onClick={handleOpenConfirmDialog}
+            color="primary"
+            variant="contained"
+            type="submit"
+          >
             Create bot
           </Button>
         </CardActions>
       </Card>
-      {/* Confirmation */}
-      <Dialog
-        open={openConfirmation}
-        onClose={handleCloseConfirmation}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">{loading ? "Creating bot" : "Confirm bot creation?"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            {loading ? `Please wait`:`Do you really want to create a new bot ?`}</DialogContentText>
-          </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={handleCloseConfirmation}
-            autoFocus color="secondary"
-            variant="contained"
-            disabled={loading}
-          >
-            No
-          </Button>
-          {/* <Button onClick={saveBot} color="primary" variant="contained">
-            Yes
-          </Button> */}
-          <Button
-            variant="contained"
-            color="primary"
-            className={buttonClassname}
-            disabled={loading}
-            onClick={saveBot}
-          >
-            Yes
-          </Button>
-          {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
-        </DialogActions>
-      </Dialog>
+      <ConfirmDialog
+        open={openConfirmDialog}
+        title="Confirm bot creation ?"
+        titleLoading="Saving bot..."
+        contentText="Do you really want to create a new bot ?"
+        contentTextLoading="Please wait..."
+        onYesClicked={() => confirmDialogYesClicked()}
+        onCloseClicked={() => confirmDialogCloseClicked()}
+        loading={confirmDialogLoading}
+      />
     </div>
   );
 };

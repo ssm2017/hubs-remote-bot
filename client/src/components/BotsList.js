@@ -9,6 +9,7 @@ import AddBot from "./panels/AddBot";
 
 import {
   AppBar,
+  Checkbox,
   CssBaseline,
   Divider,
   Drawer,
@@ -31,8 +32,10 @@ import {
 } from "@material-ui/icons";
 
 import SystemMessage from "./utils/SystemMessage";
+import useStickyState from "./utils/useStickyState";
 
 const drawerWidth = 200;
+const autoRefresh = false;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -76,28 +79,23 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const BotsList = (props) => {
+  // manage config
+  const [configAutorefresh, setConfigAutorefresh] = useStickyState(false, "enableAutoRefresh");
+
   // theming
   const classes = useStyles();
 
   const {botsList, setBotsList} = useContext(botsListContext);
   // get the bots list on init
   useEffect(() => {
-    // retrieveBots();
+    if (configAutorefresh) {
+      const interval = setInterval(() => {
+        setBotsList();
+      }, 2000 );
+      return () => clearInterval(interval);
+    }
     setBotsList();
   }, []);
-
-  // botsList list
-  // const [botsList, setBotsList] = useState([]);
-  // const retrieveBots = () => {
-  //   return BotDataService.getAll()
-  //     .then((response) => {
-  //       setBotsList(response.data);
-  //     })
-  //     .catch((e) => {
-  //       console.log(e);
-  //     });
-  // };
-  
 
   // selected bot
   const initialCurrentBotState = {
@@ -105,7 +103,6 @@ const BotsList = (props) => {
     name: "",
     room_url: "",
   };
-  // const [selectedBot, setSelectedBot] = useState(initialCurrentBotState);
   const {selectedBot, setSelectedBot} = useContext(selectedBotContext);
   const [selectedBotIndex, setSelectedBotIndex] = useState(-1);
   const selectBot = (bot, index) => {
@@ -257,7 +254,7 @@ const BotsList = (props) => {
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" noWrap className={classes.title}>
-          Hubs Bots Remote{selectedBot.name ? " : " + selectedBot.name : ""}
+          Hubs Bots Remote({botsList.length}) {selectedBot.name ? " : " + selectedBot.name : ""}
         </Typography>
         {selectedBot.uuid && (
           <IconButton
@@ -294,7 +291,9 @@ const BotsList = (props) => {
     </div>
   );
 
-  return <div className="botsList">{botsList.length ? botsListTemplate : noBotTemplate}</div>;
+  return (
+    <div className="botsList">{botsList.length ? botsListTemplate : noBotTemplate}</div>
+  );
 };
 
 export default BotsList;

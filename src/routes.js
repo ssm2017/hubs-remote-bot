@@ -25,19 +25,24 @@ module.exports = function (httpServer) {
         userDataDir: process.env.USER_DATA_DIR || "./assets/chrome-profile/User Data/",
         autoLog: process.env.AUTOLOG || true,
       };
-      console.log("params", params);
-      console.log("req query", req.query);
-      console.log("req body", req.body);
+      if (params.name.length > 26) {
+        res.status(400).json({
+          error: {
+            status: 400,
+            message: "Name too long. 26 max."
+          }
+        });
+        return;
+      }
       let response = await botsList.newBot(params);
       res.status(200).json(response);
     } catch (e) {
-      res.status(500).json(
-        buildJsonResponse({
-          command: "new bot",
-          success: false,
+      res.status(500).json({
+        error: {
+          status: 500,
           message: e.message,
-        })
-      );
+        }
+      });
     }
   });
 

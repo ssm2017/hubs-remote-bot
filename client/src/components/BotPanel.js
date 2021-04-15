@@ -19,6 +19,8 @@ import {
   Grid,
 } from "@material-ui/core";
 
+import useStickyState from "./utils/useStickyState";
+
 const TOOLS_DRAWER_WIDTH = 200;
 
 const useStyles = makeStyles((theme) => ({
@@ -88,6 +90,12 @@ const panelsList = [
 const DefaultToolsDisplayList = ["properties"];
 
 const BotPanel = (props) => {
+  // manage config
+  const [configAutorefresh, setConfigAutorefresh] = useStickyState(false, "enableAutoRefresh");
+  const handleToggleConfigAutorefresh = () => {
+    setConfigAutorefresh(!configAutorefresh);
+  }
+
   // tools menu
   const [showMobileTools, setShowMobileTools] = useState(props.showToolsMenu);
   useEffect(() => {
@@ -127,6 +135,15 @@ const BotPanel = (props) => {
 
   const toolsPanel = (
     <div className={classes.toolsPanel}>
+      <FormControlLabel
+        label="AR"
+        control={<Checkbox
+          key="toggleAutoRefresh"
+          checked={configAutorefresh}
+          name="AR"
+          value="AutoRefreshBotsList"
+          onChange={(event) => handleToggleConfigAutorefresh(event)} />}
+        />
       <FormControlLabel
         control={<Switch checked={soloMode} onChange={handleSetSoloMode} name="solo_mode" color="primary" />}
         label="Solo mode"

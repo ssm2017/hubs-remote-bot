@@ -15,8 +15,9 @@ class BotsList {
    * @returns {object} json response
    */
   async newBot(params) {
+    var new_bot = {};
     try {
-      let new_bot = new HubsBot({
+      new_bot = new HubsBot({
         userDataDir: params.userDataDir,
       });
       new_bot.uuid = uuidv4();
@@ -42,11 +43,7 @@ class BotsList {
       });
     } catch (e) {
       console.error("Error creating bot", e);
-      return utils.buildJsonResponse({
-        command: "new bot",
-        success: false,
-        message: e.message,
-      });
+      throw(e);
     }
   }
 

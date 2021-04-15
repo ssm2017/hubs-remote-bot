@@ -3,84 +3,107 @@ import BotDataService from "../../services/BotService";
 import botsListContext from "../../contexts/botsListContext";
 import selectedBotContext from "../../contexts/selectedBotContext";
 
-import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
+import ConfirmDialog from "../utils/ConfirmDialog";
+import SystemMessage from "../utils/SystemMessage";
+
+import {
+  Typography,
+  TextField,
+  Button,
+  Card,
+  CardActions,
+  CardContent
+} from "@material-ui/core";
 
 const Properties = (props) => {
+
+  // input name error
+  const [nameError, setNameError] = useState(false);
+  const [nameErrorMessage, setNameErrorMessage] = useState("");
+
   const [editMode, setEditMode] = useState(false);
 
   const {botsList, setBotsList} = useContext(botsListContext);
 
   const {selectedBot, setSelectedBot} = useContext(selectedBotContext);
-  // const [selectedBot, setSelectedBot] = useState(props.bot);
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setSelectedBot({ ...selectedBot, [name]: value });
-  };
+
+  const [editedBot, setEditedBot] = useState(props.bot);
+
   useEffect(() => {
-    console.log("props", props.bot);
+    setEditedBot(props.bot);
     setSelectedBot(props.bot);
   }, []);
 
-  // confirmation
-  const [openUpdateConfirmation, setOpenUpdateConfirmation] = useState(false);
-  const handleClickOpenUpdateConfirmation = () => {
-    setOpenUpdateConfirmation(true);
-  };
-  const handleCloseUpdateConfirmation = () => {
-    setOpenUpdateConfirmation(false);
-  };
-  const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
-  const handleClickOpenDeleteConfirmation = () => {
-    setOpenDeleteConfirmation(true);
-  };
-  const handleCloseDeleteConfirmation = () => {
-    setOpenDeleteConfirmation(false);
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    if (name === "name" && value.length > 26) {
+      setNameError(true);
+      setNameErrorMessage("26 chars max");
+    }
+    setEditedBot({ ...editedBot, [name]: value });
   };
 
   // actions
   const cancelUpdateBot = () => {
-    setSelectedBot(props.bot);
+    setEditedBot(props.bot);
     setEditMode(false);
   };
 
   const updateBot = () => {
-    handleCloseUpdateConfirmation();
-    console.log("update bot", selectedBot);
-    BotDataService.update(selectedBot.uuid, selectedBot)
+    setConfirmUpdateDialogLoading(true);
+    BotDataService.update(editedBot.uuid, editedBot)
       .then((response) => {
-        console.log(response.data);
+        console.log("updated bot",response.data);
+        setConfirmUpdateDialogLoading(false);
+        setOpenUpdateConfirmDialog(false);
         setEditMode(false);
-        setBotsList();
+        setSelectedBot(editedBot);
       })
       .catch((e) => {
         console.log(e);
+        setConfirmUpdateDialogLoading(false);
+        setOpenUpdateConfirmDialog(false);
       });
   };
 
   const deleteBot = () => {
-    handleCloseDeleteConfirmation();
-    
-    console.log("delete bot", selectedBot);
-    BotDataService.remove(selectedBot.uuid)
+    setConfirmDeleteDialogLoading(true);
+    BotDataService.remove(editedBot.uuid)
       .then((response) => {
-        console.log(response.data);
+        console.log("deleted bot",response.data);
+        setConfirmUpdateDialogLoading(false);
+        setOpenUpdateConfirmDialog(false);
         setEditMode(false);
         setBotsList();
         setSelectedBot(null);
+        setEditedBot(null);
       })
       .catch((e) => {
         console.log(e);
+        setConfirmUpdateDialogLoading(false);
+        setOpenUpdateConfirmDialog(false);
       });
+  };
+
+  // confirmation
+  const [openUpdateConfirmDialog, setOpenUpdateConfirmDialog] = useState(false);
+  const [confirmUpdateDialogLoading, setConfirmUpdateDialogLoading] = useState(false);
+
+  const confirmUpdateDialogYesClicked = () => {
+    updateBot();
+  };
+  const confirmUpdateDialogCloseClicked = () => {
+    setOpenUpdateConfirmDialog(false);
+  };
+
+  const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
+  const [confirmDeleteDialogLoading, setConfirmDeleteDialogLoading] = useState(false);
+
+  const confirmDeleteDialogYesClicked = () => {
+    deleteBot();
+  };
+  const confirmDeleteDialogCloseClicked = () => {
+    setOpenDeleteConfirmDialog(false);
   };
 
   const displayTemplate = (
@@ -106,49 +129,7 @@ const Properties = (props) => {
     </Card>
   );
 
-  const updateConfirmationTemplate = (
-    <Dialog
-      open={openUpdateConfirmation}
-      onClose={handleCloseUpdateConfirmation}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-    >
-      <DialogTitle id="alert-dialog-title">{"Confirm bot update ?"}</DialogTitle>
-      <DialogContent>
-        <DialogContentText id="alert-dialog-description">Do you really want to update the bot ?</DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleCloseUpdateConfirmation} autoFocus color="secondary" variant="contained">
-          No
-        </Button>
-        <Button onClick={updateBot} color="primary" variant="contained">
-          Yes
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-
-  const deleteConfirmationTemplate = (
-    <Dialog
-      open={openDeleteConfirmation}
-      onClose={handleCloseDeleteConfirmation}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-    >
-      <DialogTitle id="alert-dialog-title">{"Confirm bot deletion ?"}</DialogTitle>
-      <DialogContent>
-        <DialogContentText id="alert-dialog-description">Do you really want to delete the bot ?</DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleCloseDeleteConfirmation} autoFocus color="secondary" variant="contained">
-          No
-        </Button>
-        <Button onClick={deleteBot} color="primary" variant="contained">
-          Yes
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
+  
 
   const editTemplate = (
     <div className="edit-bot">
@@ -158,21 +139,33 @@ const Properties = (props) => {
             Edit Properties
           </Typography>
           <form noValidate autoComplete="off">
-            <TextField id="name" name="name" value={selectedBot.name} onChange={handleInputChange} label="Name" />
+            <TextField
+              inputRef={input => input && input.focus()}
+              id="name"
+              name="name"
+              label="Name"
+              value={editedBot.name}
+              onChange={handleInputChange}
+              error={nameError}
+              helperText={nameErrorMessage}
+              inputProps={{
+                maxLength: 26,
+              }}
+            />
             <TextField
               id="room_url"
               name="room_url"
-              value={selectedBot.room_url}
-              onChange={handleInputChange}
               label="Room url"
+              value={editedBot.room_url}
+              onChange={handleInputChange}
             />
           </form>
         </CardContent>
         <CardActions>
-          <Button onClick={handleClickOpenUpdateConfirmation} color="primary" variant="contained">
+          <Button onClick={() => setOpenUpdateConfirmDialog(true)} color="primary" variant="contained">
             Save bot
           </Button>
-          <Button onClick={handleClickOpenDeleteConfirmation} color="secondary" variant="contained">
+          <Button onClick={() => setOpenDeleteConfirmDialog(true)} color="secondary" variant="contained">
             Delete
           </Button>
           <Button onClick={cancelUpdateBot} color="default" variant="contained">
@@ -181,8 +174,26 @@ const Properties = (props) => {
         </CardActions>
       </Card>
       {/* Confirmation */}
-      {updateConfirmationTemplate}
-      {deleteConfirmationTemplate}
+      <ConfirmDialog
+        open={openUpdateConfirmDialog}
+        title="Confirm bot update ?"
+        titleLoading="Updating bot..."
+        contentText="Do you really want to update the bot ??"
+        contentTextLoading="Please wait..."
+        onYesClicked={() => confirmUpdateDialogYesClicked()}
+        onCloseClicked={() => confirmUpdateDialogCloseClicked()}
+        loading={confirmUpdateDialogLoading}
+      />
+      <ConfirmDialog
+        open={openDeleteConfirmDialog}
+        title="Confirm bot deletion ?"
+        titleLoading="Deleting bot..."
+        contentText="Do you really want to delete the bot ?"
+        contentTextLoading="Please wait..."
+        onYesClicked={() => confirmDeleteDialogYesClicked()}
+        onCloseClicked={() => confirmDeleteDialogCloseClicked()}
+        loading={confirmDeleteDialogLoading}
+      />
     </div>
   );
 
