@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import BotDataService from "../../services/BotService";
 import SystemMessage from "../utils/SystemMessage";
 
@@ -18,7 +18,7 @@ const GoTo = (props) => {
       z: null,
     },
   };
-  const [currentPosition, setCurrentPosition] = useState(initialPositionState);
+  const [currentPosition, setCurrentPosition] = React.useState(initialPositionState);
 
   const handlePositionChange = (event) => {
     const { name, value } = event.target;
@@ -36,7 +36,7 @@ const GoTo = (props) => {
     message: null,
     status: 0,
   };
-  const [currentSystemMessage, setCurrentSystemMessage] = useState(initialSystemMessage);
+  const [currentSystemMessage, setCurrentSystemMessage] = React.useState(initialSystemMessage);
 
   const goTo = () => {
     var data = {

@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useContext} from "react";
+import React from "react";
 
 import {
   Checkbox,
@@ -76,27 +76,27 @@ const ConfigPanel = (props) => {
   const classes = useStyles();
 
   // selected bot
-  const {selectedBot, setSelectedBot} = useContext(selectedBotContext);
+  const {selectedBot, setSelectedBot} = React.useContext(selectedBotContext);
 
   // manage config
-  const {config, setConfig} = useContext(configContext);
+  const {config, setConfig} = React.useContext(configContext);
   const handleToggleConfigAutorefresh = (event) => {
     setConfig("enableAutoRefresh", event.target.checked);
   }
-  const [soloMode, setSoloMode] = useState(false);
+  const [soloMode, setSoloMode] = React.useState(false);
   const handleToggleConfigSoloMode = (event) => {
     setSoloMode(event.target.checked);
     if (config.panels.length >1) {
       setConfig("panels", ["properties"]);
     }
   }
-  useEffect(() => {
+  React.useEffect(() => {
     setConfig("soloMode", soloMode);
   }, [soloMode]);
 
   // tools menu
-  const [showMobileTools, setShowMobileTools] = useState(props.showToolsMenu);
-  useEffect(() => {
+  const [showMobileTools, setShowMobileTools] = React.useState(props.showToolsMenu);
+  React.useEffect(() => {
     setShowMobileTools(props.showToolsMenu);
   }, [props.showToolsMenu]);
 

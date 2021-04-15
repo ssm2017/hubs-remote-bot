@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React from "react";
 import BotDataService from "../../services/BotService";
 import botsListContext from "../../contexts/botsListContext";
 import selectedBotContext from "../../contexts/selectedBotContext";
@@ -18,18 +18,18 @@ import {
 const Properties = (props) => {
 
   // input name error
-  const [nameError, setNameError] = useState(false);
-  const [nameErrorMessage, setNameErrorMessage] = useState("");
+  const [nameError, setNameError] = React.useState(false);
+  const [nameErrorMessage, setNameErrorMessage] = React.useState("");
 
-  const [editMode, setEditMode] = useState(false);
+  const [editMode, setEditMode] = React.useState(false);
 
-  const {botsList, setBotsList} = useContext(botsListContext);
+  const {botsList, setBotsList} = React.useContext(botsListContext);
 
-  const {selectedBot, setSelectedBot} = useContext(selectedBotContext);
+  const {selectedBot, setSelectedBot} = React.useContext(selectedBotContext);
 
-  const [editedBot, setEditedBot] = useState(props.bot);
+  const [editedBot, setEditedBot] = React.useState(props.bot);
 
-  useEffect(() => {
+  React.useEffect(() => {
     setEditedBot(props.bot);
     setSelectedBot(props.bot);
   }, []);
@@ -86,8 +86,8 @@ const Properties = (props) => {
   };
 
   // confirmation
-  const [openUpdateConfirmDialog, setOpenUpdateConfirmDialog] = useState(false);
-  const [confirmUpdateDialogLoading, setConfirmUpdateDialogLoading] = useState(false);
+  const [openUpdateConfirmDialog, setOpenUpdateConfirmDialog] = React.useState(false);
+  const [confirmUpdateDialogLoading, setConfirmUpdateDialogLoading] = React.useState(false);
 
   const confirmUpdateDialogYesClicked = () => {
     updateBot();
@@ -96,8 +96,8 @@ const Properties = (props) => {
     setOpenUpdateConfirmDialog(false);
   };
 
-  const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
-  const [confirmDeleteDialogLoading, setConfirmDeleteDialogLoading] = useState(false);
+  const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = React.useState(false);
+  const [confirmDeleteDialogLoading, setConfirmDeleteDialogLoading] = React.useState(false);
 
   const confirmDeleteDialogYesClicked = () => {
     deleteBot();

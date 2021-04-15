@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React from "react";
 import {
   Button,
   Dialog,
@@ -62,8 +62,8 @@ const ConfirmDialog = (props) => {
   // )
 
   // open
-  const [open, setOpen] = useState(props.open);
-  useEffect(()=>{
+  const [open, setOpen] = React.useState(props.open);
+  React.useEffect(()=>{
     setOpen(props.open);
   }, [props.open])
 
@@ -78,13 +78,13 @@ const ConfirmDialog = (props) => {
   };
 
   // manage progress bar
-  const [loading, setLoading] = useState(props.loading);
-  const [success, setSuccess] = useState(props.success);
-  useEffect(()=>{
+  const [loading, setLoading] = React.useState(props.loading);
+  const [success, setSuccess] = React.useState(props.success);
+  React.useEffect(()=>{
     setLoading(props.loading);
     console.log("loading triered", props.loading);
   }, [props.loading])
-  useEffect(()=>{
+  React.useEffect(()=>{
     setSuccess(props.success);
   }, [props.success])
 

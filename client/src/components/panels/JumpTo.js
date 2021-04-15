@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import BotDataService from "../../services/BotService";
 import SystemMessage from "../utils/SystemMessage";
 
@@ -30,10 +30,10 @@ const JumpTo = (props) => {
     message: null,
     status: 0,
   };
-  const [currentSystemMessage, setCurrentSystemMessage] = useState(initialSystemMessage);
+  const [currentSystemMessage, setCurrentSystemMessage] = React.useState(initialSystemMessage);
 
-  const [waypointsList, setWaypointsList] = useState([]);
-  const [currentWaypoint, setCurrentWaypoint] = useState(null);
+  const [waypointsList, setWaypointsList] = React.useState([]);
+  const [currentWaypoint, setCurrentWaypoint] = React.useState(null);
 
   const getWaypoints = () => {
     BotDataService.getWaypointsList(props.bot.uuid)
@@ -50,7 +50,7 @@ const JumpTo = (props) => {
         }
       });
   };
-  useEffect(() => {
+  React.useEffect(() => {
     getWaypoints();
   }, [props]);
 

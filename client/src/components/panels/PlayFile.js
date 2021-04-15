@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import BotDataService from "../../services/BotService";
 
 import Button from "@material-ui/core/Button";
@@ -27,13 +27,13 @@ const PlayFile = (props) => {
   const initialFileState = {
     filename: null,
   };
-  const [jsonFiles, setJsonFiles] = useState([]);
-  const [mp3Files, setMp3Files] = useState([]);
+  const [jsonFiles, setJsonFiles] = React.useState([]);
+  const [mp3Files, setMp3Files] = React.useState([]);
 
-  const [currentJsonFile, setCurrentJsonFile] = useState(initialFileState);
-  const [currentMp3File, setCurrentMp3File] = useState(initialFileState);
+  const [currentJsonFile, setCurrentJsonFile] = React.useState(initialFileState);
+  const [currentMp3File, setCurrentMp3File] = React.useState(initialFileState);
 
-  useEffect(() => {
+  React.useEffect(() => {
     getFiles();
   }, []);
 

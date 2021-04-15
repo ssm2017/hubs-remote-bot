@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React from "react";
 import BotDataService from "../../services/BotService";
 
 import ConfirmDialog from "../utils/ConfirmDialog";
@@ -17,11 +17,11 @@ import {
 const AddBot = (props) => {
 
   // input name error
-  const [nameError, setNameError] = useState(false);
-  const [nameErrorMessage, setNameErrorMessage] = useState("");
+  const [nameError, setNameError] = React.useState(false);
+  const [nameErrorMessage, setNameErrorMessage] = React.useState("");
 
   // system message
-  const [systemMessage, setSystemMessage] = useState({
+  const [systemMessage, setSystemMessage] = React.useState({
     visible: false,
     level: null,
     message: null
@@ -33,7 +33,7 @@ const AddBot = (props) => {
     name: "",
     room_url: ""
   };
-  const [bot, setBot] = useState(initialBotState);
+  const [bot, setBot] = React.useState(initialBotState);
 
   // text fields content
   const handleInputChange = (event) => {
@@ -78,8 +78,8 @@ const AddBot = (props) => {
   };
 
   // confirmDialog
-  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-  const [confirmDialogLoading, setConfirmDialogLoading] = useState(false);
+  const [openConfirmDialog, setOpenConfirmDialog] = React.useState(false);
+  const [confirmDialogLoading, setConfirmDialogLoading] = React.useState(false);
 
   const handleOpenConfirmDialog = () => {
     setOpenConfirmDialog(true);

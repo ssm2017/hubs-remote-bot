@@ -1,8 +1,8 @@
 // source : https://codepen.io/davidmunro/pen/xxxeoOo
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 const Accordion = ({ title, children }) => {
-  const [isOpen, setOpen] = useState(false);
+  const [isOpen, setOpen] = React.useState(false);
   return (
     <div className="accordion-wrapper">
       <div className={`accordion-title ${isOpen ? "open" : ""}`} onClick={() => setOpen(!isOpen)}>

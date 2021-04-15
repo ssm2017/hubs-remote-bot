@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React from "react";
 
 import botsListContext from "../contexts/botsListContext";
 import selectedBotContext from "../contexts/selectedBotContext";
@@ -84,14 +84,14 @@ const useStyles = makeStyles((theme) => ({
 
 const BotsList = (props) => {
   // get config
-  const {config, setConfig} = useContext(configContext);
+  const {config, setConfig} = React.useContext(configContext);
 
   // theming
   const classes = useStyles();
 
-  const {botsList, setBotsList} = useContext(botsListContext);
+  const {botsList, setBotsList} = React.useContext(botsListContext);
   // get the bots list on init
-  useEffect(() => {
+  React.useEffect(() => {
     if (config.enableAutoRefresh) {
       const interval = setInterval(() => {
         console.log("Refresh bots list");
@@ -108,8 +108,8 @@ const BotsList = (props) => {
     name: "",
     room_url: "",
   };
-  const {selectedBot, setSelectedBot} = useContext(selectedBotContext);
-  const [selectedBotIndex, setSelectedBotIndex] = useState(-1);
+  const {selectedBot, setSelectedBot} = React.useContext(selectedBotContext);
+  const [selectedBotIndex, setSelectedBotIndex] = React.useState(-1);
   const selectBot = (bot, index) => {
     if (showMobileMenu) {
       handleBotsListDrawerToggle();
@@ -127,7 +127,7 @@ const BotsList = (props) => {
     setBotsList();
     setnewBotOpenned(false);
   };
-  const [newBotOpenned, setnewBotOpenned] = useState(false);
+  const [newBotOpenned, setnewBotOpenned] = React.useState(false);
   const handleOpenNewBot = () => {
     if (showMobileMenu) {
       handleBotsListDrawerToggle();
@@ -141,17 +141,17 @@ const BotsList = (props) => {
   const { window } = props;
   const container = window !== undefined ? () => window().document.body : undefined;
 
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = React.useState(false);
   const handleBotsListDrawerToggle = () => {
     setShowMobileMenu(!showMobileMenu);
   };
 
-  const [showMobileTools, setShowMobileTools] = useState(false);
+  const [showMobileTools, setShowMobileTools] = React.useState(false);
   const handleToolsDrawerToggle = () => {
     setShowMobileTools(!showMobileTools);
   };
 
-  // useEffect(() => {
+  // React.useEffect(() => {
   // }, [showMobileTools]);
 
   const botsListDrawer = (

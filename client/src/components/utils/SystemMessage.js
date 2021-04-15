@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Alert from "@material-ui/lab/Alert";
 
 const SystemMessage = (props) => {
-  const [levelState, setLevelState] = useState("info");
+  const [levelState, setLevelState] = React.useState("info");
 
-  useEffect(() => {
+  React.useEffect(() => {
     switch (props.level) {
       case 100:
         setLevelState("info");
