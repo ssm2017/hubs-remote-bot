@@ -34,11 +34,18 @@ const Properties = (props) => {
     setSelectedBot(props.bot);
   }, []);
 
+  // text fields content
   const handleInputChange = (event) => {
+    setNameError(false);
+    setNameErrorMessage("");
     const { name, value } = event.target;
-    if (name === "name" && value.length > 26) {
-      setNameError(true);
-      setNameErrorMessage("26 chars max");
+    if (name === "name") {
+      let myregex = new RegExp("^[A-Za-z0-9 -]{0,26}$");
+      if (!myregex.test(value)) {
+        console.log("ta mere");
+        setNameError(true);
+        setNameErrorMessage("Only alphanumerics, hyphens, underscores, and tildes. At least 1 characters, no more than 26");
+      }
     }
     setEditedBot({ ...editedBot, [name]: value });
   };
@@ -125,6 +132,9 @@ const Properties = (props) => {
         <Button onClick={() => setEditMode(true)} variant="contained" color="primary">
           Edit
         </Button>
+        <Button onClick={() => setOpenDeleteConfirmDialog(true)} color="secondary" variant="contained">
+          Delete
+        </Button>
       </CardActions>
     </Card>
   );
@@ -148,6 +158,7 @@ const Properties = (props) => {
               helperText={nameErrorMessage}
               inputProps={{
                 maxLength: 26,
+                pattern: "^[A-Za-z0-9 -]{3,32}$"
               }}
             />
             <TextField
@@ -160,9 +171,11 @@ const Properties = (props) => {
           </form>
         </CardContent>
         <CardActions>
-          <Button onClick={() => setOpenUpdateConfirmDialog(true)} color="primary" variant="contained">
-            Save bot
-          </Button>
+          {!nameError &&
+            <Button onClick={() => setOpenUpdateConfirmDialog(true)} color="primary" variant="contained">
+              Save bot
+            </Button>
+          }
           <Button onClick={() => setOpenDeleteConfirmDialog(true)} color="secondary" variant="contained">
             Delete
           </Button>
@@ -171,6 +184,12 @@ const Properties = (props) => {
           </Button>
         </CardActions>
       </Card>
+    </div>
+  );
+
+  return (
+    <div className="bot-properties">
+      {editMode ? editTemplate : displayTemplate}
       {/* Confirmation */}
       <ConfirmDialog
         open={openUpdateConfirmDialog}
@@ -192,10 +211,7 @@ const Properties = (props) => {
         onCloseClicked={() => confirmDeleteDialogCloseClicked()}
         loading={confirmDeleteDialogLoading}
       />
-    </div>
-  );
-
-  return <div className="bot-properties">{editMode ? editTemplate : displayTemplate}</div>;
+    </div>);
 };
 
 export default Properties;

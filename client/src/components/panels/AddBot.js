@@ -37,10 +37,16 @@ const AddBot = (props) => {
 
   // text fields content
   const handleInputChange = (event) => {
+    setNameError(false);
+    setNameErrorMessage("");
     const { name, value } = event.target;
-    if (name === "name" && value.length > 26) {
-      setNameError(true);
-      setNameErrorMessage("26 chars max");
+    if (name === "name") {
+      let myregex = new RegExp("^[A-Za-z0-9 -]{0,26}$");
+      if (!myregex.test(value)) {
+        console.log("ta mere");
+        setNameError(true);
+        setNameErrorMessage("Only alphanumerics, hyphens, underscores, and tildes. At least 1 characters, no more than 26");
+      }
     }
     setBot({ ...bot, [name]: value });
   };
@@ -116,6 +122,7 @@ const AddBot = (props) => {
               helperText={nameErrorMessage}
               inputProps={{
                 maxLength: 26,
+                pattern: "^[A-Za-z0-9 -]{0,26}$"
               }}
             />
             <TextField
@@ -128,7 +135,8 @@ const AddBot = (props) => {
           </form>
         </CardContent>
         <CardActions>
-          <Button
+          {!nameError &&
+            <Button
             onClick={handleOpenConfirmDialog}
             color="primary"
             variant="contained"
@@ -136,6 +144,7 @@ const AddBot = (props) => {
           >
             Create bot
           </Button>
+          }
         </CardActions>
       </Card>
       <ConfirmDialog

@@ -146,7 +146,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"pinned\": \"false\",\r\n    \"interval\": 0\r\n}",
+					"raw": "{\r\n    \"pinned\": \"false\",\r\n    \"interval\": 2000\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -483,6 +483,24 @@
 						"last",
 						"objects",
 						"interval"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/status",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"status"
 					]
 				}
 			},
