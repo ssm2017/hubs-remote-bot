@@ -26,7 +26,7 @@ module.exports = function (httpServer) {
         autoLog: process.env.AUTOLOG || true,
       };
       // check name pattern
-      if (!params.name.match("^[A-Za-z0-9 -]{3,26}$")) {
+      if (!params.name.match("^[A-Za-z0-9 -]{1,26}$")) {
         res.status(400).json({
           error: {
             status: 400,
@@ -307,6 +307,7 @@ module.exports = function (httpServer) {
           await bot.spawnObject(params);
         }
       }
+      console.log("Called : /api/bots/:uuid/objects", params);
       res.status(200).json(params);
     } catch (e) {
       res.status(500).json({

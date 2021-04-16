@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import BotDataService from "../../services/BotService";
 import SystemMessage from "../utils/SystemMessage";
+import ConfirmDialog from "../utils/ConfirmDialog";
 
 import {
   Box,
@@ -13,8 +14,12 @@ import {
   FormControlLabel,
   Typography,
   ButtonGroup,
-
+  FormControl,
+  InputLabel,
+  NativeSelect,
 } from "@material-ui/core";
+
+import RefreshIcon from '@material-ui/icons/Refresh';
 
 import { makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles((theme) => ({
@@ -30,8 +35,18 @@ const useStyles = makeStyles((theme) => ({
   },
   tab: {
     minWidth: "auto"
-  }
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
 }));
+
+// source : https://gist.github.com/jpillora/7885636
+const isValidUrl = /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.​\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[​6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1​,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00​a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u​00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i;
 
 // main
 const SpawnObjects = (props) => {
@@ -70,10 +85,16 @@ const SpawnObjects = (props) => {
     },
     pinned: true,
     dynamic: false,
-    projection: null,
+    projection: "",
     interval: 0,
   };
   const [objectToSpawn, setObjectToSpawn] = React.useState(initialObjectToSpawn);
+
+  const [showProjection, setShowProjection] = React.useState(false);
+
+  // input name error
+  const [urlError, setUrlError] = React.useState(false);
+  const [urlErrorMessage, setUrlErrorMessage] = React.useState("");
 
   // text fields content
   const handleInputChange = (event) => {
@@ -93,6 +114,20 @@ const SpawnObjects = (props) => {
     } else {
       if (type == "checkbox") {
         value = event.target.checked;
+      }
+      if (name == "url") {
+        setShowProjection(false);
+        setUrlError(false);
+        setUrlErrorMessage("");
+        if (!isValidUrl.test(value)) {
+          setUrlError(true);
+          setUrlErrorMessage("Wrong url"); 
+        }
+        if (value.match(/.(jpg|jpeg|png|gif)$/i)) {
+          if (!urlError) {
+            setShowProjection(true);
+          }
+        }
       }
       setObjectToSpawn({ ...objectToSpawn, [name]: value });
     }
@@ -167,6 +202,17 @@ const SpawnObjects = (props) => {
     });
   }
 
+  // delete confirmation
+  const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = React.useState(false);
+
+  const confirmDeleteDialogYesClicked = () => {
+    deleteObjects();
+    setOpenDeleteConfirmDialog(false);
+  };
+  const confirmDeleteDialogCloseClicked = () => {
+    setOpenDeleteConfirmDialog(false);
+  };
+
   return (
     <Card>
       <CardContent>
@@ -184,7 +230,28 @@ const SpawnObjects = (props) => {
             label="Url"
             value={objectToSpawn.url}
             onChange={handleInputChange}
+            error={urlError}
+            helperText={urlErrorMessage}
           />
+          {showProjection &&
+            <FormControl variant="outlined" className={classes.formControl}>
+              <InputLabel htmlFor="waypoints">Select projection</InputLabel>
+              <NativeSelect
+                value={objectToSpawn.projection || null}
+                onChange={handleInputChange}
+                inputProps={{
+                  name: "projection",
+                  id: "projection",
+                  type: "text",
+                }}
+              >
+                <option key={0} aria-label="None" value=""></option>
+                <option key={1} value="360-equirectangular">
+                  360
+                </option>
+              </NativeSelect>
+            </FormControl>
+          }
           <ButtonGroup variant="contained" color="primary" aria-label="outlined primary button group">
             <Button name="position" onClick={() => {handleSelectTab(0)}}>Position</Button>
             <Button name="rotation" onClick={() => {handleSelectTab(1)}}>Rotation</Button>
@@ -348,13 +415,22 @@ const SpawnObjects = (props) => {
           Spawn
         </Button>
         <Button
-          onClick={deleteObjects}
+          onClick={() => setOpenDeleteConfirmDialog(true)}
           color="secondary"
           variant="contained"
         >
           Delete objects
         </Button>
       </CardActions>
+      <ConfirmDialog
+        open={openDeleteConfirmDialog}
+        title="Confirm objects deletion ?"
+        titleLoading="Deleting objects..."
+        contentText="Do you really want to delete the objects ?"
+        contentTextLoading="Please wait..."
+        onYesClicked={() => confirmDeleteDialogYesClicked()}
+        onCloseClicked={() => confirmDeleteDialogCloseClicked()}
+      />
     </Card>
   );
 }
