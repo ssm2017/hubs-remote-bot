@@ -71,10 +71,12 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing(3),
+    padding: theme.spacing(2),
     marginTop: "50px",
     [theme.breakpoints.up("sm")]: {
-      marginRight: "200px",
+      // marginRight: "400px",
+      // marginLeft: "200px",
+      maxWidth: "250px"
     },
   },
   title: {
@@ -245,11 +247,7 @@ const BotsList = (props) => {
       ) : (
         <SystemMessage level="info" message="Please select a bot..." />
       )}
-      <ConfigPanel
-        showToolsMenu={showMobileTools}
-        onToggleTools={(status) => {
-          setShowMobileTools(status);
-        }}/>
+      
     </div>
   );
 
@@ -297,10 +295,14 @@ const BotsList = (props) => {
           {desktopMenuTemplate}
         </Hidden>
       </nav>
-
+      
       {/* Main Content */}
       {mainContentTemplate}
-      
+      <ConfigPanel
+        showToolsMenu={showMobileTools}
+        onToggleTools={(status) => {
+          setShowMobileTools(status);
+        }}/>
     </div>
   );
 

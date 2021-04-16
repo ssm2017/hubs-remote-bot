@@ -286,7 +286,7 @@ module.exports = function (httpServer) {
       };
       // loop ?
       if (params.interval) {
-        if (params.interval > 0) {
+        if (params.interval > 999) {
           if (!bot.interval) {
             bot.interval = setInterval(() => {
               params.position = `${Math.random() * 3 - 1.5} ${Math.random() * 2 + 1} ${Math.random() * 4 - 2}`;
@@ -295,12 +295,106 @@ module.exports = function (httpServer) {
           }
         } else {
           clearInterval(bot.interval);
-          bot.interval = null;
+          bot.interval = undefined;
         }
       } else {
-        await bot.spawnObject(params);
+        if (bot.interval !== undefined) {
+          clearInterval(bot.interval);
+          bot.interval = undefined;
+        } else {
+          await bot.spawnObject(params);
+        }
       }
       res.status(200).json(params);
+    } catch (e) {
+      res.status(500).json({
+        error: {
+          status: 500,
+          message: e.message,
+        }
+      });
+    }
+  });
+
+  // get multiple spawn interval
+  httpServer.get("/api/bots/:uuid/objects/interval", async (req, res) => {
+    try {
+      // get uuid
+      let uuid = req.params.uuid || null;
+      // check uuid
+      if (!botsList.checkUuid(uuid)) {
+        res.status(400).json({
+          error: {
+            status: 400,
+            message: "Wrong uuid."
+          }
+        });
+        return;
+      }
+      // get bot
+      const bot = botsList.getBotByUuid(uuid);
+      if (!bot) {
+        res.status(404).json({
+          error: {
+            status: 404,
+            message: "Bot not found.",
+          }
+        });
+        return;
+      }
+      if (bot.interval !== undefined) {
+        res.status(200).json(bot.interval._repeat);
+      } else {
+        res.status(200).json(0);
+      }
+    } catch (e) {
+      res.status(500).json({
+        error: {
+          status: 500,
+          message: e.message,
+        }
+      });
+    }
+  });
+
+  // delete multiple spawn interval
+  httpServer.delete("/api/bots/:uuid/objects/interval", async (req, res) => {
+    try {
+      // get uuid
+      let uuid = req.params.uuid || null;
+      // check uuid
+      if (!botsList.checkUuid(uuid)) {
+        res.status(400).json({
+          error: {
+            status: 400,
+            message: "Wrong uuid."
+          }
+        });
+        return;
+      }
+      // get bot
+      const bot = botsList.getBotByUuid(uuid);
+      if (!bot) {
+        res.status(404).json({
+          error: {
+            status: 404,
+            message: "Bot not found.",
+          }
+        });
+        return;
+      }
+      if (bot.interval !== undefined) {
+        clearInterval(bot.interval);
+        bot.interval = undefined;
+        res.status(200).json({});
+      } else {
+        res.status(404).json({
+          error: {
+            status: 404,
+            message: "Interval not found.",
+          }
+        });
+      }
     } catch (e) {
       res.status(500).json({
         error: {
@@ -629,6 +723,10 @@ module.exports = function (httpServer) {
         }
       });
     }
+  });
+  httpServer.get("/api/status", (req, res) => {
+    console.log(botsList.bots);
+    res.status(200).json({});
   });
   // httpServer.get('/client', (req, res) => {
   // 	res.sendFile(path.join(__dirname, '../client/build/index.html'));

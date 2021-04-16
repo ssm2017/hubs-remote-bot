@@ -144,6 +144,15 @@
 			"request": {
 				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"pinned\": \"false\",\r\n    \"interval\": 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
 					"raw": "{{url}}/api/bots/first/objects",
 					"host": [
@@ -453,6 +462,27 @@
 						"bots",
 						"first",
 						"position"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get spawn interval",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/bots/last/objects/interval",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"bots",
+						"last",
+						"objects",
+						"interval"
 					]
 				}
 			},
