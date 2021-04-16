@@ -19,21 +19,23 @@ module.exports = function (httpServer) {
     try {
       let params = {
         spawn_point: req.body.spawn_point || null,
-        name: req.body.name || Date.now(),
+        name: req.body.name || String(Date.now()),
         room_url: req.body.room_url || "https://hubs.mozilla.com/jtbhYFh/adorable-cultured-venture",
         audio_volume: process.env.AUDIO_VOLUME || 1,
         userDataDir: process.env.USER_DATA_DIR || "./assets/chrome-profile/User Data/",
         autoLog: process.env.AUTOLOG || true,
       };
-      if (params.name.length > 26) {
+      // check name pattern
+      if (!params.name.match("^[A-Za-z0-9 -]{3,26}$")) {
         res.status(400).json({
           error: {
             status: 400,
-            message: "Name too long. 26 max."
+            message: "Invalid name."
           }
         });
         return;
       }
+      console.log("Called : /api/bots", params);
       let response = await botsList.newBot(params);
       res.status(200).json(response);
     } catch (e) {
@@ -660,6 +662,7 @@ module.exports = function (httpServer) {
     }
   });
 
+  // get assets
   httpServer.get("/api/system/assets", async (req, res) => {
     try {
       let assets_folder = process.env.ASSETS_FOLDER + "/" || "./assets/";

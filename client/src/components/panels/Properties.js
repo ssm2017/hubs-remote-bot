@@ -40,9 +40,7 @@ const Properties = (props) => {
     setNameErrorMessage("");
     const { name, value } = event.target;
     if (name === "name") {
-      let myregex = new RegExp("^[A-Za-z0-9 -]{0,26}$");
-      if (!myregex.test(value)) {
-        console.log("ta mere");
+      if (!value.match("^[A-Za-z0-9 -]{0,26}$")) {
         setNameError(true);
         setNameErrorMessage("Only alphanumerics, hyphens, underscores, and tildes. At least 1 characters, no more than 26");
       }
