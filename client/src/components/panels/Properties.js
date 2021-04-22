@@ -159,13 +159,13 @@ const Properties = () => {
                 pattern: "^[A-Za-z0-9 -]{3,32}$"
               }}
             />
-            <TextField
+            {/* <TextField
               id="room_url"
               name="room_url"
               label="Room url"
               value={editedBot.room_url}
               onChange={handleInputChange}
-            />
+            /> */}
           </form>
         </CardContent>
         <CardActions>

@@ -153,9 +153,6 @@ const BotsList = (props) => {
     setShowMobileTools(!showMobileTools);
   };
 
-  // React.useEffect(() => {
-  // }, [showMobileTools]);
-
   const botsListDrawer = (
     <div>
       <List>
