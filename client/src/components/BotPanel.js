@@ -25,37 +25,37 @@ const BotPanel = (props) => {
       
       {config.panels.includes("properties") &&
       <Grid item>
-        <Properties bot={props.bot} />
+        <Properties />
       </Grid>
       }
 
       {config.panels.includes("play_file") &&
       <Grid item>
-        <PlayFile bot={props.bot} />
+        <PlayFile />
       </Grid>
       }
 
       {config.panels.includes("jump_to") &&
       <Grid item>
-        <JumpTo bot={props.bot} />
+        <JumpTo />
       </Grid>
       }
 
       {config.panels.includes("go_to") &&
       <Grid item>
-        <GoTo bot={props.bot} />
+        <GoTo />
       </Grid>
       }
 
       {config.panels.includes("say") &&
       <Grid item>
-        <SayInChat bot={props.bot} />
+        <SayInChat />
       </Grid>
       }
 
       {config.panels.includes("spawn") &&
       <Grid item>
-        <SpawnObjects bot={props.bot} />
+        <SpawnObjects />
       </Grid>
       }
       
