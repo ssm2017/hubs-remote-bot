@@ -1,16 +1,19 @@
 import React from "react";
 import BotDataService from "../../services/BotService";
 import SystemMessage from "../utils/SystemMessage";
+import selectedBotContext from "../../contexts/selectedBotContext";
 
-import Button from "@material-ui/core/Button";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
+import {
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  InputLabel,
+  FormControl,
+  NativeSelect
+} from "@material-ui/core";
 
 import { makeStyles } from "@material-ui/core/styles";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
-import NativeSelect from "@material-ui/core/NativeSelect";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -22,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const JumpTo = (props) => {
+const JumpTo = () => {
   const classes = useStyles();
 
   // system messages
@@ -32,11 +35,13 @@ const JumpTo = (props) => {
   };
   const [currentSystemMessage, setCurrentSystemMessage] = React.useState(initialSystemMessage);
 
+  const {selectedBot, setSelectedBot} = React.useContext(selectedBotContext);
+
   const [waypointsList, setWaypointsList] = React.useState([]);
   const [currentWaypoint, setCurrentWaypoint] = React.useState(null);
 
   const getWaypoints = () => {
-    BotDataService.getWaypointsList(props.bot.uuid)
+    BotDataService.getWaypointsList(selectedBot.uuid)
     .then((response) => {
       setWaypointsList(response.data);
       console.log(response.data);
@@ -48,7 +53,7 @@ const JumpTo = (props) => {
   };
   React.useEffect(() => {
     getWaypoints();
-  }, [props]);
+  }, []);
 
   const handleWaypointChange = (event) => {
     setCurrentWaypoint(event.target.value);
@@ -58,7 +63,7 @@ const JumpTo = (props) => {
     var data = {
       waypoint: currentWaypoint,
     };
-    BotDataService.jumpTo(props.bot.uuid, data)
+    BotDataService.jumpTo(selectedBot.uuid, data)
       .then((response) => {
         console.log("jump to server response", response.data);
         setCurrentWaypoint(null);

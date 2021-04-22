@@ -15,7 +15,7 @@ import {
   CardContent
 } from "@material-ui/core";
 
-const Properties = (props) => {
+const Properties = () => {
 
   // input name error
   const [nameError, setNameError] = React.useState(false);
@@ -27,11 +27,11 @@ const Properties = (props) => {
 
   const {selectedBot, setSelectedBot} = React.useContext(selectedBotContext);
 
-  const [editedBot, setEditedBot] = React.useState(props.bot);
+  const [editedBot, setEditedBot] = React.useState(selectedBot);
 
   React.useEffect(() => {
-    setEditedBot(props.bot);
-    setSelectedBot(props.bot);
+    setEditedBot(selectedBot);
+    setSelectedBot(selectedBot);
   }, []);
 
   // text fields content
@@ -50,7 +50,7 @@ const Properties = (props) => {
 
   // actions
   const cancelUpdateBot = () => {
-    setEditedBot(props.bot);
+    setEditedBot(selectedBot);
     setEditMode(false);
   };
 

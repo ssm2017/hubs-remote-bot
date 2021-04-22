@@ -1,16 +1,19 @@
 import React from "react";
 import BotDataService from "../../services/BotService";
 import SystemMessage from "../utils/SystemMessage";
+import selectedBotContext from "../../contexts/selectedBotContext";
 
-import Button from "@material-ui/core/Button";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
+import {
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  InputLabel,
+  FormControl,
+  NativeSelect
+} from "@material-ui/core";
 
 import { makeStyles } from "@material-ui/core/styles";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
-import NativeSelect from "@material-ui/core/NativeSelect";
 import Alert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles((theme) => ({
@@ -23,13 +26,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PlayFile = (props) => {
+const PlayFile = () => {
   // system messages
   const initialSystemMessage = {
     message: null,
     status: 0,
   };
   const [currentSystemMessage, setCurrentSystemMessage] = React.useState(initialSystemMessage);
+
+  const {selectedBot, setSelectedBot} = React.useContext(selectedBotContext);
 
   const classes = useStyles();
   const initialFileState = {
@@ -72,7 +77,7 @@ const PlayFile = (props) => {
     var data = {
       filename: currentJsonFile.filename,
     };
-    BotDataService.playFile(props.bot.uuid, data)
+    BotDataService.playFile(selectedBot.uuid, data)
     .then((response) => {
       console.log(response.data);
       setCurrentJsonFile(initialFileState);
@@ -88,7 +93,7 @@ const PlayFile = (props) => {
     var data = {
       filename: currentMp3File.filename,
     };
-    BotDataService.playFile(props.bot.uuid, data)
+    BotDataService.playFile(selectedBot.uuid, data)
       .then((response) => {
         console.log(response.data);
         setCurrentMp3File(initialFileState);

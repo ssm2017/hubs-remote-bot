@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import BotDataService from "../../services/BotService";
+import selectedBotContext from "../../contexts/selectedBotContext";
 import SystemMessage from "../utils/SystemMessage";
 import ConfirmDialog from "../utils/ConfirmDialog";
 
@@ -49,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
 const isValidUrl = /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.​\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[​6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1​,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00​a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u​00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i;
 
 // main
-const SpawnObjects = (props) => {
+const SpawnObjects = () => {
   const classes = useStyles();
 
   // system messages
@@ -58,6 +59,8 @@ const SpawnObjects = (props) => {
     status: 0,
   };
   const [currentSystemMessage, setCurrentSystemMessage] = React.useState(initialSystemMessage);
+
+  const {selectedBot, setSelectedBot} = React.useContext(selectedBotContext);
 
   // tabs
   const [selectedTab, setSelectedTab] = React.useState(0);
@@ -155,7 +158,7 @@ const SpawnObjects = (props) => {
   }, [])
 
   const getInterval = () => {
-    BotDataService.getSpawnInterval(props.bot.uuid)
+    BotDataService.getSpawnInterval(selectedBot.uuid)
     .then((response) => {
       console.log("Get interval", response.data);
       if (response.data > 0) {
@@ -169,7 +172,7 @@ const SpawnObjects = (props) => {
   }
 
   const stopLoop = () => {
-    BotDataService.deleteSpawnInterval(props.bot.uuid)
+    BotDataService.deleteSpawnInterval(selectedBot.uuid)
     .then((response) => {
       console.log("Loop stopped");
       setMultipleSpawn(false);
@@ -183,7 +186,7 @@ const SpawnObjects = (props) => {
   // action
   const spawnObjects = () => {
     console.log("spawn!!!", objectToSpawn);
-    BotDataService.spawnObjects(props.bot.uuid, objectToSpawn)
+    BotDataService.spawnObjects(selectedBot.uuid, objectToSpawn)
     .then((response) => {
       console.log("Spawned");
     })
@@ -193,7 +196,7 @@ const SpawnObjects = (props) => {
   }
 
   const deleteObjects = () => {
-    BotDataService.deleteObjects(props.bot.uuid)
+    BotDataService.deleteObjects(selectedBot.uuid)
     .then((response) => {
       console.log("Objects in deletion");
     })

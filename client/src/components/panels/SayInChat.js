@@ -1,6 +1,7 @@
 import React from "react";
 import BotDataService from "../../services/BotService";
 import SystemMessage from "../utils/SystemMessage";
+import selectedBotContext from "../../contexts/selectedBotContext";
 
 import {
   TextField,
@@ -12,13 +13,15 @@ import {
 
 } from "@material-ui/core";
 
-const SayInChat = (props) => {
+const SayInChat = () => {
   // system messages
   const initialSystemMessage = {
     message: null,
     status: 0,
   };
   const [currentSystemMessage, setCurrentSystemMessage] = React.useState(initialSystemMessage);
+
+  const {selectedBot, setSelectedBot} = React.useContext(selectedBotContext);
 
   const [message, setMessage] = React.useState("");
 
@@ -31,7 +34,7 @@ const SayInChat = (props) => {
     var data = {
       message, message
     };
-    BotDataService.sayInChat(props.bot.uuid, data)
+    BotDataService.sayInChat(selectedBot.uuid, data)
     .then((response) => {
       console.log(response.data);
       setMessage("");

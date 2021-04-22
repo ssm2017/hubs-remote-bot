@@ -1,6 +1,7 @@
 import React from "react";
 import BotDataService from "../../services/BotService";
 import SystemMessage from "../utils/SystemMessage";
+import selectedBotContext from "../../contexts/selectedBotContext";
 
 import {
   TextField,
@@ -12,13 +13,15 @@ import {
   InputLabel
 } from "@material-ui/core";
 
-const GoTo = (props) => {
+const GoTo = () => {
   // system message
   const initialSystemMessage = {
     message: null,
     status: 0,
   };
   const [currentSystemMessage, setCurrentSystemMessage] = React.useState(initialSystemMessage);
+
+  const {selectedBot, setSelectedBot} = React.useContext(selectedBotContext);
 
   // init position
   const initialPositionState = {
@@ -31,7 +34,7 @@ const GoTo = (props) => {
 
   // get position
   const getPosition = () => {
-    BotDataService.getPosition(props.bot.uuid)
+    BotDataService.getPosition(selectedBot.uuid)
     .then((response) => {
       setActualPosition(response.data);
     })
@@ -61,7 +64,7 @@ const GoTo = (props) => {
       y: newPosition.y,
       z: newPosition.z,
     };
-    BotDataService.setPosition(props.bot.uuid, data)
+    BotDataService.setPosition(selectedBot.uuid, data)
     .then((response) => {
       setCurrentSystemMessage(response.data);
       console.log("response from go to", response.data);
