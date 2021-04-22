@@ -3,7 +3,7 @@ import React from "react";
 import botsListContext from "../contexts/botsListContext";
 import selectedBotContext from "../contexts/selectedBotContext";
 // import BotsListContextProvider from '../contexts/BotsListContextProvider';
-import ConfigPanel from "./panels/ConfigPanel";
+import ConfigPanel from "./ConfigPanel";
 
 import BotPanel from "./BotPanel";
 import AddBot from "./panels/AddBot";
@@ -73,11 +73,11 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     padding: theme.spacing(2),
     marginTop: "50px",
-    [theme.breakpoints.up("sm")]: {
+    // [theme.breakpoints.up("sm")]: {
       // marginRight: "400px",
       // marginLeft: "200px",
-      maxWidth: "250px"
-    },
+      // maxWidth: "250px"
+    // },
   },
   title: {
     flexGrow: 1,

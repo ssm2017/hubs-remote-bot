@@ -5,7 +5,7 @@ import BotDataService from "../services/BotService";
 const BotsListContextProvider = (props) => {
   const [botsList, setBotsList] = React.useState([]);
 
-  const setBotsListdValue = () => {
+  const setBotsListValue = () => {
     BotDataService.getAll()
     .then((response) => {
       setBotsList(response.data);
@@ -18,7 +18,7 @@ const BotsListContextProvider = (props) => {
   return (
     <botsListContext.Provider value={{
         botsList,
-        setBotsList: setBotsListdValue
+        setBotsList: setBotsListValue
       }}>
       {props.children}
     </botsListContext.Provider>

@@ -32,7 +32,7 @@ const SayInChat = () => {
 
   const sendMessage = () => {
     var data = {
-      message, message
+      message: message
     };
     BotDataService.sayInChat(selectedBot.uuid, data)
     .then((response) => {

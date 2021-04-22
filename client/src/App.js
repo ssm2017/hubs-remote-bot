@@ -6,6 +6,7 @@ import { CssBaseline, createMuiTheme } from "@material-ui/core";
 
 import BotsListContextProvider from "./contexts/BotsListContextProvider";
 import SelectedBotContextProvider from "./contexts/SelectedBotContextProvider";
+import ObjectsListContextProvider from "./contexts/ObjectsListContextProvider";
 import BotsList from "./components/BotsList";
 import ConfigContextProvider from "./contexts/ConfigContextProvider";
 
@@ -21,8 +22,10 @@ function App() {
       <ThemeProvider theme={theme}>
         <BotsListContextProvider>
           <SelectedBotContextProvider>
-            <CssBaseline />
-            <BotsList />
+            <ObjectsListContextProvider>
+              <CssBaseline />
+              <BotsList />
+            </ObjectsListContextProvider>
           </SelectedBotContextProvider>
         </BotsListContextProvider>
       </ThemeProvider>

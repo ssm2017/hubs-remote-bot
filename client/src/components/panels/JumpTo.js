@@ -16,6 +16,9 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1
+  },
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
@@ -44,7 +47,6 @@ const JumpTo = () => {
     BotDataService.getWaypointsList(selectedBot.uuid)
     .then((response) => {
       setWaypointsList(response.data);
-      console.log(response.data);
     })
     .catch((e) => {
       console.log(e.response);
@@ -104,6 +106,7 @@ const JumpTo = () => {
   );
 
   return (
+    <div className={classes.root}>
     <Card>
       <CardContent>
         <Typography variant="h5" component="h2">
@@ -115,6 +118,7 @@ const JumpTo = () => {
         {waypointsList.length ? waypointsAvailable : "No waypoint found."}
       </CardContent>
     </Card>
+    </div>
   );
 };
 

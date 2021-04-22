@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import BotDataService from "../../services/BotService";
 import selectedBotContext from "../../contexts/selectedBotContext";
+import objectsListContext from "../../contexts/objectsListContext";
 import SystemMessage from "../utils/SystemMessage";
-import ConfirmDialog from "../utils/ConfirmDialog";
 
 import {
   Box,
@@ -20,15 +20,11 @@ import {
   NativeSelect,
 } from "@material-ui/core";
 
-import RefreshIcon from '@material-ui/icons/Refresh';
-
 import { makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.paper,
-  },
-  root: {
     '& > *': {
       margin: theme.spacing(1),
       // width: '25ch',
@@ -61,6 +57,10 @@ const SpawnObjects = () => {
   const [currentSystemMessage, setCurrentSystemMessage] = React.useState(initialSystemMessage);
 
   const {selectedBot, setSelectedBot} = React.useContext(selectedBotContext);
+
+  const {objectsList, setObjectsList} = React.useContext(objectsListContext);
+
+  const [botIsSpawning, setBotIsSpawning] = React.useState(false);
 
   // tabs
   const [selectedTab, setSelectedTab] = React.useState(0);
@@ -115,10 +115,10 @@ const SpawnObjects = () => {
         },
       }));
     } else {
-      if (type == "checkbox") {
+      if (type === "checkbox") {
         value = event.target.checked;
       }
-      if (name == "url") {
+      if (name === "url") {
         setShowProjection(false);
         setUrlError(false);
         setUrlErrorMessage("");
@@ -153,9 +153,14 @@ const SpawnObjects = () => {
     setMultipleSpawn(event.target.checked);
   }
   useEffect(() => {
+    setCurrentSystemMessage(initialSystemMessage);
     setMultipleSpawn(false);
     getInterval();
   }, [])
+
+  useEffect(() => {
+    getInterval();
+  }, [selectedBot])
 
   const getInterval = () => {
     BotDataService.getSpawnInterval(selectedBot.uuid)
@@ -164,6 +169,9 @@ const SpawnObjects = () => {
       if (response.data > 0) {
         setMultipleSpawn(true);
         setObjectToSpawn({ ...objectToSpawn, interval: response.data });
+      } else {
+        setMultipleSpawn(false);
+        setObjectToSpawn({ ...objectToSpawn, interval: 0 });
       }
     })
     .catch((e) => {
@@ -177,6 +185,7 @@ const SpawnObjects = () => {
       console.log("Loop stopped");
       setMultipleSpawn(false);
       setObjectToSpawn({ ...objectToSpawn, interval: 0});
+      setObjectsList();
     })
     .catch((e) => {
       console.log("error stopping loop", e.response);
@@ -189,32 +198,211 @@ const SpawnObjects = () => {
     BotDataService.spawnObjects(selectedBot.uuid, objectToSpawn)
     .then((response) => {
       console.log("Spawned");
+      setObjectsList();
+      getInterval();
     })
     .catch((e) => {
       console.log("error spawning", e.response);
+      setCurrentSystemMessage(e.response.data.error);
     });
   }
 
-  const deleteObjects = () => {
-    BotDataService.deleteObjects(selectedBot.uuid)
-    .then((response) => {
-      console.log("Objects in deletion");
-    })
-    .catch((e) => {
-      console.log("error deleting objects", e.response);
-    });
-  }
+  const urlTemplate = (
+    <div className="url">
+      <TextField
+        id="object_url"
+        name="url"
+        label="Url"
+        value={objectToSpawn.url}
+        onChange={handleInputChange}
+        error={urlError}
+        helperText={urlErrorMessage}
+      />
+      {showProjection &&
+        <FormControl variant="outlined" className={classes.formControl}>
+          <InputLabel htmlFor="waypoints">Select projection</InputLabel>
+          <NativeSelect
+            value={objectToSpawn.projection || null}
+            onChange={handleInputChange}
+            inputProps={{
+              name: "projection",
+              id: "projection",
+              type: "text",
+            }}
+          >
+            <option key={0} aria-label="None" value=""></option>
+            <option key={1} value="360-equirectangular">
+              360
+            </option>
+          </NativeSelect>
+        </FormControl>
+      }
+    </div>
+  );
 
-  // delete confirmation
-  const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = React.useState(false);
+  const coordinatesTemplate = (
+    <div className="coordinates">
+      <ButtonGroup variant="contained" color="primary" aria-label="outlined primary button group">
+        <Button name="position" onClick={() => {handleSelectTab(0)}}>Position</Button>
+        <Button name="rotation" onClick={() => {handleSelectTab(1)}}>Rotation</Button>
+        <Button name="scale" onClick={() => {handleSelectTab(2)}}>Scale</Button>
+      </ButtonGroup>
+      {selectedTab === 0 &&
+      <Box>
+        <fieldset>
+          <legend>Position</legend>
+          <TextField
+            type="number"
+            id="object_position_x"
+            name="position_x"
+            label="Position.x"
+            value={objectToSpawn.position.x}
+            onChange={handleInputChange}
+          />
+          <TextField
+            type="number"
+            id="object_position_y"
+            name="position_y"
+            label="Position.y"
+            value={objectToSpawn.position.y}
+            onChange={handleInputChange}
+          />
+          <TextField
+            type="number"
+            id="object_position_z"
+            name="position_z"
+            label="Position.z"
+            value={objectToSpawn.position.z}
+            onChange={handleInputChange}
+          />
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={randomizePosition}
+          >Randomize
+          </Button>
+        </fieldset>
+      </Box>
+      }
+      {selectedTab === 1 &&
+      <Box>
+        <fieldset>
+          <legend>Rotation</legend>
+          <TextField
+            type="number"
+            id="object_rotation_x"
+            name="rotation_x"
+            label="Rotation.x"
+            value={objectToSpawn.rotation.x}
+            onChange={handleInputChange}
+          />
+          <TextField
+            type="number"
+            id="object_rotation_y"
+            name="rotation_y"
+            label="Rotation.y"
+            value={objectToSpawn.rotation.y}
+            onChange={handleInputChange}
+          />
+          <TextField
+            type="number"
+            id="object_rotation_z"
+            name="rotation_z"
+            label="Rotation.z"
+            value={objectToSpawn.rotation.z}
+            onChange={handleInputChange}
+          />
+        </fieldset>
+      </Box>
+      }
+      {selectedTab === 2 &&
+      <Box>
+        <fieldset>
+          <legend>Scale</legend>
+          <TextField
+            type="number"
+            id="object_scale_x"
+            name="scale_x"
+            label="Scale.x"
+            value={objectToSpawn.scale.x}
+            onChange={handleInputChange}
+          />
+          <TextField
+            type="number"
+            id="object_scale_y"
+            name="scale_y"
+            label="Scale.y"
+            value={objectToSpawn.scale.y}
+            onChange={handleInputChange}
+          />
+          <TextField
+            type="number"
+            id="object_scale_z"
+            name="scale_z"
+            label="Scale.z"
+            value={objectToSpawn.scale.z}
+            onChange={handleInputChange}
+          />
+        </fieldset>
+      </Box>
+      }
+    </div>
+  );
 
-  const confirmDeleteDialogYesClicked = () => {
-    deleteObjects();
-    setOpenDeleteConfirmDialog(false);
-  };
-  const confirmDeleteDialogCloseClicked = () => {
-    setOpenDeleteConfirmDialog(false);
-  };
+  const optionsTemplate = (
+    <div className="options">
+      <FormControlLabel
+        control={
+          <Checkbox
+            id="object_pinned"
+            name="pinned"
+            label="Pinned"
+            checked={objectToSpawn.pinned}
+            onChange={handleInputChange}
+          />
+        }
+        label="Pinned"
+      />
+      {/* dynamic */}
+      <FormControlLabel
+        control={
+          <Checkbox
+            id="object_dynamic"
+            name="dynamic"
+            label="Dynamic"
+            checked={objectToSpawn.dynamic}
+            onChange={handleInputChange}
+          />
+        }
+        label="Dynamic"
+      />
+    </div>
+  );
+
+  const loopTemplate = (
+    <div className="loop">
+      <fieldset>
+        <legend>Loop</legend>
+        <TextField
+          type="number"
+          id="interval"
+          name="interval"
+          label="Interval"
+          InputProps={{inputProps: {min: 999}}}
+          value={objectToSpawn.interval}
+          onChange={handleInputChange}
+        />
+      <ButtonGroup variant="contained" color="primary" aria-label="outlined primary button group">
+      {multipleSpawn &&
+        <Button name="position" color="secondary" onClick={stopLoop}>Stop loop</Button>
+      }
+        <Button name="position" onClick={() => {setObjectToSpawn({ ...objectToSpawn, interval: 2000})}}>2s</Button>
+        <Button name="rotation" onClick={() => {setObjectToSpawn({ ...objectToSpawn, interval: 5000})}}>5s</Button>
+        <Button name="scale" onClick={() => {setObjectToSpawn({ ...objectToSpawn, interval: 10000})}}>10s</Button>
+      </ButtonGroup>
+      </fieldset>
+    </div>
+  );
 
   return (
     <Card>
@@ -225,215 +413,29 @@ const SpawnObjects = () => {
         {currentSystemMessage.message && (
           <SystemMessage level={currentSystemMessage.status} message={currentSystemMessage.message} />
         )}
+        {!multipleSpawn &&
         <form className={classes.root} noValidate autoComplete="off">
-          {/* url */}
-          <TextField
-            id="object_url"
-            name="url"
-            label="Url"
-            value={objectToSpawn.url}
-            onChange={handleInputChange}
-            error={urlError}
-            helperText={urlErrorMessage}
-          />
-          {showProjection &&
-            <FormControl variant="outlined" className={classes.formControl}>
-              <InputLabel htmlFor="waypoints">Select projection</InputLabel>
-              <NativeSelect
-                value={objectToSpawn.projection || null}
-                onChange={handleInputChange}
-                inputProps={{
-                  name: "projection",
-                  id: "projection",
-                  type: "text",
-                }}
-              >
-                <option key={0} aria-label="None" value=""></option>
-                <option key={1} value="360-equirectangular">
-                  360
-                </option>
-              </NativeSelect>
-            </FormControl>
-          }
-          <ButtonGroup variant="contained" color="primary" aria-label="outlined primary button group">
-            <Button name="position" onClick={() => {handleSelectTab(0)}}>Position</Button>
-            <Button name="rotation" onClick={() => {handleSelectTab(1)}}>Rotation</Button>
-            <Button name="scale" onClick={() => {handleSelectTab(2)}}>Scale</Button>
-          </ButtonGroup>
-          {selectedTab === 0 &&
-          <Box>
-            <fieldset>
-              <legend>Position</legend>
-              <TextField
-                type="number"
-                id="object_position_x"
-                name="position_x"
-                label="Position.x"
-                value={objectToSpawn.position.x}
-                onChange={handleInputChange}
-              />
-              <TextField
-                type="number"
-                id="object_position_y"
-                name="position_y"
-                label="Position.y"
-                value={objectToSpawn.position.y}
-                onChange={handleInputChange}
-              />
-              <TextField
-                type="number"
-                id="object_position_z"
-                name="position_z"
-                label="Position.z"
-                value={objectToSpawn.position.z}
-                onChange={handleInputChange}
-              />
-              <Button
-                color="primary"
-                variant="contained"
-                onClick={randomizePosition}
-              >Randomize
-              </Button>
-            </fieldset>
-          </Box>
-          }
-          {selectedTab === 1 &&
-          <Box>
-            <fieldset>
-              <legend>Rotation</legend>
-              <TextField
-                type="number"
-                id="object_rotation_x"
-                name="rotation_x"
-                label="Rotation.x"
-                value={objectToSpawn.rotation.x}
-                onChange={handleInputChange}
-              />
-              <TextField
-                type="number"
-                id="object_rotation_y"
-                name="rotation_y"
-                label="Rotation.y"
-                value={objectToSpawn.rotation.y}
-                onChange={handleInputChange}
-              />
-              <TextField
-                type="number"
-                id="object_rotation_z"
-                name="rotation_z"
-                label="Rotation.z"
-                value={objectToSpawn.rotation.z}
-                onChange={handleInputChange}
-              />
-            </fieldset>
-          </Box>
-          }
-          {selectedTab === 2 &&
-          <Box>
-            <fieldset>
-              <legend>Scale</legend>
-              <TextField
-                type="number"
-                id="object_scale_x"
-                name="scale_x"
-                label="Scale.x"
-                value={objectToSpawn.scale.x}
-                onChange={handleInputChange}
-              />
-              <TextField
-                type="number"
-                id="object_scale_y"
-                name="scale_y"
-                label="Scale.y"
-                value={objectToSpawn.scale.y}
-                onChange={handleInputChange}
-              />
-              <TextField
-                type="number"
-                id="object_scale_z"
-                name="scale_z"
-                label="Scale.z"
-                value={objectToSpawn.scale.z}
-                onChange={handleInputChange}
-              />
-            </fieldset>
-          </Box>
-          }
-          {/* pinned */}
-          <FormControlLabel
-            control={
-              <Checkbox
-                id="object_pinned"
-                name="pinned"
-                label="Pinned"
-                checked={objectToSpawn.pinned}
-                onChange={handleInputChange}
-              />
-            }
-            label="Pinned"
-          />
-          {/* dynamic */}
-          <FormControlLabel
-            control={
-              <Checkbox
-                id="object_dynamic"
-                name="dynamic"
-                label="Dynamic"
-                checked={objectToSpawn.dynamic}
-                onChange={handleInputChange}
-              />
-            }
-            label="Dynamic"
-          />
-          {/* interval */}
-          <fieldset>
-            <legend>Loop</legend>
-            <TextField
-              type="number"
-              id="interval"
-              name="interval"
-              label="Interval"
-              InputProps={{inputProps: {min: 999}}}
-              value={objectToSpawn.interval}
-              onChange={handleInputChange}
-            />
-            {multipleSpawn &&
-              <Button
-                color="primary"
-                variant="contained"
-                onClick={stopLoop}
-              >Stop Loop
-              </Button>
-            }
-          </fieldset>
+          {urlTemplate}
+          {coordinatesTemplate}
+          {optionsTemplate}
+          {loopTemplate}
         </form>
+        }
       </CardContent>
       <CardActions>
-        <Button
-          onClick={spawnObjects}
-          color="primary"
-          variant="contained"
-          type="submit"
-        >
-          Spawn
-        </Button>
-        <Button
-          onClick={() => setOpenDeleteConfirmDialog(true)}
-          color="secondary"
-          variant="contained"
-        >
-          Delete objects
-        </Button>
+        {multipleSpawn ? (
+          <Button name="position" variant="contained" color="secondary" onClick={stopLoop}>Stop loop</Button>
+        ) : (
+          <Button
+            onClick={spawnObjects}
+            color="primary"
+            variant="contained"
+            type="submit"
+          >
+            Spawn
+          </Button>
+        )}
       </CardActions>
-      <ConfirmDialog
-        open={openDeleteConfirmDialog}
-        title="Confirm objects deletion ?"
-        titleLoading="Deleting objects..."
-        contentText="Do you really want to delete the objects ?"
-        contentTextLoading="Please wait..."
-        onYesClicked={() => confirmDeleteDialogYesClicked()}
-        onCloseClicked={() => confirmDeleteDialogCloseClicked()}
-      />
     </Card>
   );
 }

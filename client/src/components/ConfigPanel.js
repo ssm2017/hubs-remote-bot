@@ -17,10 +17,41 @@ import {
   Typography
 } from "@material-ui/core";
 
-import configContext from "../../contexts/configContext";
-import selectedBotContext from "../../contexts/selectedBotContext";
+import configContext from "../contexts/configContext";
+import selectedBotContext from "../contexts/selectedBotContext";
 
 const TOOLS_DRAWER_WIDTH = 200;
+
+const panelsList = [
+  {
+    command: "properties",
+    title: "Properties",
+  },
+  {
+    command: "play_file",
+    title: "Play file",
+  },
+  {
+    command: "jump_to",
+    title: "Jump to",
+  },
+  {
+    command: "go_to",
+    title: "Go to",
+  },
+  {
+    command: "say",
+    title: "Say in chat",
+  },
+  {
+    command: "spawn",
+    title: "Spawn objects",
+  },
+  {
+    command: "objects",
+    title: "Objects list",
+  },
+];
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -52,33 +83,6 @@ const useStyles = makeStyles((theme) => ({
     margin: "10px"
   }
 }));
-
-const panelsList = [
-  {
-    command: "properties",
-    title: "Properties",
-  },
-  {
-    command: "play_file",
-    title: "Play file",
-  },
-  {
-    command: "jump_to",
-    title: "Jump to",
-  },
-  {
-    command: "go_to",
-    title: "Go to",
-  },
-  {
-    command: "say",
-    title: "Say in chat",
-  },
-  {
-    command: "spawn",
-    title: "Spawn objects",
-  },
-];
 
 const ConfigPanel = (props) => {
   const classes = useStyles();

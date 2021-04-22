@@ -70,6 +70,10 @@ class BotDataService {
   deleteObjects = (uuid) => {
     return http.delete(`/bots/${uuid}/objects`);
   }
+
+  getObjectsList = (uuid) => {
+    return http.get(`/bots/${uuid}/objects`);
+  }
 }
 
 export default new BotDataService();
