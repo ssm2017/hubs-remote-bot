@@ -247,6 +247,45 @@ module.exports = function (httpServer) {
     }
   });
 
+  // get all objects
+  httpServer.get("/api/bots/:uuid/objects", async (req, res) => {
+    try {
+      // get uuid
+      let uuid = req.params.uuid || null;
+      // check uuid
+      if (!botsList.checkUuid(uuid)) {
+        res.status(400).json({
+          error: {
+            status: 400,
+            message: "Wrong uuid."
+          }
+        });
+        return;
+      }
+      // get bot
+      const bot = botsList.getBotByUuid(uuid);
+      if (!bot) {
+        res.status(404).json({
+          error: {
+            status: 404,
+            message: "Bot not found.",
+          }
+        });
+        return;
+      }
+      let result = await bot.getAllObjects();
+      console.log("all", result);
+      res.status(200).json(result);
+    } catch (e) {
+      res.status(500).json({
+        error: {
+          status: 500,
+          message: e.message,
+        }
+      });
+    }
+  });
+
   // spawn object
   httpServer.post("/api/bots/:uuid/objects", async (req, res) => {
     try {
@@ -732,6 +771,11 @@ module.exports = function (httpServer) {
     console.log(botsList.bots);
     res.status(200).json({});
   });
+
+  // enter room
+
+  // clone room
+
   // httpServer.get('/client', (req, res) => {
   // 	res.sendFile(path.join(__dirname, '../client/build/index.html'));
   // })
