@@ -26,6 +26,7 @@ class BotsList {
         spawnPoint: params.spawn_point,
         audioVolume: params.audio_volume,
       });
+      await new_bot.setName(params.name);
       new_bot.name = await new_bot.getName();
       this.bots.push(new_bot);
       // build response
