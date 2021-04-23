@@ -26,8 +26,13 @@ class BotsList {
         spawnPoint: params.spawn_point,
         audioVolume: params.audio_volume,
       });
+      // set name
       await new_bot.setName(params.name);
       new_bot.name = await new_bot.getName();
+      // set avatar
+      await new_bot.changeAvatarByAvatarId(params.avatar_id);
+      new_bot.avatar_id = await new_bot.getAvatarId();
+      // add to list
       this.bots.push(new_bot);
       // build response
       return utils.buildJsonResponse({
@@ -39,6 +44,7 @@ class BotsList {
             uuid: new_bot.uuid,
             name: new_bot.name,
             room_url: params.room_url,
+            avatar_id: new_bot.avatar_id
           },
         ],
       });
@@ -171,6 +177,7 @@ class BotsList {
         uuid: this.bots[idx].uuid,
         name: this.bots[idx].name,
         room_url: room_url,
+        avatar_id: this.bots[idx].avatar_id
       });
     }
     bot_status.bots = bots_list;
@@ -211,6 +218,7 @@ class BotsList {
         uuid: bot.uuid,
         name: bot.name,
         room_url: room_url,
+        avatar_id: bot.avatar_id
       },
     });
   }

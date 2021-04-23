@@ -31,7 +31,8 @@ const AddBot = (props) => {
   const initialBotState = {
     uuid: null,
     name: "",
-    room_url: ""
+    room_url: "",
+    avatar_id: ""
   };
   const [bot, setBot] = React.useState(initialBotState);
 
@@ -128,6 +129,13 @@ const AddBot = (props) => {
               name="room_url"
               label="Room url"
               value={bot.room_url}
+              onChange={handleInputChange}
+            />
+            <TextField
+              id="avatar_id"
+              name="avatar_id"
+              label="Avatar id"
+              value={bot.avatar_id}
               onChange={handleInputChange}
             />
           </form>

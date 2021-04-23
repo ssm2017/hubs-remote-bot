@@ -29,10 +29,10 @@ const Properties = () => {
 
   const [editedBot, setEditedBot] = React.useState(selectedBot);
 
-  React.useEffect(() => {
+  const handleSetEditMode = () => {
     setEditedBot(selectedBot);
-    setSelectedBot(selectedBot);
-  }, []);
+    setEditMode(true);
+  }
 
   // text fields content
   const handleInputChange = (event) => {
@@ -54,26 +54,41 @@ const Properties = () => {
     setEditMode(false);
   };
 
+  const getBotInfos = () => {
+    BotDataService.get(selectedBot.uuid)
+    .then((response) => {
+      console.log("Get bot infos",response.data);
+      setSelectedBot(response.data);
+    })
+    .catch((e) => {
+      console.log("Error getting bot infos.", e);
+    });
+  }
+
   const updateBot = () => {
-    setConfirmUpdateDialogLoading(true);
-    BotDataService.update(editedBot.uuid, editedBot)
+    if (!confirmUpdateDialogLoading) {
+      setConfirmUpdateDialogLoading(true);
+      BotDataService.update(editedBot.uuid, editedBot)
       .then((response) => {
         console.log("updated bot",response.data);
         setConfirmUpdateDialogLoading(false);
         setOpenUpdateConfirmDialog(false);
         setEditMode(false);
-        setSelectedBot(editedBot);
+        setBotsList();
+        getBotInfos();
       })
       .catch((e) => {
-        console.log(e);
+        console.log("Error updating bot.", e);
         setConfirmUpdateDialogLoading(false);
         setOpenUpdateConfirmDialog(false);
       });
+    }
   };
 
   const deleteBot = () => {
-    setConfirmDeleteDialogLoading(true);
-    BotDataService.remove(editedBot.uuid)
+    if (!confirmDeleteDialogLoading) {
+      setConfirmDeleteDialogLoading(true);
+      BotDataService.remove(editedBot.uuid)
       .then((response) => {
         console.log("deleted bot",response.data);
         setConfirmUpdateDialogLoading(false);
@@ -84,10 +99,11 @@ const Properties = () => {
         setEditedBot(null);
       })
       .catch((e) => {
-        console.log(e);
+        console.log("Error deleting bot.", e);
         setConfirmUpdateDialogLoading(false);
         setOpenUpdateConfirmDialog(false);
       });
+    }
   };
 
   // confirmation
@@ -122,12 +138,14 @@ const Properties = () => {
           <dd>{selectedBot.uuid}</dd>
           <dt>Name</dt>
           <dd>{selectedBot.name}</dd>
+          <dt>Avatar id</dt>
+          <dd>{selectedBot.avatar_id}</dd>
           <dt>Room Url</dt>
           <dd>{selectedBot.room_url}</dd>
         </dl>
       </CardContent>
       <CardActions>
-        <Button onClick={() => setEditMode(true)} variant="contained" color="primary">
+        <Button onClick={handleSetEditMode} variant="contained" color="primary">
           Edit
         </Button>
         <Button onClick={() => setOpenDeleteConfirmDialog(true)} color="secondary" variant="contained">
@@ -166,6 +184,13 @@ const Properties = () => {
               value={editedBot.room_url}
               onChange={handleInputChange}
             /> */}
+            <TextField
+              id="avatar_id"
+              name="avatar_id"
+              label="Avatar id"
+              value={editedBot.avatar_id}
+              onChange={handleInputChange}
+            />
           </form>
         </CardContent>
         <CardActions>

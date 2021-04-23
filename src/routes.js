@@ -24,6 +24,7 @@ module.exports = function (httpServer) {
         audio_volume: process.env.AUDIO_VOLUME || 1,
         userDataDir: process.env.USER_DATA_DIR || "./assets/chrome-profile/User Data/",
         autoLog: process.env.AUTOLOG || true,
+        avatar_id: req.body.avatar_id || "7qt89yB"
       };
       // check name pattern
       if (!params.name.match("^[A-Za-z0-9 -]{1,26}$")) {
@@ -71,26 +72,31 @@ module.exports = function (httpServer) {
         uuid: "1ec2c697-1e08-4bf9-b17f-7b64a51693a3",
         name: "a",
         room_url: "https://hubs.mozilla.com/jtbhYFh/adorable-cultured-venture",
+        avatar_id: "7qt89yB"
       },
       {
         uuid: "ae49189b-7118-4678-94ca-8fc15bdc9eae",
         name: "aa",
         room_url: "https://hubs.mozilla.com/jtbhYFh/adorable-cultured-venture",
+        avatar_id: "7qt89yB"
       },
       {
         uuid: "68ab7c96-b218-45c0-8e90-ab8c0e6d84ef",
         name: "aaa",
         room_url: "https://hubs.mozilla.com/jtbhYFh/adorable-cultured-venture",
+        avatar_id: "7qt89yB"
       },
       {
         uuid: "c2c00124-d4ef-4ccd-908a-196d72766c23",
         name: "aaaa",
         room_url: "https://hubs.mozilla.com/jtbhYFh/adorable-cultured-venture",
+        avatar_id: "7qt89yB"
       },
       {
         uuid: "0c5521ad-7dab-47f9-a88e-fdf15921cd2b",
         name: "aaaaa",
         room_url: "https://hubs.mozilla.com/jtbhYFh/adorable-cultured-venture",
+        avatar_id: "7qt89yB"
       },
     ];
     res.status(200).json(result);
@@ -166,17 +172,6 @@ module.exports = function (httpServer) {
         });
         return;
       }
-      // get the name
-      let name = req.body.name || null;
-      if (!name) {
-        res.status(400).json({
-          error: {
-            status: 400,
-            message: "Name needed.",
-          }
-        });
-        return;
-      }
       // get bot
       const bot = botsList.getBotByUuid(uuid);
       if (!bot) {
@@ -188,10 +183,28 @@ module.exports = function (httpServer) {
         });
         return;
       }
-      await bot.changeName(name);
+      // get the name
+      let name = req.body.name || null;
+      if (name) {
+        // check if name has changed
+        let actualName = await bot.getName();
+        if (actualName != name) {
+          await bot.changeName(name);
+        }
+      }
+      // get the avatarId
+      let avatarId = req.body.avatar_id || null;
+      if (avatarId) {
+        // check if avatarId has changed
+        let actualAvatarId = await bot.getAvatarId();
+        if (actualAvatarId != avatarId) {
+          await bot.changeAvatarByAvatarId(avatarId);
+        }
+      }
       res.status(200).json({
         uuid: bot.uuid,
         name: bot.name,
+        avatar_id: bot.avatar_id
       });
     } catch (e) {
       res.status(500).json({

@@ -95,7 +95,7 @@ const ConfigPanel = (props) => {
   const handleToggleConfigAutorefresh = (event) => {
     setConfig("enableAutoRefresh", event.target.checked);
   }
-  const [soloMode, setSoloMode] = React.useState(false);
+  const [soloMode, setSoloMode] = React.useState(config.soloMode);
   const handleToggleConfigSoloMode = (event) => {
     setSoloMode(event.target.checked);
     if (config.panels.length >1) {
