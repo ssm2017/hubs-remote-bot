@@ -3,15 +3,7 @@ import BotDataService from "../../services/BotService";
 import SystemMessage from "../utils/SystemMessage";
 import selectedBotContext from "../../contexts/selectedBotContext";
 
-import {
-  TextField,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Typography,
-  InputLabel
-} from "@material-ui/core";
+import { TextField, Button, Card, CardActions, CardContent, Typography, InputLabel } from "@material-ui/core";
 
 const GoTo = () => {
   // system message
@@ -21,13 +13,13 @@ const GoTo = () => {
   };
   const [currentSystemMessage, setCurrentSystemMessage] = React.useState(initialSystemMessage);
 
-  const {selectedBot, setSelectedBot} = React.useContext(selectedBotContext);
+  const { selectedBot, setSelectedBot } = React.useContext(selectedBotContext);
 
   // init position
   const initialPositionState = {
     x: null,
     y: null,
-    z: null
+    z: null,
   };
   const [actualPosition, setActualPosition] = React.useState(initialPositionState);
   const [newPosition, setNewPosition] = React.useState(initialPositionState);
@@ -35,27 +27,26 @@ const GoTo = () => {
   // get position
   const getPosition = () => {
     BotDataService.getPosition(selectedBot.uuid)
-    .then((response) => {
-      setActualPosition(response.data);
-    })
-    .catch((e) => {
-      setCurrentSystemMessage(e.response.data.error);
-      console.log("error response from get position", e.response);
-    });
-  }
+      .then((response) => {
+        setActualPosition(response.data);
+      })
+      .catch((e) => {
+        setCurrentSystemMessage(e.response.data.error);
+        console.log("error response from get position", e.response);
+      });
+  };
 
   React.useEffect(() => {
     getPosition();
-  }, [])
+  }, []);
 
   React.useEffect(() => {
     setNewPosition(actualPosition);
   }, [actualPosition]);
-  
 
   const handlePositionChange = (event) => {
     const { name, value } = event.target;
-    setNewPosition({...newPosition, [name]: value});
+    setNewPosition({ ...newPosition, [name]: value });
   };
 
   const goTo = () => {
@@ -65,14 +56,14 @@ const GoTo = () => {
       z: newPosition.z,
     };
     BotDataService.setPosition(selectedBot.uuid, data)
-    .then((response) => {
-      setCurrentSystemMessage(response.data);
-      console.log("response from go to", response.data);
-    })
-    .catch((e) => {
-      setCurrentSystemMessage(e.response.data.error);
-      console.log("error response from go to", e.response);
-    });
+      .then((response) => {
+        setCurrentSystemMessage(response.data);
+        console.log("response from go to", response.data);
+      })
+      .catch((e) => {
+        setCurrentSystemMessage(e.response.data.error);
+        console.log("error response from go to", e.response);
+      });
   };
 
   return (

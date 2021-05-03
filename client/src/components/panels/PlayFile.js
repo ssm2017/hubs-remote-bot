@@ -3,15 +3,7 @@ import BotDataService from "../../services/BotService";
 import SystemMessage from "../utils/SystemMessage";
 import selectedBotContext from "../../contexts/selectedBotContext";
 
-import {
-  Button,
-  Card,
-  CardContent,
-  Typography,
-  InputLabel,
-  FormControl,
-  NativeSelect
-} from "@material-ui/core";
+import { Button, Card, CardContent, Typography, InputLabel, FormControl, NativeSelect } from "@material-ui/core";
 
 import { makeStyles } from "@material-ui/core/styles";
 import Alert from "@material-ui/lab/Alert";
@@ -34,7 +26,7 @@ const PlayFile = () => {
   };
   const [currentSystemMessage, setCurrentSystemMessage] = React.useState(initialSystemMessage);
 
-  const {selectedBot, setSelectedBot} = React.useContext(selectedBotContext);
+  const { selectedBot, setSelectedBot } = React.useContext(selectedBotContext);
 
   const classes = useStyles();
   const initialFileState = {
@@ -52,15 +44,15 @@ const PlayFile = () => {
 
   const getFiles = () => {
     BotDataService.getAssetsList()
-    .then((response) => {
-      setJsonFiles(response.data.json);
-      setMp3Files(response.data.mp3);
-      console.log(response.data);
-    })
-    .catch((e) => {
-      console.log(e);
-      setCurrentSystemMessage(e.response.data.error);
-    });
+      .then((response) => {
+        setJsonFiles(response.data.json);
+        setMp3Files(response.data.mp3);
+        console.log(response.data);
+      })
+      .catch((e) => {
+        console.log(e);
+        setCurrentSystemMessage(e.response.data.error);
+      });
   };
 
   const handleJsonInputChange = (event) => {
@@ -78,15 +70,15 @@ const PlayFile = () => {
       filename: currentJsonFile.filename,
     };
     BotDataService.playFile(selectedBot.uuid, data)
-    .then((response) => {
-      console.log(response.data);
-      setCurrentJsonFile(initialFileState);
-    })
-    .catch((e) => {
-      console.log(e);
-      setCurrentJsonFile(initialFileState);
-      setCurrentSystemMessage(e.response.data.error);
-    });
+      .then((response) => {
+        console.log(response.data);
+        setCurrentJsonFile(initialFileState);
+      })
+      .catch((e) => {
+        console.log(e);
+        setCurrentJsonFile(initialFileState);
+        setCurrentSystemMessage(e.response.data.error);
+      });
   };
 
   const playMp3 = () => {

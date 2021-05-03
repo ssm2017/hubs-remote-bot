@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 const selectedBotContext = React.createContext({
   currentBot: [],
-  setCurrentBot: () => {}
+  setCurrentBot: () => {},
 });
-  
+
 export default selectedBotContext;

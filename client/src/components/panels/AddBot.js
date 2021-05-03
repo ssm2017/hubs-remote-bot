@@ -4,18 +4,9 @@ import BotDataService from "../../services/BotService";
 import ConfirmDialog from "../utils/ConfirmDialog";
 import SystemMessage from "../utils/SystemMessage";
 
-import {
-  TextField,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Typography
-
-} from "@material-ui/core";
+import { TextField, Button, Card, CardActions, CardContent, Typography } from "@material-ui/core";
 
 const AddBot = (props) => {
-
   // input name error
   const [nameError, setNameError] = React.useState(false);
   const [nameErrorMessage, setNameErrorMessage] = React.useState("");
@@ -24,7 +15,7 @@ const AddBot = (props) => {
   const [systemMessage, setSystemMessage] = React.useState({
     visible: false,
     level: null,
-    message: null
+    message: null,
   });
 
   // init values
@@ -32,7 +23,7 @@ const AddBot = (props) => {
     uuid: null,
     name: "",
     room_url: "",
-    avatar_id: ""
+    avatar_id: "",
   };
   const [bot, setBot] = React.useState(initialBotState);
 
@@ -44,7 +35,9 @@ const AddBot = (props) => {
     if (name === "name") {
       if (!value.match("^[A-Za-z0-9 -]{0,26}$")) {
         setNameError(true);
-        setNameErrorMessage("Only alphanumerics, hyphens, underscores, and tildes. At least 1 characters, no more than 26");
+        setNameErrorMessage(
+          "Only alphanumerics, hyphens, underscores, and tildes. At least 1 characters, no more than 26"
+        );
       }
     }
     setBot({ ...bot, [name]: value });
@@ -59,26 +52,26 @@ const AddBot = (props) => {
         room_url: bot.room_url,
       };
       BotDataService.create(data)
-      .then((response) => {
-        setConfirmDialogLoading(false);
-        setOpenConfirmDialog(false);
-        props.onCreate(response.data[0]);
-        setSystemMessage({
-          visible: true,
-          level: 200,
-          message: "Bot saved."
+        .then((response) => {
+          setConfirmDialogLoading(false);
+          setOpenConfirmDialog(false);
+          props.onCreate(response.data[0]);
+          setSystemMessage({
+            visible: true,
+            level: 200,
+            message: "Bot saved.",
+          });
+        })
+        .catch((e) => {
+          console.log(e);
+          setConfirmDialogLoading(false);
+          setOpenConfirmDialog(false);
+          setSystemMessage({
+            visible: true,
+            level: "error",
+            message: JSON.stringify(e.response),
+          });
         });
-      })
-      .catch((e) => {
-        console.log(e);
-        setConfirmDialogLoading(false);
-        setOpenConfirmDialog(false);
-        setSystemMessage({
-          visible: true,
-          level: "error",
-          message: JSON.stringify(e.response)
-        });
-      });
     }
   };
 
@@ -88,30 +81,28 @@ const AddBot = (props) => {
 
   const handleOpenConfirmDialog = () => {
     setOpenConfirmDialog(true);
-  }
+  };
 
   const confirmDialogYesClicked = () => {
     saveBot();
-  }
+  };
 
   const confirmDialogCloseClicked = () => {
     setOpenConfirmDialog(false);
     setConfirmDialogLoading(false);
-  }
+  };
 
   return (
     <div className="add-bot">
       <Card>
         <CardContent>
-        <Typography variant="h5" component="h2">
-          Add bot
-        </Typography>
-          {systemMessage.visible &&
-            <SystemMessage level={systemMessage.level} message={systemMessage.message} />
-          }
+          <Typography variant="h5" component="h2">
+            Add bot
+          </Typography>
+          {systemMessage.visible && <SystemMessage level={systemMessage.level} message={systemMessage.message} />}
           <form noValidate autoComplete="off">
             <TextField
-              inputRef={input => input && input.focus()}
+              inputRef={(input) => input && input.focus()}
               id="name"
               name="name"
               label="Name"
@@ -121,7 +112,7 @@ const AddBot = (props) => {
               helperText={nameErrorMessage}
               inputProps={{
                 maxLength: 26,
-                pattern: "^[A-Za-z0-9 -]{0,26}$"
+                pattern: "^[A-Za-z0-9 -]{0,26}$",
               }}
             />
             <TextField
@@ -141,16 +132,11 @@ const AddBot = (props) => {
           </form>
         </CardContent>
         <CardActions>
-          {!nameError &&
-            <Button
-            onClick={handleOpenConfirmDialog}
-            color="primary"
-            variant="contained"
-            type="submit"
-          >
-            Create bot
-          </Button>
-          }
+          {!nameError && (
+            <Button onClick={handleOpenConfirmDialog} color="primary" variant="contained" type="submit">
+              Create bot
+            </Button>
+          )}
         </CardActions>
       </Card>
       <ConfirmDialog

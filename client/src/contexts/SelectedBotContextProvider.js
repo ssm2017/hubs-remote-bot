@@ -1,5 +1,5 @@
-import React from 'react';
-import selectedBotContext from './selectedBotContext';
+import React from "react";
+import selectedBotContext from "./selectedBotContext";
 
 const defaultSelectedBot = {
   uuid: null,
@@ -16,16 +16,17 @@ const SelectedBotContextProvider = (props) => {
     } else {
       setSelectedBot(defaultSelectedBot);
     }
-    
-  }
+  };
 
   return (
-    <selectedBotContext.Provider value={{
-      selectedBot,
-      setSelectedBot: setSelectedBotValue
-      }}>
+    <selectedBotContext.Provider
+      value={{
+        selectedBot,
+        setSelectedBot: setSelectedBotValue,
+      }}
+    >
       {props.children}
     </selectedBotContext.Provider>
   );
-}
+};
 export default SelectedBotContextProvider;

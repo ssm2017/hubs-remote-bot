@@ -6,33 +6,25 @@ import selectedBotContext from "../../contexts/selectedBotContext";
 import ConfirmDialog from "../utils/ConfirmDialog";
 import SystemMessage from "../utils/SystemMessage";
 
-import {
-  Typography,
-  TextField,
-  Button,
-  Card,
-  CardActions,
-  CardContent
-} from "@material-ui/core";
+import { Typography, TextField, Button, Card, CardActions, CardContent } from "@material-ui/core";
 
 const Properties = () => {
-
   // input name error
   const [nameError, setNameError] = React.useState(false);
   const [nameErrorMessage, setNameErrorMessage] = React.useState("");
 
   const [editMode, setEditMode] = React.useState(false);
 
-  const {botsList, setBotsList} = React.useContext(botsListContext);
+  const { botsList, setBotsList } = React.useContext(botsListContext);
 
-  const {selectedBot, setSelectedBot} = React.useContext(selectedBotContext);
+  const { selectedBot, setSelectedBot } = React.useContext(selectedBotContext);
 
   const [editedBot, setEditedBot] = React.useState(selectedBot);
 
   const handleSetEditMode = () => {
     setEditedBot(selectedBot);
     setEditMode(true);
-  }
+  };
 
   // text fields content
   const handleInputChange = (event) => {
@@ -42,7 +34,9 @@ const Properties = () => {
     if (name === "name") {
       if (!value.match("^[A-Za-z0-9 -]{0,26}$")) {
         setNameError(true);
-        setNameErrorMessage("Only alphanumerics, hyphens, underscores, and tildes. At least 1 characters, no more than 26");
+        setNameErrorMessage(
+          "Only alphanumerics, hyphens, underscores, and tildes. At least 1 characters, no more than 26"
+        );
       }
     }
     setEditedBot({ ...editedBot, [name]: value });
@@ -56,32 +50,32 @@ const Properties = () => {
 
   const getBotInfos = () => {
     BotDataService.get(selectedBot.uuid)
-    .then((response) => {
-      console.log("Get bot infos",response.data);
-      setSelectedBot(response.data);
-    })
-    .catch((e) => {
-      console.log("Error getting bot infos.", e);
-    });
-  }
+      .then((response) => {
+        console.log("Get bot infos", response.data);
+        setSelectedBot(response.data);
+      })
+      .catch((e) => {
+        console.log("Error getting bot infos.", e);
+      });
+  };
 
   const updateBot = () => {
     if (!confirmUpdateDialogLoading) {
       setConfirmUpdateDialogLoading(true);
       BotDataService.update(editedBot.uuid, editedBot)
-      .then((response) => {
-        console.log("updated bot",response.data);
-        setConfirmUpdateDialogLoading(false);
-        setOpenUpdateConfirmDialog(false);
-        setEditMode(false);
-        setBotsList();
-        getBotInfos();
-      })
-      .catch((e) => {
-        console.log("Error updating bot.", e);
-        setConfirmUpdateDialogLoading(false);
-        setOpenUpdateConfirmDialog(false);
-      });
+        .then((response) => {
+          console.log("updated bot", response.data);
+          setConfirmUpdateDialogLoading(false);
+          setOpenUpdateConfirmDialog(false);
+          setEditMode(false);
+          setBotsList();
+          getBotInfos();
+        })
+        .catch((e) => {
+          console.log("Error updating bot.", e);
+          setConfirmUpdateDialogLoading(false);
+          setOpenUpdateConfirmDialog(false);
+        });
     }
   };
 
@@ -89,20 +83,20 @@ const Properties = () => {
     if (!confirmDeleteDialogLoading) {
       setConfirmDeleteDialogLoading(true);
       BotDataService.remove(editedBot.uuid)
-      .then((response) => {
-        console.log("deleted bot",response.data);
-        setConfirmUpdateDialogLoading(false);
-        setOpenUpdateConfirmDialog(false);
-        setEditMode(false);
-        setBotsList();
-        setSelectedBot(null);
-        setEditedBot(null);
-      })
-      .catch((e) => {
-        console.log("Error deleting bot.", e);
-        setConfirmUpdateDialogLoading(false);
-        setOpenUpdateConfirmDialog(false);
-      });
+        .then((response) => {
+          console.log("deleted bot", response.data);
+          setConfirmUpdateDialogLoading(false);
+          setOpenUpdateConfirmDialog(false);
+          setEditMode(false);
+          setBotsList();
+          setSelectedBot(null);
+          setEditedBot(null);
+        })
+        .catch((e) => {
+          console.log("Error deleting bot.", e);
+          setConfirmUpdateDialogLoading(false);
+          setOpenUpdateConfirmDialog(false);
+        });
     }
   };
 
@@ -164,7 +158,7 @@ const Properties = () => {
           </Typography>
           <form noValidate autoComplete="off">
             <TextField
-              inputRef={input => input && input.focus()}
+              inputRef={(input) => input && input.focus()}
               id="name"
               name="name"
               label="Name"
@@ -174,7 +168,7 @@ const Properties = () => {
               helperText={nameErrorMessage}
               inputProps={{
                 maxLength: 26,
-                pattern: "^[A-Za-z0-9 -]{3,32}$"
+                pattern: "^[A-Za-z0-9 -]{3,32}$",
               }}
             />
             {/* <TextField
@@ -194,11 +188,11 @@ const Properties = () => {
           </form>
         </CardContent>
         <CardActions>
-          {!nameError &&
+          {!nameError && (
             <Button onClick={() => setOpenUpdateConfirmDialog(true)} color="primary" variant="contained">
               Save bot
             </Button>
-          }
+          )}
           <Button onClick={() => setOpenDeleteConfirmDialog(true)} color="secondary" variant="contained">
             Delete
           </Button>
@@ -234,7 +228,8 @@ const Properties = () => {
         onCloseClicked={() => confirmDeleteDialogCloseClicked()}
         loading={confirmDeleteDialogLoading}
       />
-    </div>);
+    </div>
+  );
 };
 
 export default Properties;

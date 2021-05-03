@@ -14,7 +14,7 @@ import {
   Radio,
   Switch,
   makeStyles,
-  Typography
+  Typography,
 } from "@material-ui/core";
 
 import configContext from "../contexts/configContext";
@@ -67,10 +67,10 @@ const useStyles = makeStyles((theme) => ({
   toolbar: theme.mixins.toolbar,
   mobileToolbarHeader: {
     padding: "10px",
-    textAlign: "center"
+    textAlign: "center",
   },
   drawerPaper: {
-    width: TOOLS_DRAWER_WIDTH
+    width: TOOLS_DRAWER_WIDTH,
   },
   content: {
     flexGrow: 1,
@@ -80,28 +80,28 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   toolsPanel: {
-    margin: "10px"
-  }
+    margin: "10px",
+  },
 }));
 
 const ConfigPanel = (props) => {
   const classes = useStyles();
 
   // selected bot
-  const {selectedBot, setSelectedBot} = React.useContext(selectedBotContext);
+  const { selectedBot, setSelectedBot } = React.useContext(selectedBotContext);
 
   // manage config
-  const {config, setConfig} = React.useContext(configContext);
+  const { config, setConfig } = React.useContext(configContext);
   const handleToggleConfigAutorefresh = (event) => {
     setConfig("enableAutoRefresh", event.target.checked);
-  }
+  };
   const [soloMode, setSoloMode] = React.useState(config.soloMode);
   const handleToggleConfigSoloMode = (event) => {
     setSoloMode(event.target.checked);
-    if (config.panels.length >1) {
+    if (config.panels.length > 1) {
       setConfig("panels", ["properties"]);
     }
-  }
+  };
   React.useEffect(() => {
     setConfig("soloMode", soloMode);
   }, [soloMode]);
@@ -139,11 +139,14 @@ const ConfigPanel = (props) => {
     <div className={classes.toolsPanel}>
       <FormControlLabel
         label="Auto refresh"
-        control={<Checkbox
-          key="toggleAutoRefresh"
-          checked={config.enableAutoRefresh}
-          name="auto_refresh"
-          onChange={handleToggleConfigAutorefresh} />}
+        control={
+          <Checkbox
+            key="toggleAutoRefresh"
+            checked={config.enableAutoRefresh}
+            name="auto_refresh"
+            onChange={handleToggleConfigAutorefresh}
+          />
+        }
       />
       <FormHelperText>Need page refresh</FormHelperText>
     </div>
@@ -153,31 +156,19 @@ const ConfigPanel = (props) => {
     <div className={classes.toolsPanel}>
       <FormControlLabel
         label="Solo mode"
-        control={<Switch
-          key="toggleSoloMode"
-          checked={config.soloMode}
-          name="solo_mode"
-          color="primary" />}
-          onChange={handleToggleConfigSoloMode}
+        control={<Switch key="toggleSoloMode" checked={config.soloMode} name="solo_mode" color="primary" />}
+        onChange={handleToggleConfigSoloMode}
       />
       {config.soloMode ? (
         <FormControl component="fieldset">
           <FormLabel component="legend">Select panel</FormLabel>
-          <RadioGroup
-            aria-label="panels"
-            name="panels"
-            onChange={(event) => handleToolsDisplayListChange(event)}
-          >
+          <RadioGroup aria-label="panels" name="panels" onChange={(event) => handleToolsDisplayListChange(event)}>
             {panelsList.map((panel, index) => (
               <FormControlLabel
                 key={index}
                 value={panel.command}
                 label={panel.title}
-                control={<Radio
-                  key={index}
-                  name={panel.command}
-                  checked={config.panels.includes(panel.command)}
-                />}
+                control={<Radio key={index} name={panel.command} checked={config.panels.includes(panel.command)} />}
               />
             ))}
           </RadioGroup>
@@ -190,13 +181,7 @@ const ConfigPanel = (props) => {
               <FormControlLabel
                 key={index}
                 label={panel.title}
-                control={
-                  <Checkbox
-                    key={index}
-                    name={panel.command}
-                    checked={config.panels.includes(panel.command)}
-                  />
-                }
+                control={<Checkbox key={index} name={panel.command} checked={config.panels.includes(panel.command)} />}
               />
             ))}
           </FormGroup>
@@ -242,9 +227,9 @@ const ConfigPanel = (props) => {
         anchor="right"
       >
         <div className={classes.toolbar} />
-      {configPanelTemplate}
-      <Divider />
-      {selectedBot.uuid && toolsPanelTemplate}
+        {configPanelTemplate}
+        <Divider />
+        {selectedBot.uuid && toolsPanelTemplate}
       </Drawer>
     </div>
   );
@@ -263,6 +248,6 @@ const ConfigPanel = (props) => {
       </nav>
     </div>
   );
-}
+};
 
 export default ConfigPanel;

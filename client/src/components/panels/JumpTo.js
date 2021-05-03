@@ -3,21 +3,13 @@ import BotDataService from "../../services/BotService";
 import SystemMessage from "../utils/SystemMessage";
 import selectedBotContext from "../../contexts/selectedBotContext";
 
-import {
-  Button,
-  Card,
-  CardContent,
-  Typography,
-  InputLabel,
-  FormControl,
-  NativeSelect
-} from "@material-ui/core";
+import { Button, Card, CardContent, Typography, InputLabel, FormControl, NativeSelect } from "@material-ui/core";
 
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   formControl: {
     margin: theme.spacing(1),
@@ -38,20 +30,20 @@ const JumpTo = () => {
   };
   const [currentSystemMessage, setCurrentSystemMessage] = React.useState(initialSystemMessage);
 
-  const {selectedBot, setSelectedBot} = React.useContext(selectedBotContext);
+  const { selectedBot, setSelectedBot } = React.useContext(selectedBotContext);
 
   const [waypointsList, setWaypointsList] = React.useState([]);
   const [currentWaypoint, setCurrentWaypoint] = React.useState(null);
 
   const getWaypoints = () => {
     BotDataService.getWaypointsList(selectedBot.uuid)
-    .then((response) => {
-      setWaypointsList(response.data);
-    })
-    .catch((e) => {
-      console.log(e.response);
-      setCurrentSystemMessage(e.response.data.error);
-    });
+      .then((response) => {
+        setWaypointsList(response.data);
+      })
+      .catch((e) => {
+        console.log(e.response);
+        setCurrentSystemMessage(e.response.data.error);
+      });
   };
   React.useEffect(() => {
     getWaypoints();
@@ -107,17 +99,17 @@ const JumpTo = () => {
 
   return (
     <div className={classes.root}>
-    <Card>
-      <CardContent>
-        <Typography variant="h5" component="h2">
-          Jump to
-        </Typography>
-        {currentSystemMessage.message && (
-          <SystemMessage level={currentSystemMessage.status} message={currentSystemMessage.message} />
-        )}
-        {waypointsList.length ? waypointsAvailable : "No waypoint found."}
-      </CardContent>
-    </Card>
+      <Card>
+        <CardContent>
+          <Typography variant="h5" component="h2">
+            Jump to
+          </Typography>
+          {currentSystemMessage.message && (
+            <SystemMessage level={currentSystemMessage.status} message={currentSystemMessage.message} />
+          )}
+          {waypointsList.length ? waypointsAvailable : "No waypoint found."}
+        </CardContent>
+      </Card>
     </div>
   );
 };

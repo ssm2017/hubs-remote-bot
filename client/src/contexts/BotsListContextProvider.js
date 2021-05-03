@@ -1,5 +1,5 @@
-import React from 'react';
-import botsListContext from './botsListContext';
+import React from "react";
+import botsListContext from "./botsListContext";
 import BotDataService from "../services/BotService";
 
 const BotsListContextProvider = (props) => {
@@ -7,21 +7,23 @@ const BotsListContextProvider = (props) => {
 
   const setBotsListValue = () => {
     BotDataService.getAll()
-    .then((response) => {
-      setBotsList(response.data);
-    })
-    .catch((e) => {
-      console.log(e);
-    });
-  }
+      .then((response) => {
+        setBotsList(response.data);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
 
   return (
-    <botsListContext.Provider value={{
+    <botsListContext.Provider
+      value={{
         botsList,
-        setBotsList: setBotsListValue
-      }}>
+        setBotsList: setBotsListValue,
+      }}
+    >
       {props.children}
     </botsListContext.Provider>
   );
-}
+};
 export default BotsListContextProvider;

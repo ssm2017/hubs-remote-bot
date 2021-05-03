@@ -24,15 +24,15 @@ module.exports = function (httpServer) {
         audio_volume: process.env.AUDIO_VOLUME || 1,
         userDataDir: process.env.USER_DATA_DIR || "./assets/chrome-profile/User Data/",
         autoLog: process.env.AUTOLOG || true,
-        avatar_id: req.body.avatar_id || "7qt89yB"
+        avatar_id: req.body.avatar_id || "7qt89yB",
       };
       // check name pattern
       if (!params.name.match("^[A-Za-z0-9 -]{1,26}$")) {
         res.status(400).json({
           error: {
             status: 400,
-            message: "Invalid name."
-          }
+            message: "Invalid name.",
+          },
         });
         return;
       }
@@ -44,7 +44,7 @@ module.exports = function (httpServer) {
         error: {
           status: 500,
           message: e.message,
-        }
+        },
       });
     }
   });
@@ -60,7 +60,7 @@ module.exports = function (httpServer) {
           error: {
             status: 500,
             message: e.message,
-          }
+          },
         })
       );
     }
@@ -72,31 +72,31 @@ module.exports = function (httpServer) {
         uuid: "1ec2c697-1e08-4bf9-b17f-7b64a51693a3",
         name: "a",
         room_url: "https://hubs.mozilla.com/jtbhYFh/adorable-cultured-venture",
-        avatar_id: "7qt89yB"
+        avatar_id: "7qt89yB",
       },
       {
         uuid: "ae49189b-7118-4678-94ca-8fc15bdc9eae",
         name: "aa",
         room_url: "https://hubs.mozilla.com/jtbhYFh/adorable-cultured-venture",
-        avatar_id: "7qt89yB"
+        avatar_id: "7qt89yB",
       },
       {
         uuid: "68ab7c96-b218-45c0-8e90-ab8c0e6d84ef",
         name: "aaa",
         room_url: "https://hubs.mozilla.com/jtbhYFh/adorable-cultured-venture",
-        avatar_id: "7qt89yB"
+        avatar_id: "7qt89yB",
       },
       {
         uuid: "c2c00124-d4ef-4ccd-908a-196d72766c23",
         name: "aaaa",
         room_url: "https://hubs.mozilla.com/jtbhYFh/adorable-cultured-venture",
-        avatar_id: "7qt89yB"
+        avatar_id: "7qt89yB",
       },
       {
         uuid: "0c5521ad-7dab-47f9-a88e-fdf15921cd2b",
         name: "aaaaa",
         room_url: "https://hubs.mozilla.com/jtbhYFh/adorable-cultured-venture",
-        avatar_id: "7qt89yB"
+        avatar_id: "7qt89yB",
       },
     ];
     res.status(200).json(result);
@@ -113,7 +113,7 @@ module.exports = function (httpServer) {
           error: {
             status: 404,
             message: "Bot not found.",
-          }
+          },
         });
         return;
       }
@@ -125,7 +125,7 @@ module.exports = function (httpServer) {
         error: {
           status: 500,
           message: e.message,
-        }
+        },
       });
     }
   });
@@ -140,8 +140,8 @@ module.exports = function (httpServer) {
         res.status(400).json({
           error: {
             status: 400,
-            message: "Wrong uuid."
-          }
+            message: "Wrong uuid.",
+          },
         });
         return;
       }
@@ -152,7 +152,7 @@ module.exports = function (httpServer) {
         error: {
           status: 500,
           message: e.message,
-        }
+        },
       });
     }
   });
@@ -167,8 +167,8 @@ module.exports = function (httpServer) {
         res.status(400).json({
           error: {
             status: 400,
-            message: "Wrong uuid."
-          }
+            message: "Wrong uuid.",
+          },
         });
         return;
       }
@@ -179,7 +179,7 @@ module.exports = function (httpServer) {
           error: {
             status: 404,
             message: "Bot not found.",
-          }
+          },
         });
         return;
       }
@@ -204,14 +204,14 @@ module.exports = function (httpServer) {
       res.status(200).json({
         uuid: bot.uuid,
         name: bot.name,
-        avatar_id: bot.avatar_id
+        avatar_id: bot.avatar_id,
       });
     } catch (e) {
       res.status(500).json({
         error: {
           status: 500,
           message: e.message,
-        }
+        },
       });
     }
   });
@@ -226,8 +226,8 @@ module.exports = function (httpServer) {
         res.status(400).json({
           error: {
             status: 400,
-            message: "Wrong uuid."
-          }
+            message: "Wrong uuid.",
+          },
         });
         return;
       }
@@ -238,7 +238,7 @@ module.exports = function (httpServer) {
           error: {
             status: 404,
             message: "Bot not found.",
-          }
+          },
         });
         return;
       }
@@ -249,13 +249,13 @@ module.exports = function (httpServer) {
       let file_to_play = assets_folder + "/" + filename;
       // play the file
       await bot.playFile(file_to_play);
-      res.status(200).json({file: file_to_play});
+      res.status(200).json({ file: file_to_play });
     } catch (e) {
       res.status(500).json({
         error: {
           status: 500,
           message: e.message,
-        }
+        },
       });
     }
   });
@@ -270,8 +270,8 @@ module.exports = function (httpServer) {
         res.status(400).json({
           error: {
             status: 400,
-            message: "Wrong uuid."
-          }
+            message: "Wrong uuid.",
+          },
         });
         return;
       }
@@ -282,7 +282,7 @@ module.exports = function (httpServer) {
           error: {
             status: 404,
             message: "Bot not found.",
-          }
+          },
         });
         return;
       }
@@ -294,7 +294,7 @@ module.exports = function (httpServer) {
         error: {
           status: 500,
           message: e.message,
-        }
+        },
       });
     }
   });
@@ -309,8 +309,8 @@ module.exports = function (httpServer) {
         res.status(400).json({
           error: {
             status: 400,
-            message: "Wrong uuid."
-          }
+            message: "Wrong uuid.",
+          },
         });
         return;
       }
@@ -321,7 +321,7 @@ module.exports = function (httpServer) {
           error: {
             status: 404,
             message: "Bot not found.",
-          }
+          },
         });
         return;
       }
@@ -366,7 +366,7 @@ module.exports = function (httpServer) {
         error: {
           status: 500,
           message: e.message,
-        }
+        },
       });
     }
   });
@@ -381,8 +381,8 @@ module.exports = function (httpServer) {
         res.status(400).json({
           error: {
             status: 400,
-            message: "Wrong uuid."
-          }
+            message: "Wrong uuid.",
+          },
         });
         return;
       }
@@ -393,7 +393,7 @@ module.exports = function (httpServer) {
           error: {
             status: 404,
             message: "Bot not found.",
-          }
+          },
         });
         return;
       }
@@ -407,7 +407,7 @@ module.exports = function (httpServer) {
         error: {
           status: 500,
           message: e.message,
-        }
+        },
       });
     }
   });
@@ -422,8 +422,8 @@ module.exports = function (httpServer) {
         res.status(400).json({
           error: {
             status: 400,
-            message: "Wrong uuid."
-          }
+            message: "Wrong uuid.",
+          },
         });
         return;
       }
@@ -434,7 +434,7 @@ module.exports = function (httpServer) {
           error: {
             status: 404,
             message: "Bot not found.",
-          }
+          },
         });
         return;
       }
@@ -447,7 +447,7 @@ module.exports = function (httpServer) {
           error: {
             status: 404,
             message: "Interval not found.",
-          }
+          },
         });
       }
     } catch (e) {
@@ -455,7 +455,7 @@ module.exports = function (httpServer) {
         error: {
           status: 500,
           message: e.message,
-        }
+        },
       });
     }
   });
@@ -470,8 +470,8 @@ module.exports = function (httpServer) {
         res.status(400).json({
           error: {
             status: 400,
-            message: "Wrong uuid."
-          }
+            message: "Wrong uuid.",
+          },
         });
         return;
       }
@@ -482,18 +482,18 @@ module.exports = function (httpServer) {
           error: {
             status: 404,
             message: "Bot not found.",
-          }
+          },
         });
         return;
       }
       await bot.deleteAllObjects();
-      res.status(200).json({uuid:uuid});
+      res.status(200).json({ uuid: uuid });
     } catch (e) {
       res.status(500).json({
         error: {
           status: 500,
           message: e.message,
-        }
+        },
       });
     }
   });
@@ -508,8 +508,8 @@ module.exports = function (httpServer) {
         res.status(400).json({
           error: {
             status: 400,
-            message: "Wrong uuid."
-          }
+            message: "Wrong uuid.",
+          },
         });
         return;
       }
@@ -520,7 +520,7 @@ module.exports = function (httpServer) {
           error: {
             status: 404,
             message: "Bot not found.",
-          }
+          },
         });
         return;
       }
@@ -547,8 +547,8 @@ module.exports = function (httpServer) {
         res.status(400).json({
           error: {
             status: 400,
-            message: "Wrong uuid."
-          }
+            message: "Wrong uuid.",
+          },
         });
         return;
       }
@@ -559,7 +559,7 @@ module.exports = function (httpServer) {
           error: {
             status: 404,
             message: "Bot not found.",
-          }
+          },
         });
         return;
       }
@@ -583,7 +583,7 @@ module.exports = function (httpServer) {
       res.status(200).json({
         x: params.x,
         y: params.y,
-        z: params.z
+        z: params.z,
       });
     } catch (e) {
       res.status(500).json({
@@ -605,8 +605,8 @@ module.exports = function (httpServer) {
         res.status(400).json({
           error: {
             status: 400,
-            message: "Wrong uuid."
-          }
+            message: "Wrong uuid.",
+          },
         });
         return;
       }
@@ -617,7 +617,7 @@ module.exports = function (httpServer) {
           error: {
             status: 404,
             message: "Bot not found.",
-          }
+          },
         });
         return;
       }
@@ -628,7 +628,7 @@ module.exports = function (httpServer) {
         error: {
           status: 500,
           message: e.message,
-        }
+        },
       });
     }
   });
@@ -648,8 +648,8 @@ module.exports = function (httpServer) {
         res.status(400).json({
           error: {
             status: 400,
-            message: "Wrong uuid."
-          }
+            message: "Wrong uuid.",
+          },
         });
         return;
       }
@@ -660,7 +660,7 @@ module.exports = function (httpServer) {
           error: {
             status: 404,
             message: "Bot not found.",
-          }
+          },
         });
         return;
       }
@@ -686,8 +686,8 @@ module.exports = function (httpServer) {
         res.status(400).json({
           error: {
             status: 400,
-            message: "Wrong uuid."
-          }
+            message: "Wrong uuid.",
+          },
         });
         return;
       }
@@ -698,7 +698,7 @@ module.exports = function (httpServer) {
           error: {
             status: 404,
             message: "Bot not found.",
-          }
+          },
         });
         return;
       }
@@ -710,7 +710,7 @@ module.exports = function (httpServer) {
         error: {
           status: 500,
           message: e.message,
-        }
+        },
       });
     }
   });
@@ -739,7 +739,7 @@ module.exports = function (httpServer) {
         error: {
           status: 500,
           message: e.message,
-        }
+        },
       });
     }
   });
@@ -752,8 +752,8 @@ module.exports = function (httpServer) {
         res.status(400).json({
           error: {
             status: 400,
-            message: "Wrong uuid."
-          }
+            message: "Wrong uuid.",
+          },
         });
         return;
       }
@@ -764,7 +764,7 @@ module.exports = function (httpServer) {
           error: {
             status: 404,
             message: "Bot not found.",
-          }
+          },
         });
         return;
       }
@@ -776,7 +776,7 @@ module.exports = function (httpServer) {
         error: {
           status: 500,
           message: e.message,
-        }
+        },
       });
     }
   });

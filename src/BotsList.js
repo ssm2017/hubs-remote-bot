@@ -44,13 +44,13 @@ class BotsList {
             uuid: new_bot.uuid,
             name: new_bot.name,
             room_url: params.room_url,
-            avatar_id: new_bot.avatar_id
+            avatar_id: new_bot.avatar_id,
           },
         ],
       });
     } catch (e) {
       console.error("Error creating bot", e);
-      throw(e);
+      throw e;
     }
   }
 
@@ -177,7 +177,7 @@ class BotsList {
         uuid: this.bots[idx].uuid,
         name: this.bots[idx].name,
         room_url: room_url,
-        avatar_id: this.bots[idx].avatar_id
+        avatar_id: this.bots[idx].avatar_id,
       });
     }
     bot_status.bots = bots_list;
@@ -218,7 +218,7 @@ class BotsList {
         uuid: bot.uuid,
         name: bot.name,
         room_url: room_url,
-        avatar_id: bot.avatar_id
+        avatar_id: bot.avatar_id,
       },
     });
   }

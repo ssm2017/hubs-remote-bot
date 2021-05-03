@@ -53,27 +53,27 @@ class BotDataService {
 
   sayInChat = (uuid, data) => {
     return http.post(`/bots/${uuid}/say`, data);
-  }
+  };
 
   spawnObjects = (uuid, data) => {
     return http.post(`/bots/${uuid}/objects`, data);
-  }
+  };
 
   getSpawnInterval = (uuid) => {
     return http.get(`/bots/${uuid}/objects/interval`);
-  }
+  };
 
   deleteSpawnInterval = (uuid) => {
     return http.delete(`/bots/${uuid}/objects/interval`);
-  }
+  };
 
   deleteObjects = (uuid) => {
     return http.delete(`/bots/${uuid}/objects`);
-  }
+  };
 
   getObjectsList = (uuid) => {
     return http.get(`/bots/${uuid}/objects`);
-  }
+  };
 }
 
 export default new BotDataService();

@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 const objectsListContext = React.createContext({
   objectsList: [],
-  setObjetcsList: () => {}
+  setObjetcsList: () => {},
 });
-  
+
 export default objectsListContext;

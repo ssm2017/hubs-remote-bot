@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
   toolbar: theme.mixins.toolbar,
   mobileToolbarHeader: {
     padding: "10px",
-    textAlign: "center"
+    textAlign: "center",
   },
   drawerPaper: {
     width: drawerWidth,
@@ -74,9 +74,9 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     marginTop: "50px",
     // [theme.breakpoints.up("sm")]: {
-      // marginRight: "400px",
-      // marginLeft: "200px",
-      // maxWidth: "250px"
+    // marginRight: "400px",
+    // marginLeft: "200px",
+    // maxWidth: "250px"
     // },
   },
   title: {
@@ -86,19 +86,19 @@ const useStyles = makeStyles((theme) => ({
 
 const BotsList = (props) => {
   // get config
-  const {config, setConfig} = React.useContext(configContext);
+  const { config, setConfig } = React.useContext(configContext);
 
   // theming
   const classes = useStyles();
 
-  const {botsList, setBotsList} = React.useContext(botsListContext);
+  const { botsList, setBotsList } = React.useContext(botsListContext);
   // get the bots list on init
   React.useEffect(() => {
     if (config.enableAutoRefresh) {
       const interval = setInterval(() => {
         console.log("Refresh bots list");
         setBotsList();
-      }, 2000 );
+      }, 2000);
       return () => clearInterval(interval);
     }
     setBotsList();
@@ -110,7 +110,7 @@ const BotsList = (props) => {
     name: "",
     room_url: "",
   };
-  const {selectedBot, setSelectedBot} = React.useContext(selectedBotContext);
+  const { selectedBot, setSelectedBot } = React.useContext(selectedBotContext);
   const [selectedBotIndex, setSelectedBotIndex] = React.useState(-1);
   const selectBot = (bot, index) => {
     if (showMobileMenu) {
@@ -192,14 +192,13 @@ const BotsList = (props) => {
         keepMounted: true, // Better open performance on mobile.
       }}
     >
-    <div className={classes.mobileToolbarHeader}>
-      <Typography variant="h5" component="h2">
+      <div className={classes.mobileToolbarHeader}>
+        <Typography variant="h5" component="h2">
           Bots
         </Typography>
-        </div>
-        <Divider />
+      </div>
+      <Divider />
       {botsListDrawer}
-      
     </Drawer>
   );
 
@@ -212,7 +211,7 @@ const BotsList = (props) => {
         variant="permanent"
         open
       >
-        <div className={classes.toolbar}/>
+        <div className={classes.toolbar} />
         {botsListDrawer}
       </Drawer>
     </div>
@@ -238,13 +237,10 @@ const BotsList = (props) => {
           }}
         />
       ) : selectedBot.uuid ? (
-        <BotPanel
-          bot={selectedBot}
-        />
+        <BotPanel bot={selectedBot} />
       ) : (
         <SystemMessage level="info" message="Please select a bot..." />
       )}
-      
     </div>
   );
 
@@ -258,21 +254,21 @@ const BotsList = (props) => {
           onClick={handleBotsListDrawerToggle}
           className={classes.menuButton}
         >
-        <MenuIcon />
+          <MenuIcon />
         </IconButton>
         <Typography variant="h6" noWrap className={classes.title}>
           HBR({botsList.length}) {selectedBot.name ? " : " + selectedBot.name : ""}
         </Typography>
         {/* {selectedBot.uuid && ( */}
-          <IconButton
-            color="inherit"
-            aria-label="open tools"
-            edge="end"
-            onClick={handleToolsDrawerToggle}
-            className={classes.moreButton}
-          >
-            <MoreVertIcon />
-          </IconButton>
+        <IconButton
+          color="inherit"
+          aria-label="open tools"
+          edge="end"
+          onClick={handleToolsDrawerToggle}
+          className={classes.moreButton}
+        >
+          <MoreVertIcon />
+        </IconButton>
         {/* )} */}
       </Toolbar>
     </AppBar>
@@ -292,20 +288,19 @@ const BotsList = (props) => {
           {desktopMenuTemplate}
         </Hidden>
       </nav>
-      
+
       {/* Main Content */}
       {mainContentTemplate}
       <ConfigPanel
         showToolsMenu={showMobileTools}
         onToggleTools={(status) => {
           setShowMobileTools(status);
-        }}/>
+        }}
+      />
     </div>
   );
 
-  return (
-    <div className="botsList">{botsList.length ? botsListTemplate : noBotTemplate}</div>
-  );
+  return <div className="botsList">{botsList.length ? botsListTemplate : noBotTemplate}</div>;
 };
 
 export default BotsList;

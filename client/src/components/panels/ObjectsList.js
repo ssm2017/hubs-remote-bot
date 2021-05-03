@@ -5,18 +5,12 @@ import selectedBotContext from "../../contexts/selectedBotContext";
 import ConfirmDialog from "../utils/ConfirmDialog";
 import objectsListContext from "../../contexts/objectsListContext";
 
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { makeStyles } from '@material-ui/core/styles';
-import { green } from '@material-ui/core/colors';
+import CircularProgress from "@material-ui/core/CircularProgress";
+import { makeStyles } from "@material-ui/core/styles";
+import { green } from "@material-ui/core/colors";
 
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Typography,
-} from "@material-ui/core";
-import RefreshIcon from '@material-ui/icons/Refresh';
+import { Button, Card, CardActions, CardContent, Typography } from "@material-ui/core";
+import RefreshIcon from "@material-ui/icons/Refresh";
 
 const useStyles = makeStyles((theme) => ({
   buttonProgress: {
@@ -34,16 +28,16 @@ const ObjectsList = () => {
   };
   const [currentSystemMessage, setCurrentSystemMessage] = React.useState(initialSystemMessage);
 
-  const {selectedBot, setSelectedBot} = React.useContext(selectedBotContext);
+  const { selectedBot, setSelectedBot } = React.useContext(selectedBotContext);
 
-  const {objectsList, setObjectsList} = React.useContext(objectsListContext);
+  const { objectsList, setObjectsList } = React.useContext(objectsListContext);
 
   const [deleteInProgress, setDeleteInProgress] = React.useState(false);
 
   // actions
   const handleGetObjectsList = () => {
     setObjectsList();
-  }
+  };
 
   React.useEffect(() => {
     setObjectsList();
@@ -53,18 +47,18 @@ const ObjectsList = () => {
     if (!deleteInProgress) {
       setDeleteInProgress(true);
       BotDataService.deleteObjects(selectedBot.uuid)
-      .then((response) => {
-        console.log("Objects deleted");
-        setDeleteInProgress(false);
-        setObjectsList();
-      })
-      .catch((e) => {
-        console.log("error deleting objects", e.response);
-        setDeleteInProgress(false);
-        setCurrentSystemMessage(e.response.data.error);
-      });
+        .then((response) => {
+          console.log("Objects deleted");
+          setDeleteInProgress(false);
+          setObjectsList();
+        })
+        .catch((e) => {
+          console.log("error deleting objects", e.response);
+          setDeleteInProgress(false);
+          setCurrentSystemMessage(e.response.data.error);
+        });
     }
-  }
+  };
 
   // delete confirmation
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = React.useState(false);
@@ -77,13 +71,7 @@ const ObjectsList = () => {
     setOpenDeleteConfirmDialog(false);
   };
 
-  const listTemplate = (
-    <ul>
-      {objectsList && objectsList.map((item, index) => (
-        <li key={index}>{item.id}</li>
-      ))}
-    </ul>
-  );
+  const listTemplate = <ul>{objectsList && objectsList.map((item, index) => <li key={index}>{item.id}</li>)}</ul>;
 
   const deleteButtonTemplate = (
     <div>
@@ -92,17 +80,15 @@ const ObjectsList = () => {
           <div>
             <Typography component="p">Delete in progress</Typography>
             <CircularProgress size={24} className={classes.buttonProgress} />
-          </div>  
-        ): (
-          <Button
-            onClick={() => setOpenDeleteConfirmDialog(true)}
-            color="secondary"
-            variant="contained"
-          >
+          </div>
+        ) : (
+          <Button onClick={() => setOpenDeleteConfirmDialog(true)} color="secondary" variant="contained">
             Delete objects
           </Button>
         )
-      ) : ("")}
+      ) : (
+        ""
+      )}
       <ConfirmDialog
         open={openDeleteConfirmDialog}
         title="Confirm objects deletion ?"
@@ -117,29 +103,23 @@ const ObjectsList = () => {
     <Card>
       <CardContent>
         <Typography variant="h5" component="h2">
-         Objects list
+          Objects list
         </Typography>
-        <Typography component="p">
-          Count: {objectsList.length}
-        </Typography>
+        <Typography component="p">Count: {objectsList.length}</Typography>
         {currentSystemMessage.message && (
-        <SystemMessage level={currentSystemMessage.status} message={currentSystemMessage.message} />
+          <SystemMessage level={currentSystemMessage.status} message={currentSystemMessage.message} />
         )}
         {objectsList && objectsList.length ? listTemplate : "No object found."}
       </CardContent>
       <CardActions>
-        <Button
-          color="primary"
-          variant="contained"
-          onClick={handleGetObjectsList}
-        >
-        <RefreshIcon />
-        Refresh
+        <Button color="primary" variant="contained" onClick={handleGetObjectsList}>
+          <RefreshIcon />
+          Refresh
         </Button>
         {deleteButtonTemplate}
       </CardActions>
     </Card>
-  )
-}
+  );
+};
 
 export default ObjectsList;
